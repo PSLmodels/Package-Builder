@@ -21,7 +21,7 @@ rm -rf $PKGS_TO_UPLOAD/*
 mkdir -p $OSPC_CLONE_DIR
 
 msg(){
-    echo \#\#\#\#\#\#\#\# STATUS \#\#e $* \#\#\#\#\#\#\#\# \#\#\#\#\#\#\#\#;
+    echo \#\#\#\#\#\#\#\# STATUS \#\# $* \#\#\#\#\#\#\#\# \#\#\#\#\#\#\#\#;
 }
 
 clone(){
@@ -31,17 +31,6 @@ clone(){
     ls $3 && return 0;
     git clone $1 && cd $3 || return 1;
     return 0;
-}
-clone_all(){
-    if [ "$SKIP_TAXCALC_BUILD" = "" ];then
-        ls $TAXCALC_CLONE/setup.py || clone $TAXCALC_REPO TAXCALC Tax-Calculator || return 1;
-    fi
-    if [ "$SKIP_BTAX_BUILD" = "" ];then
-        ls $BTAX_CLONE/setup.py || clone $BTAX_REPO BTAX B-Tax || return 1;
-    fi
-    if [ "$SKIP_OGUSA_BUILD" = "" ];then
-        ls $OGUSA_CLONE/setup.py || clone $OGUSA_REPO OGUSA OG-USA || return 1;
-    fi
 }
 fetch_checkout(){
     msg cd $1;
@@ -55,11 +44,21 @@ fetch_checkout(){
     msg Git Archive ${PKGS_TO_UPLOAD}/$3.tar
     git archive --prefix=$3/ -o $PKGS_TO_UPLOAD/$3.tar $latest_tag || return 1;
 }
-fetch_all(){
-    fetch_checkout $TAXCALC_CLONE TAXCALC Tax-Calculator || return 1;
-    fetch_checkout $OGUSA_CLONE OGUSA OG-USA || return 1;
-    fetch_checkout $BTAX_CLONE BTAX B-Tax || return 1;
+clone_all(){
+    if [ "$SKIP_TAXCALC" = "" ];then
+        ls $TAXCALC_CLONE/setup.py || clone $TAXCALC_REPO TAXCALC Tax-Calculator || return 1;
+        fetch_checkout $TAXCALC_CLONE TAXCALC Tax-Calculator || return 1;
+    fi
+    if [ "$SKIP_BTAX" = "" ];then
+        ls $BTAX_CLONE/setup.py || clone $BTAX_REPO BTAX B-Tax || return 1;
+        fetch_checkout $BTAX_CLONE BTAX B-Tax || return 1;
+    fi
+    if [ "$SKIP_OGUSA" = "" ];then
+        ls $OGUSA_CLONE/setup.py || clone $OGUSA_REPO OGUSA OG-USA || return 1;
+        fetch_checkout $OGUSA_CLONE OGUSA OG-USA || return 1;
+    fi
 }
+
 anaconda_upload(){
     if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
         anaconda upload --force $1 || return 1;
@@ -92,24 +91,26 @@ build_one_pkg(){
     export python_version=$3;
     msg Replace version string from ${USE_PYTHON_RECIPE}/meta.yaml;
     cd ${USE_PYTHON_RECIPE} && sed -i '' 's/version: 0.4/version: '${2}'/g' meta.yaml && cd ${PKGS_TO_UPLOAD}/$1 || return 1;
-    msg conda build --python $python_version ${USE_PYTHON_RECIPE};
-    conda build --python $python_version ${USE_PYTHON_RECIPE} || return 1;
-    msg conda convert packages for python $python_version;
+    msg RUN: conda build -c ospc --python $python_version ${USE_PYTHON_RECIPE};
+    conda build -c ospc --python $python_version ${USE_PYTHON_RECIPE} || return 1;
+    msg RUN: conda convert packages for python $python_version;
     convert_packages "$(conda build --python $python_version ${USE_PYTHON_RECIPE} --output)";
     return 0;
 }
 
 build_all_pkgs(){
-    clone_all && fetch_all || return 1;
+    clone_all || return 1;
     for python_version in 2.7 3.4 3.5 3.6;do
         msg STARTING BUILDS FOR PYTHON ${python_version};
-        if [ "$SKIP_TAXCALC_BUILD" = "" ];then
+        if [ "$SKIP_TAXCALC" = "" ];then
             build_one_pkg Tax-Calculator $TAXCALC_TAG $python_version || return 1;
         fi
-        if [ "$SKIP_OGUSA_BUILD" = "" ];then
-            build_one_pkg OG-USA $OGUSA_TAG $python_version || return 1;
+        if [ "$SKIP_OGUSA" = "" ];then
+            if [ "$python_version" = "2.7" ];then
+                build_one_pkg OG-USA $OGUSA_TAG $python_version || return 1;
+            fi
         fi
-        if [ "$SKIP_BTAX_BUILD" = "" ];then
+        if [ "$SKIP_BTAX" = "" ];then
             build_one_pkg B-Tax $BTAX_TAG $python_version || return 1;
         fi
         msg FINISHED BUILDS FOR PYTHON ${python_version};
@@ -117,4 +118,4 @@ build_all_pkgs(){
     return 0;
 }
 
-build_all_pkgs && msg OK || msg FAILED
+build_all_pkgs && msg && echo OK || echo FAILED
