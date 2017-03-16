@@ -94,6 +94,7 @@ convert_packages(){
         anaconda_upload ./${platform}/*-${version}-*.tar.bz2 || return 1;
     done
     anaconda_upload $build_file || return 1;
+    return 0;
 }
 
 build_one_pkg(){
@@ -104,7 +105,7 @@ build_one_pkg(){
     msg Untar $1.tar
     tar xvf $1.tar || return 1;
     msg cd $1;
-    cd $1;
+    cd $1 || return 1;
     ls conda.recipe && export USE_PYTHON_RECIPE="conda.recipe" || export USE_PYTHON_RECIPE="Python/conda.recipe";
     export python_version=$3;
     msg Replace version string from ${USE_PYTHON_RECIPE}/meta.yaml;
@@ -112,7 +113,7 @@ build_one_pkg(){
     msg RUN: conda build -c ospc --python $python_version ${USE_PYTHON_RECIPE};
     conda build -c ospc --python $python_version ${USE_PYTHON_RECIPE} || return 1;
     msg RUN: conda convert packages for python $python_version;
-    convert_packages "$(conda build --python $python_version ${USE_PYTHON_RECIPE} --output)";
+    convert_packages "$(conda build --python $python_version ${USE_PYTHON_RECIPE} --output)" || return 1;
     return 0;
 }
 
