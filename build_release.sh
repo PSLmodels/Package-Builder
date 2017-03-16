@@ -1,4 +1,5 @@
 #!/bin/bash
+
 source deactivate
 echo Update conda and conda-build
 conda update -n root conda conda-build
@@ -8,6 +9,9 @@ export OSPC_REPOS="https://github.com/open-source-economics"
 export BTAX_REPO="${OSPC_REPOS}/B-Tax"
 export TAXCALC_REPO="${OSPC_REPOS}/Tax-Calculator"
 export OGUSA_REPO="${OSPC_REPOS}/OG-USA"
+if [ "${OSPC_PYTHONS}" = "" ];then
+    export OSPC_PYTHONS="2.7 3.4 3.5 3.6";
+fi
 
 if [ "$PKGS_TO_UPLOAD" = "" ];then
     export PKGS_TO_UPLOAD=~/code
@@ -23,7 +27,21 @@ mkdir -p $OSPC_CLONE_DIR
 msg(){
     echo \#\#\#\#\#\#\#\# STATUS \#\# $* \#\#\#\#\#\#\#\# \#\#\#\#\#\#\#\#;
 }
-
+check_anaconda(){
+    export IS_ANON=0;
+    msg Check if anaconda-client has been conda installed
+    which anaconda || return 1;
+    msg Check whether logged into Anaconda client
+    anaconda whoami | grep -i anonymous && export IS_ANON=1;
+    if [ "$IS_ANON" = "1" ];then
+        if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
+            msg Cannot upload packages when anaconda user is anonymous or you did not do conda install anaconda-client and anaconda login;
+            return 1;
+        fi
+    fi
+    msg Logged into anaconda
+    return 0;
+}
 clone(){
     cd $OSPC_CLONE_DIR && rm -rf $1;
     msg From $OSPC_CLONE_DIR Clone $1;
@@ -99,8 +117,9 @@ build_one_pkg(){
 }
 
 build_all_pkgs(){
+    check_anaconda || return 1;
     clone_all || return 1;
-    for python_version in 2.7 3.4 3.5 3.6;do
+    for python_version in ${OSPC_PYTHONS};do
         msg STARTING BUILDS FOR PYTHON ${python_version};
         if [ "$SKIP_TAXCALC" = "" ];then
             build_one_pkg Tax-Calculator $TAXCALC_TAG $python_version || return 1;
