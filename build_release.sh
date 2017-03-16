@@ -27,6 +27,7 @@ mkdir -p $OSPC_CLONE_DIR
 msg(){
     echo \#\#\#\#\#\#\#\# STATUS \#\# $* \#\#\#\#\#\#\#\# \#\#\#\#\#\#\#\#;
 }
+msg Build for Python $OSPC_PYTHONS
 check_anaconda(){
     export IS_ANON=0;
     msg Check if anaconda-client has been conda installed
