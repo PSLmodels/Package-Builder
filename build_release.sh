@@ -1,11 +1,10 @@
 #!/bin/bash
-
+set -x
 source deactivate
-echo Update conda and conda-build
-conda update -n root conda conda-build
+export ORIGINAL_DIR=`pwd`
 conda config --set always_yes true
 export CONDA_BUILD_DEFAULT_DIR="$(dirname $(dirname $(which python)))/conda-bld"
-export OSPC_REPOS="https://github.com/open-source-economics"
+export OSPC_REPOS="http://github.com/open-source-economics"
 export BTAX_REPO="${OSPC_REPOS}/B-Tax"
 export TAXCALC_REPO="${OSPC_REPOS}/Tax-Calculator"
 export OGUSA_REPO="${OSPC_REPOS}/OG-USA"
@@ -14,10 +13,10 @@ if [ "${OSPC_PYTHONS}" = "" ];then
 fi
 
 if [ "$PKGS_TO_UPLOAD" = "" ];then
-    export PKGS_TO_UPLOAD=~/code
+    export PKGS_TO_UPLOAD=~/code;
 fi
 if [ "$OSPC_CLONE_DIR" = "" ];then
-    export OSPC_CLONE_DIR=~/ospc_clones
+    export OSPC_CLONE_DIR=~/ospc_clones;
 fi
 
 mkdir -p $PKGS_TO_UPLOAD
@@ -46,7 +45,7 @@ check_anaconda(){
 clone(){
     cd $OSPC_CLONE_DIR && rm -rf $1;
     msg From $OSPC_CLONE_DIR Clone $1;
-    export "$2_CLONE=${OSPC_CLONE_DIR}/$3"
+    export "$2_CLONE=${OSPC_CLONE_DIR}/$3";
     ls $3 && return 0;
     git clone $1 && cd $3 || return 1;
     return 0;
@@ -79,19 +78,31 @@ clone_all(){
 }
 
 anaconda_upload(){
+    cd $PKGS_TO_UPLOAD || return 1;
+    export ret=0;
     if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
-        anaconda upload --force $1 || return 1;
+        msg From $PKGS_TO_UPLOAD as pwd;
+        msg anaconda upload --force $1;
+        anaconda upload --force $1 || export ret=1;
     else
-        msg Would have done - anaconda upload --force $1 || return 1;
+        msg Would have done - anaconda upload --force $1 || export ret=1;
     fi
+    cd $OLDPWD || return 1;
+    return $ret;
 }
 convert_packages(){
     export build_file=$1;
     export version=$2;
     cd $PKGS_TO_UPLOAD || return 1;
     msg Convert $build_file for platforms;
-    conda convert -p all $build_file -o . || return 1;
-    for platform in osx-32 osx-64 linux-32 linux-64 win-32 win-64; do
+    if [ "$OSPC_PLATFORMS" = "" ];then
+        export OSPC_PLATFORMS="win-32 win-64 linux-64 linux-32 osx-64";
+    fi
+    for platform in $OSPC_PLATFORMS;do
+        msg conda convert -p $platform $build_file -o .
+        conda convert -p $platform $build_file -o . || return 1;
+    done
+    for platform in $OSPC_PLATFORMS; do
         anaconda_upload ./${platform}/*-${version}-*.tar.bz2 || return 1;
     done
     anaconda_upload $build_file || return 1;
@@ -110,11 +121,11 @@ build_one_pkg(){
     ls conda.recipe && export USE_PYTHON_RECIPE="conda.recipe" || export USE_PYTHON_RECIPE="Python/conda.recipe";
     export python_version=$3;
     msg Replace version string from ${USE_PYTHON_RECIPE}/meta.yaml;
-    cd ${USE_PYTHON_RECIPE} && sed -i '' 's/version: 0.4/version: '${2}'/g' meta.yaml && cd ${PKGS_TO_UPLOAD}/$1 || return 1;
+    cd ${USE_PYTHON_RECIPE} && sed -i '' 's/version: .*/version: '${2}'/g' meta.yaml && cd ${PKGS_TO_UPLOAD}/$1 || return 1;
     msg RUN: conda build -c ospc --python $python_version ${USE_PYTHON_RECIPE};
     conda build -c ospc --python $python_version ${USE_PYTHON_RECIPE} || return 1;
     msg RUN: conda convert packages for python $python_version;
-    convert_packages "$(conda build --python $python_version ${USE_PYTHON_RECIPE} --output)" || return 1;
+    convert_packages "$(conda build --python $python_version ${USE_PYTHON_RECIPE} --output)" ${2} || return 1;
     return 0;
 }
 
@@ -140,3 +151,4 @@ build_all_pkgs(){
 }
 
 build_all_pkgs && msg && echo OK || echo FAILED
+cd $ORIGINAL_DIR
