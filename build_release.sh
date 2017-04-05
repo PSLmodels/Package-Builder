@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 source deactivate
 export ORIGINAL_DIR=`pwd`
 conda config --set always_yes true
@@ -121,8 +120,21 @@ build_one_pkg(){
     ls conda.recipe && export USE_PYTHON_RECIPE="conda.recipe" || export USE_PYTHON_RECIPE="Python/conda.recipe";
     export python_version=$3;
     msg Replace version string from ${USE_PYTHON_RECIPE}/meta.yaml;
-    cd ${USE_PYTHON_RECIPE} && sed -i '' 's/version: .*/version: '${2}'/g' meta.yaml && cd ${PKGS_TO_UPLOAD}/$1 || return 1;
-    msg RUN: conda build -c ospc --python $python_version ${USE_PYTHON_RECIPE};
+    cd ${USE_PYTHON_RECIPE} && sed -i '' 's/version: .*/version: '${2}'/g' meta.yaml || return 1;
+    export is_ogusa=0;
+    export is_btax=0;
+    echo $1 | grep OG-USA && export is_ogusa=1;
+    echo $1 | grep B-Tax && export is_btax=1;
+    if [ "$is_ogusa" = "1" ];then
+        sed -i '' 's/taxcalc/taxcalc =='${TAXCALC_TAG}'/g' meta.yaml
+        echo OGUSA CHANGED META: $(cat meta.yaml)
+    fi
+    if [ "$is_btax" = "" ];then
+        sed -i '' 's/taxcalc/taxcalc =='${TAXCALC_TAG}'/g' meta.yaml
+        echo B-Tax CHANGED META: $(cat meta.yaml)
+    fi
+    cd ${PKGS_TO_UPLOAD}/$1 || return 1;
+    msg RUN: conda build --use-local --python $python_version ${USE_PYTHON_RECIPE};
     conda build -c ospc --python $python_version ${USE_PYTHON_RECIPE} || return 1;
     msg RUN: conda convert packages for python $python_version;
     convert_packages "$(conda build --python $python_version ${USE_PYTHON_RECIPE} --output)" ${2} || return 1;
