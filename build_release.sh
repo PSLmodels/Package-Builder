@@ -124,7 +124,7 @@ build_one_pkg(){
     ls conda.recipe && export USE_PYTHON_RECIPE="conda.recipe" || export USE_PYTHON_RECIPE="Python/conda.recipe";
     export python_version=$3;
     msg Replace version string from ${USE_PYTHON_RECIPE}/meta.yaml;
-    cd ${USE_PYTHON_RECIPE} && sed -i '' 's/version: .*/version: '${2}'/g' meta.yaml || return 1;
+    cd ${USE_PYTHON_RECIPE} && sed -i '' 's/version: \.*.*/version: '${2}'/g' meta.yaml || return 1;
     export is_ogusa=0;
     export is_btax=0;
     echo $1 | grep OG-USA && export is_ogusa=1;
