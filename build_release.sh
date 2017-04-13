@@ -42,10 +42,9 @@ check_anaconda(){
     return 0;
 }
 clone(){
-    cd $OSPC_CLONE_DIR && rm -rf $1;
-    msg From $OSPC_CLONE_DIR Clone $1;
+    cd $OSPC_CLONE_DIR && rm -rf $3;
+    msg From $OSPC_CLONE_DIR Clone $1 to $3;
     export "$2_CLONE=${OSPC_CLONE_DIR}/$3";
-    ls $3 && return 0;
     git clone $1 && cd $3 || return 1;
     return 0;
 }
@@ -54,8 +53,9 @@ fetch_checkout(){
     cd $1 || return 1;
     msg git fetch origin;
     git fetch origin;
+    git fetch origin --tags
     export latest_tag=$(git describe --abbrev=0 --tags)
-    export "$2_TAG"="$latest_tag";
+    export "$2_TAG"="$latest_tag"
     msg Git Checkout $latest_tag
     git checkout $latest_tag || return 1;
     msg Git Archive ${PKGS_TO_UPLOAD}/$3.tar
@@ -63,15 +63,15 @@ fetch_checkout(){
 }
 clone_all(){
     if [ "$SKIP_TAXCALC" = "" ];then
-        ls $TAXCALC_CLONE/setup.py || clone $TAXCALC_REPO TAXCALC Tax-Calculator || return 1;
+        clone $TAXCALC_REPO TAXCALC Tax-Calculator || return 1;
         fetch_checkout $TAXCALC_CLONE TAXCALC Tax-Calculator || return 1;
     fi
     if [ "$SKIP_BTAX" = "" ];then
-        ls $BTAX_CLONE/setup.py || clone $BTAX_REPO BTAX B-Tax || return 1;
+        clone $BTAX_REPO BTAX B-Tax || return 1;
         fetch_checkout $BTAX_CLONE BTAX B-Tax || return 1;
     fi
     if [ "$SKIP_OGUSA" = "" ];then
-        ls $OGUSA_CLONE/setup.py || clone $OGUSA_REPO OGUSA OG-USA || return 1;
+        clone $OGUSA_REPO OGUSA OG-USA || return 1;
         fetch_checkout $OGUSA_CLONE OGUSA OG-USA || return 1;
     fi
 }
@@ -82,7 +82,11 @@ anaconda_upload(){
     if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
         msg From $PKGS_TO_UPLOAD as pwd;
         msg anaconda upload --force $1;
-        anaconda upload --force $1 || export ret=1;
+        if [ "$OSPC_UPLOAD_TOKEN" = "" ];then
+            anaconda upload --force $1 || export ret=1;
+        else
+            anaconda -t $OSPC_UPLOAD_TOKEN upload --force $1 || export ret=1;
+        fi
     else
         msg Would have done - anaconda upload --force $1 || export ret=1;
     fi
