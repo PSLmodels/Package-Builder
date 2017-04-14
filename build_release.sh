@@ -58,12 +58,12 @@ fetch_checkout(){
     cd $1 || return 1;
     msg git fetch origin;
     git fetch origin;
-    git fetch origin --tags
-    export latest_tag=$(git describe --abbrev=0 --tags)
-    export "$2_TAG"="$latest_tag"
-    msg Git Checkout $latest_tag
+    git fetch origin --tags;
+    export latest_tag=$(git describe --abbrev=0 --tags);
+    export "$2_TAG"="$latest_tag";
+    msg Git Checkout $latest_tag;
     git checkout $latest_tag || return 1;
-    msg Git Archive ${PKGS_TO_UPLOAD}/$3.tar
+    msg Git Archive ${PKGS_TO_UPLOAD}/$3.tar;
     git archive --prefix=$3/ -o $PKGS_TO_UPLOAD/$3.tar $latest_tag || return 1;
 }
 clone_all(){
@@ -122,7 +122,7 @@ convert_packages(){
 }
 replace_version(){
     version=$1;
-    IFS='' ; while read line ;do echo "$line" | grep version && echo "version: $version" >> meta2.yaml  || echo "$line" >> meta2.yaml  ; done < meta.yaml
+    IFS='' ; while read line ;do echo "$line" | grep version && echo "  version: $version" >> meta2.yaml  || echo "$line" >> meta2.yaml  ; done < meta.yaml
     mv meta2.yaml meta.yaml;
 }
 build_one_pkg(){
