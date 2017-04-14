@@ -109,9 +109,10 @@ convert_packages(){
     cd $PKGS_TO_UPLOAD || return 1;
     msg Convert $build_file for platforms;
     msg conda convert -p all $build_file -o .
+
     conda convert -p all $build_file -o . || return 1;
     for platform in win-32 win-64 linux-64 linux-32 osx-64; do
-        anaconda_upload ./${platform}/*-${version}-*.tar.bz2 || return 1;
+        ls $platform && anaconda_upload ./${platform}/*-${version}-*.tar.bz2;
     done
     anaconda_upload $build_file || return 1;
     return 0;
