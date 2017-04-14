@@ -79,16 +79,20 @@ clone_all(){
 anaconda_upload(){
     cd $PKGS_TO_UPLOAD || return 1;
     export ret=0;
+    if [ "$OSPC_ANACONDA_CHANNEL" = "" ];then
+        export OSPC_ANACONDA_CHANNEL=main;
+    fi
+    export label="--label $OSPC_ANACONDA_CHANNEL";
     if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
         msg From $PKGS_TO_UPLOAD as pwd;
         msg anaconda upload --force $1;
         if [ "$OSPC_UPLOAD_TOKEN" = "" ];then
-            anaconda upload --force $1 || export ret=1;
+            anaconda upload --force $label $1 || export ret=1;
         else
-            anaconda -t $OSPC_UPLOAD_TOKEN upload --force $1 || export ret=1;
+            anaconda -t $OSPC_UPLOAD_TOKEN upload --force $label $1 || export ret=1;
         fi
     else
-        msg Would have done - anaconda upload --force $1 || export ret=1;
+        msg Would have done - anaconda upload --force $label $1 || export ret=1;
     fi
     cd $OLDPWD || return 1;
     return $ret;
