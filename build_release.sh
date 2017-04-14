@@ -7,15 +7,18 @@ export OSPC_REPOS="http://github.com/open-source-economics"
 export BTAX_REPO="${OSPC_REPOS}/B-Tax"
 export TAXCALC_REPO="${OSPC_REPOS}/Tax-Calculator"
 export OGUSA_REPO="${OSPC_REPOS}/OG-USA"
+if [ "$WORKSPACE" = "" ];then
+    export WORKSPACE="~"
+fi
 if [ "${OSPC_PYTHONS}" = "" ];then
     export OSPC_PYTHONS="2.7 3.4 3.5 3.6";
 fi
 
 if [ "$PKGS_TO_UPLOAD" = "" ];then
-    export PKGS_TO_UPLOAD=~/code;
+    export PKGS_TO_UPLOAD=$WORKSPACE/code;
 fi
 if [ "$OSPC_CLONE_DIR" = "" ];then
-    export OSPC_CLONE_DIR=~/ospc_clones;
+    export OSPC_CLONE_DIR=$WORKSPACE/ospc_clones;
 fi
 
 mkdir -p $PKGS_TO_UPLOAD
