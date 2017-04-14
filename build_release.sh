@@ -91,14 +91,14 @@ anaconda_upload(){
     if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
         msg From $PKGS_TO_UPLOAD as pwd;
         if [ "$OSPC_UPLOAD_TOKEN" = "" ];then
-            msg anaconda upload --force $label $1;
-            anaconda upload --force $label $1 || export ret=1;
+            msg anaconda upload --force $1 $label;
+            anaconda upload --force $1 $label || export ret=1;
         else
-            msg anaconda -t $OSPC_UPLOAD_TOKEN upload --force $label $1;
-            anaconda -t $OSPC_UPLOAD_TOKEN upload --force $label $1 || export ret=1;
+            msg anaconda -t $OSPC_UPLOAD_TOKEN upload --force $1 $label;
+            anaconda -t $OSPC_UPLOAD_TOKEN upload --force $1 $label || export ret=1;
         fi
     else
-        msg Would have done - anaconda upload --force $label $1 || export ret=1;
+        msg Would have done - anaconda upload --force $1 $label || export ret=1;
     fi
     cd $OLDPWD || return 1;
     return $ret;
