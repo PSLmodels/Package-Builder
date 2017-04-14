@@ -134,13 +134,13 @@ build_one_pkg(){
     ls conda.recipe && export USE_PYTHON_RECIPE="conda.recipe" || export USE_PYTHON_RECIPE="Python/conda.recipe";
     export python_version=$3;
     msg Replace version string from ${USE_PYTHON_RECIPE}/meta.yaml;
-    replacement="  version: ${TAXCALC_TAG}";
+    replacement="  version: $2";
     cd ${USE_PYTHON_RECIPE} && replace_version "$replacement" version  || return 1;
     export is_ogusa=0;
     export is_btax=0;
     echo $1 | grep OG-USA && export is_ogusa=1;
     echo $1 | grep B-Tax && export is_btax=1;
-    export replacement="taxcalc ==${TAXCALC_TAG}";
+    export replacement="    - taxcalc ==${TAXCALC_TAG}";
     if [ "$is_ogusa" = "1" ];then
         replace_version "$replacement" taxcalc;
         echo OGUSA CHANGED META: $(cat meta.yaml)
