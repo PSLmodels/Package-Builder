@@ -90,10 +90,11 @@ anaconda_upload(){
     export label="--label $OSPC_ANACONDA_CHANNEL";
     if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
         msg From $PKGS_TO_UPLOAD as pwd;
-        msg anaconda upload --force $1;
         if [ "$OSPC_UPLOAD_TOKEN" = "" ];then
+            msg anaconda upload --force $label $1;
             anaconda upload --force $label $1 || export ret=1;
         else
+            msg anaconda -t $OSPC_UPLOAD_TOKEN upload --force $label $1;
             anaconda -t $OSPC_UPLOAD_TOKEN upload --force $label $1 || export ret=1;
         fi
     else
