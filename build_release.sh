@@ -117,7 +117,10 @@ convert_packages(){
     anaconda_upload $build_file || return 1;
     return 0;
 }
-
+replace_version(){
+    cat meta.yaml | while read line;do echo $line | grep version && echo "version: $1" >> meta2.yaml || echo $line >> meta2.yaml;done
+    mv meta2.yaml meta.yaml
+}
 build_one_pkg(){
     msg cd $PKGS_TO_UPLOAD
     cd $PKGS_TO_UPLOAD || return 1;
@@ -130,7 +133,7 @@ build_one_pkg(){
     ls conda.recipe && export USE_PYTHON_RECIPE="conda.recipe" || export USE_PYTHON_RECIPE="Python/conda.recipe";
     export python_version=$3;
     msg Replace version string from ${USE_PYTHON_RECIPE}/meta.yaml;
-    cd ${USE_PYTHON_RECIPE} && sed -i '' 's/version: .*/version: '${2}'/g' meta.yaml || return 1;
+    cd ${USE_PYTHON_RECIPE} && replace_version $2 || return 1;
     export is_ogusa=0;
     export is_btax=0;
     echo $1 | grep OG-USA && export is_ogusa=1;
