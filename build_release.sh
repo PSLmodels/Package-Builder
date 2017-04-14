@@ -118,7 +118,8 @@ convert_packages(){
     return 0;
 }
 replace_version(){
-    IFS='' ; while read line ;do echo $line | grep version && echo "version: $1" >> meta2.yaml  || echo $line >> meta2.yaml  ; done < meta.yaml
+    version=$1;
+    IFS='' ; while read line ;do echo "$line" | grep version && echo "version: $version" >> meta2.yaml  || echo "$line" >> meta2.yaml  ; done < meta.yaml
     mv meta2.yaml meta.yaml;
 }
 build_one_pkg(){
