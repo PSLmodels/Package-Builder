@@ -134,7 +134,7 @@ build_one_pkg(){
     ls conda.recipe && export USE_PYTHON_RECIPE="conda.recipe" || export USE_PYTHON_RECIPE="Python/conda.recipe";
     export python_version=$3;
     msg Replace version string from ${USE_PYTHON_RECIPE}/meta.yaml;
-    replacement="  version: $version";
+    replacement="  version: ${TAXCALC_TAG}";
     cd ${USE_PYTHON_RECIPE} && replace_version "$replacement" version  || return 1;
     export is_ogusa=0;
     export is_btax=0;
