@@ -108,8 +108,8 @@ convert_packages(){
     export version=$2;
     cd $PKGS_TO_UPLOAD || return 1;
     msg Convert $build_file for platforms;
-    msg conda convert -p $platform $build_file -o .
-    conda convert -p $platform $build_file -o . || return 1;
+    msg conda convert -p all $build_file -o .
+    conda convert -p all $build_file -o . || return 1;
     for platform in $OSPC_PLATFORMS; do
         anaconda_upload ./${platform}/*-${version}-*.tar.bz2 || return 1;
     done
