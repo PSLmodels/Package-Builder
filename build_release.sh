@@ -27,18 +27,20 @@ msg(){
 }
 msg Build for Python $OSPC_PYTHONS
 check_anaconda(){
-    export IS_ANON=0;
-    msg Check if anaconda-client has been conda installed
-    which anaconda || return 1;
-    msg Check whether logged into Anaconda client
-    anaconda whoami | grep -i anonymous && export IS_ANON=1;
-    if [ "$IS_ANON" = "1" ];then
-        if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
-            msg Cannot upload packages when anaconda user is anonymous or you did not do conda install anaconda-client and anaconda login;
-            return 1;
+    if [ "$OSPC_UPLOAD_TOKEN" = "" ];then
+        export IS_ANON=0;
+        msg Check if anaconda-client has been conda installed
+        which anaconda || return 1;
+        msg Check whether logged into Anaconda client
+        anaconda whoami | grep -i anonymous && export IS_ANON=1;
+        if [ "$IS_ANON" = "1" ];then
+            if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
+                msg Cannot upload packages when anaconda user is anonymous or you did not do conda install anaconda-client and anaconda login;
+                return 1;
+            fi
         fi
+        msg Logged into anaconda
     fi
-    msg Logged into anaconda
     return 0;
 }
 clone(){
@@ -128,7 +130,7 @@ build_one_pkg(){
     ls conda.recipe && export USE_PYTHON_RECIPE="conda.recipe" || export USE_PYTHON_RECIPE="Python/conda.recipe";
     export python_version=$3;
     msg Replace version string from ${USE_PYTHON_RECIPE}/meta.yaml;
-    cd ${USE_PYTHON_RECIPE} && sed -i '' 's/version: \.*.*/version: '${2}'/g' meta.yaml || return 1;
+    cd ${USE_PYTHON_RECIPE} && sed -i '' 's/version: .*/version: '${2}'/g' meta.yaml || return 1;
     export is_ogusa=0;
     export is_btax=0;
     echo $1 | grep OG-USA && export is_ogusa=1;
