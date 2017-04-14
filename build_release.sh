@@ -102,7 +102,6 @@ anaconda_upload(){
     cd $OLDPWD || return 1;
     return $ret;
 }
-export OSPC_PLATFORMS="win-32 win-64 linux-64 linux-32 osx-64";
 convert_packages(){
     export build_file=$1;
     export version=$2;
@@ -110,7 +109,7 @@ convert_packages(){
     msg Convert $build_file for platforms;
     msg conda convert -p all $build_file -o .
     conda convert -p all $build_file -o . || return 1;
-    for platform in $OSPC_PLATFORMS; do
+    for platform in win-32 win-64 linux-64 linux-32 osx-64; do
         anaconda_upload ./${platform}/*-${version}-*.tar.bz2 || return 1;
     done
     anaconda_upload $build_file || return 1;
