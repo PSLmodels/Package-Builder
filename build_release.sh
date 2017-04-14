@@ -142,10 +142,11 @@ build_one_pkg(){
     if [ "$is_ogusa" = "1" ];then
         sed -i '' 's/taxcalc/taxcalc =='${TAXCALC_TAG}'/g' meta.yaml
         echo OGUSA CHANGED META: $(cat meta.yaml)
-    fi
-    if [ "$is_btax" = "" ];then
+    elif [ "$is_btax" = "" ];then
         sed -i '' 's/taxcalc/taxcalc =='${TAXCALC_TAG}'/g' meta.yaml
         echo B-Tax CHANGED META: $(cat meta.yaml)
+    else
+        echo Tax-Calculator CHANGED META: $(cat meta.yaml)
     fi
     cd ${PKGS_TO_UPLOAD}/$1 || return 1;
     msg RUN: conda build --use-local --python $python_version ${USE_PYTHON_RECIPE};
