@@ -90,14 +90,14 @@ anaconda_upload(){
     if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
         msg From $PKGS_TO_UPLOAD as pwd;
         if [ "$OSPC_UPLOAD_TOKEN" = "" ];then
-            msg anaconda upload --force $1 --label $OSPC_ANACONDA_CHANNEL;
-            anaconda upload --force $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
+            msg anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL;
+            anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
         else
-            msg anaconda -t $OSPC_UPLOAD_TOKEN upload --force $1 --label $OSPC_ANACONDA_CHANNEL;
-            anaconda -t $OSPC_UPLOAD_TOKEN upload --force $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
+            msg anaconda -t TOKEN_REDACTED_BUT_PRESENT upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL;
+            anaconda -t $OSPC_UPLOAD_TOKEN upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
         fi
     else
-        msg Would have done - anaconda upload --force $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
+        msg Would have done - anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
     fi
     cd $OLDPWD || return 1;
     return $ret;
@@ -117,8 +117,9 @@ convert_packages(){
     return 0;
 }
 replace_version(){
-    version=$1;
-    IFS='' ; while read line ;do echo "$line" | grep version && echo "  version: $version" >> meta2.yaml  || echo "$line" >> meta2.yaml  ; done < meta.yaml
+    replacement=$1;
+    grepper=$2;
+    IFS='' ; while read line ;do echo "$line" | grep $grepper && echo "$replacement" >> meta2.yaml  || echo "$line" >> meta2.yaml  ; done < meta.yaml
     mv meta2.yaml meta.yaml;
 }
 build_one_pkg(){
@@ -133,16 +134,18 @@ build_one_pkg(){
     ls conda.recipe && export USE_PYTHON_RECIPE="conda.recipe" || export USE_PYTHON_RECIPE="Python/conda.recipe";
     export python_version=$3;
     msg Replace version string from ${USE_PYTHON_RECIPE}/meta.yaml;
-    cd ${USE_PYTHON_RECIPE} && replace_version $2 || return 1;
+    replacement="  version: $version";
+    cd ${USE_PYTHON_RECIPE} && replace_version "$replacement" version  || return 1;
     export is_ogusa=0;
     export is_btax=0;
     echo $1 | grep OG-USA && export is_ogusa=1;
     echo $1 | grep B-Tax && export is_btax=1;
+    export replacement="taxcalc ==${TAXCALC_TAG}";
     if [ "$is_ogusa" = "1" ];then
-        sed -i '' 's/taxcalc/taxcalc =='${TAXCALC_TAG}'/g' meta.yaml
+        replace_version "$replacement" taxcalc;
         echo OGUSA CHANGED META: $(cat meta.yaml)
     elif [ "$is_btax" = "" ];then
-        sed -i '' 's/taxcalc/taxcalc =='${TAXCALC_TAG}'/g' meta.yaml
+        replace_version "$replacement" taxcalc;
         echo B-Tax CHANGED META: $(cat meta.yaml)
     else
         echo Tax-Calculator CHANGED META: $(cat meta.yaml)
