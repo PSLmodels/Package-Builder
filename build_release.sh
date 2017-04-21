@@ -8,22 +8,19 @@ export BTAX_REPO="${OSPC_REPOS}/B-Tax"
 export TAXCALC_REPO="${OSPC_REPOS}/Tax-Calculator"
 export OGUSA_REPO="${OSPC_REPOS}/OG-USA"
 if [ "$WORKSPACE" = "" ];then
-    export WORKSPACE="~"
+    export WORKSPACE="/tmp";
 fi
 if [ "${OSPC_PYTHONS}" = "" ];then
     export OSPC_PYTHONS="2.7 3.4 3.5 3.6";
 fi
 
-if [ "$PKGS_TO_UPLOAD" = "" ];then
-    export PKGS_TO_UPLOAD=$WORKSPACE/code;
-fi
-if [ "$OSPC_CLONE_DIR" = "" ];then
-    export OSPC_CLONE_DIR=$WORKSPACE/ospc_clones;
-fi
+export PKGS_TO_UPLOAD=$WORKSPACE/code
+export OSPC_CLONE_DIR=$WORKSPACE/ospc_clones
 
 mkdir -p $PKGS_TO_UPLOAD
 rm -rf $PKGS_TO_UPLOAD/*
 mkdir -p $OSPC_CLONE_DIR
+rm -rf $OSPC_CLONE_DIR/*
 
 msg(){
     echo \#\#\#\#\#\#\#\# STATUS \#\# $* \#\#\#\#\#\#\#\# \#\#\#\#\#\#\#\#;
@@ -68,7 +65,9 @@ fetch_checkout(){
 }
 clone_all(){
     if [ "$SKIP_TAXCALC" = "" ];then
+        msg Tax-Calculator - $TAXCALC_REPO
         clone $TAXCALC_REPO TAXCALC Tax-Calculator || return 1;
+        msg $TAXCALC_CLONE
         fetch_checkout $TAXCALC_CLONE TAXCALC Tax-Calculator || return 1;
     fi
     if [ "$SKIP_BTAX" = "" ];then
@@ -85,7 +84,7 @@ anaconda_upload(){
     cd $PKGS_TO_UPLOAD || return 1;
     export ret=0;
     if [ "$OSPC_ANACONDA_CHANNEL" = "" ];then
-        export OSPC_ANACONDA_CHANNEL=main;
+        export OSPC_ANACONDA_CHANNEL=dev;
     fi
     if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
         msg From $PKGS_TO_UPLOAD as pwd;
