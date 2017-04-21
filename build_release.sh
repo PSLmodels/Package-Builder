@@ -118,7 +118,9 @@ convert_packages(){
 replace_version(){
     replacement=$1;
     grepper=$2;
+    old_ifs=$IFS;
     IFS='' ; while read line ;do echo "$line" | grep $grepper && echo "$replacement" >> meta2.yaml  || echo "$line" >> meta2.yaml  ; done < meta.yaml
+    IFS=$old_ifs;
     mv meta2.yaml meta.yaml;
 }
 build_one_pkg(){
