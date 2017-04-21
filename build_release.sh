@@ -85,7 +85,7 @@ anaconda_upload(){
     cd $PKGS_TO_UPLOAD || return 1;
     export ret=0;
     if [ "$OSPC_ANACONDA_CHANNEL" = "" ];then
-        export OSPC_ANACONDA_CHANNEL=main;
+        export OSPC_ANACONDA_CHANNEL=dev;
     fi
     if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
         msg From $PKGS_TO_UPLOAD as pwd;
