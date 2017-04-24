@@ -83,20 +83,27 @@ clone_all(){
 anaconda_upload(){
     cd $PKGS_TO_UPLOAD || return 1;
     export ret=0;
+    export version=$2;
+    export pkg=$3;
     if [ "$OSPC_ANACONDA_CHANNEL" = "" ];then
         export OSPC_ANACONDA_CHANNEL=dev;
+    fi
+    export file_exists=0;
+    anaconda search -t conda $pkg | grep ospc | grep $version && export file_exists=1;
+    if [ "$file_exists" = "1" ];then
+        export version="${version}-dev";
     fi
     if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
         msg From $PKGS_TO_UPLOAD as pwd;
         if [ "$OSPC_UPLOAD_TOKEN" = "" ];then
-            msg anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL;
-            anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
+            msg anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version} ;
+            anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version} || export ret=1;
         else
-            msg anaconda -t TOKEN_REDACTED_BUT_PRESENT upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL;
-            anaconda -t $OSPC_UPLOAD_TOKEN upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
+            msg anaconda -t TOKEN_REDACTED_BUT_PRESENT upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version} ;
+            anaconda -t $OSPC_UPLOAD_TOKEN upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL  --version ${version} || export ret=1;
         fi
     else
-        msg Would have done - anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
+        msg Would have done - anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version} || export ret=1;
     fi
     cd $OLDPWD || return 1;
     return $ret;
@@ -104,13 +111,21 @@ anaconda_upload(){
 convert_packages(){
     export build_file=$1;
     export version=$2;
+    export pkg=$3;
+    if [ "$pkg" = "Tax-Calculator" ];then
+        export pkg=taxcalc;
+    elif [ "$pkg" = "OG-USA" ];then
+        export pkg=btax
+    else
+        export pkg=ogusa
+    fi
     cd $PKGS_TO_UPLOAD || return 1;
     msg Convert $build_file for platforms;
     msg conda convert -p all $build_file -o .
 
     conda convert -p all $build_file -o . || return 1;
     for platform in win-32 win-64 linux-64 linux-32 osx-64; do
-        ls $platform && anaconda_upload ./${platform}/*-${version}-*.tar.bz2;
+        ls $platform && anaconda_upload ./${platform}/*-${version}-*.tar.bz2 "${version}" $pkg;
     done
     anaconda_upload $build_file || return 1;
     return 0;
@@ -118,7 +133,9 @@ convert_packages(){
 replace_version(){
     replacement=$1;
     grepper=$2;
+    old_ifs="$IFS";
     IFS='' ; while read line ;do echo "$line" | grep $grepper && echo "$replacement" >> meta2.yaml  || echo "$line" >> meta2.yaml  ; done < meta.yaml
+    IFS=$old_ifs;
     mv meta2.yaml meta.yaml;
 }
 build_one_pkg(){
@@ -153,7 +170,7 @@ build_one_pkg(){
     msg RUN: conda build --use-local --python $python_version ${USE_PYTHON_RECIPE};
     conda build -c ospc --python $python_version ${USE_PYTHON_RECIPE} || return 1;
     msg RUN: conda convert packages for python $python_version;
-    convert_packages "$(conda build --python $python_version ${USE_PYTHON_RECIPE} --output)" ${2} || return 1;
+    convert_packages "$(conda build --python $python_version ${USE_PYTHON_RECIPE} --output)" ${2} $1 || return 1;
     return 0;
 }
 
