@@ -89,38 +89,33 @@ anaconda_upload(){
         export OSPC_ANACONDA_CHANNEL=dev;
     fi
     export file_exists=0;
-    anaconda search -t conda $pkg | grep ospc | grep $version && export file_exists=1;
-    if [ "$file_exists" = "1" ];then
-        export version_used="${version}-dev";
+    if [ "$ANACONDA_FORCE" = "" ];then
+        export force=""
     else
-        export version_used="${version}";
+        export force=" --force "
     fi
     if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
         msg From $PKGS_TO_UPLOAD as pwd;
         if [ "$OSPC_UPLOAD_TOKEN" = "" ];then
-            msg anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version_used} ;
-            anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version_used} || export ret=1;
+            msg anaconda upload $force --no-progress $1 --label $OSPC_ANACONDA_CHANNEL;
+            anaconda upload $force  --no-progress $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
         else
-            msg anaconda -t TOKEN_REDACTED_BUT_PRESENT upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version_used} ;
-            anaconda -t $OSPC_UPLOAD_TOKEN upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL  --version ${version_used} || export ret=1;
+            msg anaconda -t TOKEN_REDACTED_BUT_PRESENT upload $force  --no-progress $1 --label $OSPC_ANACONDA_CHANNEL ;
+            anaconda -t $OSPC_UPLOAD_TOKEN upload $force  --no-progress $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
         fi
     else
-        msg Would have done - anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version_used} || export ret=1;
+        msg Would have done - anaconda upload  $force --no-progress $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
     fi
     cd $OLDPWD || return 1;
+    if [ "$ret" = "1" ];then
+        msg Failed on anaconda upload likely because version already exists - continuing;
+    fi
     return $ret;
 }
 convert_packages(){
     export build_file=$1;
     export version=$2;
     export pkg=$3;
-    if [ "$pkg" = "Tax-Calculator" ];then
-        export pkg=taxcalc;
-    elif [ "$pkg" = "OG-USA" ];then
-        export pkg=btax
-    else
-        export pkg=ogusa
-    fi
     cd $PKGS_TO_UPLOAD || return 1;
     msg Convert $build_file for platforms;
     msg conda convert -p all $build_file -o .
