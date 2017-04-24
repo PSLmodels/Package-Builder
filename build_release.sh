@@ -83,20 +83,24 @@ clone_all(){
 anaconda_upload(){
     cd $PKGS_TO_UPLOAD || return 1;
     export ret=0;
+    export version=$2;
     if [ "$OSPC_ANACONDA_CHANNEL" = "" ];then
         export OSPC_ANACONDA_CHANNEL=dev;
+    fi
+    if [ "$OSPC_ANACONDA_CHANNEL" = "dev" ];then
+        export version="${version}-dev";
     fi
     if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
         msg From $PKGS_TO_UPLOAD as pwd;
         if [ "$OSPC_UPLOAD_TOKEN" = "" ];then
-            msg anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL;
-            anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
+            msg anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version} ;
+            anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version} || export ret=1;
         else
-            msg anaconda -t TOKEN_REDACTED_BUT_PRESENT upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL;
-            anaconda -t $OSPC_UPLOAD_TOKEN upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
+            msg anaconda -t TOKEN_REDACTED_BUT_PRESENT upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version} ;
+            anaconda -t $OSPC_UPLOAD_TOKEN upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL  --version ${version} || export ret=1;
         fi
     else
-        msg Would have done - anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
+        msg Would have done - anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version} || export ret=1;
     fi
     cd $OLDPWD || return 1;
     return $ret;
@@ -110,7 +114,7 @@ convert_packages(){
 
     conda convert -p all $build_file -o . || return 1;
     for platform in win-32 win-64 linux-64 linux-32 osx-64; do
-        ls $platform && anaconda_upload ./${platform}/*-${version}-*.tar.bz2;
+        ls $platform && anaconda_upload ./${platform}/*-${version}-*.tar.bz2 "${version}";
     done
     anaconda_upload $build_file || return 1;
     return 0;
