@@ -91,19 +91,21 @@ anaconda_upload(){
     export file_exists=0;
     anaconda search -t conda $pkg | grep ospc | grep $version && export file_exists=1;
     if [ "$file_exists" = "1" ];then
-        export version="${version}-dev";
+        export version_used="${version}-dev";
+    else
+        export version_used="${version}";
     fi
     if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
         msg From $PKGS_TO_UPLOAD as pwd;
         if [ "$OSPC_UPLOAD_TOKEN" = "" ];then
-            msg anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version} ;
-            anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version} || export ret=1;
+            msg anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version_used} ;
+            anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version_used} || export ret=1;
         else
-            msg anaconda -t TOKEN_REDACTED_BUT_PRESENT upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version} ;
-            anaconda -t $OSPC_UPLOAD_TOKEN upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL  --version ${version} || export ret=1;
+            msg anaconda -t TOKEN_REDACTED_BUT_PRESENT upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version_used} ;
+            anaconda -t $OSPC_UPLOAD_TOKEN upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL  --version ${version_used} || export ret=1;
         fi
     else
-        msg Would have done - anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version} || export ret=1;
+        msg Would have done - anaconda upload --no-progress --force $1 --label $OSPC_ANACONDA_CHANNEL --version ${version_used} || export ret=1;
     fi
     cd $OLDPWD || return 1;
     return $ret;
