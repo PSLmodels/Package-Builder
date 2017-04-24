@@ -89,17 +89,22 @@ anaconda_upload(){
         export OSPC_ANACONDA_CHANNEL=dev;
     fi
     export file_exists=0;
+    if [ "$ANACONDA_FORCE" = "" ];then
+        export force=""
+    else
+        export force=" --force "
+    fi
     if [ "$SKIP_ANACONDA_UPLOAD" = "" ];then
         msg From $PKGS_TO_UPLOAD as pwd;
         if [ "$OSPC_UPLOAD_TOKEN" = "" ];then
-            msg anaconda upload --no-progress $1 --label $OSPC_ANACONDA_CHANNEL;
-            anaconda upload --no-progress $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
+            msg anaconda upload $force --no-progress $1 --label $OSPC_ANACONDA_CHANNEL;
+            anaconda upload $force  --no-progress $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
         else
-            msg anaconda -t TOKEN_REDACTED_BUT_PRESENT upload --no-progress $1 --label $OSPC_ANACONDA_CHANNEL ;
-            anaconda -t $OSPC_UPLOAD_TOKEN upload --no-progress $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
+            msg anaconda -t TOKEN_REDACTED_BUT_PRESENT upload $force  --no-progress $1 --label $OSPC_ANACONDA_CHANNEL ;
+            anaconda -t $OSPC_UPLOAD_TOKEN upload $force  --no-progress $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
         fi
     else
-        msg Would have done - anaconda upload --no-progress $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
+        msg Would have done - anaconda upload  $force --no-progress $1 --label $OSPC_ANACONDA_CHANNEL || export ret=1;
     fi
     cd $OLDPWD || return 1;
     if [ "$ret" = "1" ];then
