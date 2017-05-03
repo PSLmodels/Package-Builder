@@ -129,11 +129,14 @@ convert_packages(){
 
     conda convert -p all $build_file -o . || return 1;
     for platform in win-32 win-64 linux-64 linux-32 osx-64; do
-        export fname=$(ls ${platform}/*-${version}-*.tar.bz2);
+        export fname=$(ls ./${platform}/*-${version}-*.tar.bz2);
+        msg Upload $fname
         if [ "$BUILDING_PKG" = "ogusa" ] || [ "$BUILDING_PKG" = "btax" ];then
             mkdir -p $tc_string;
+            msg Make dir $tc_string
             mv $fname "${tc_string}/${fname}";
             export fname="${tc_string}/${fname}";
+            export build_file=
         fi
         ls $platform && anaconda_upload ${fname} "${version}" $pkg;
     done
