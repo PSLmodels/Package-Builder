@@ -135,9 +135,9 @@ convert_packages(){
         if [ "$BUILDING_PKG" = "ogusa" ] || [ "$BUILDING_PKG" = "btax" ];then
             mkdir -p $tc_string;
             msg Make dir $tc_string
-            mv $fname "${tc_string}/${fname}";
-            export fname="${tc_string}/${fname}";
-            ls -lrth $tc_string
+            mv $fname ${tc_string}/${platform};
+            export fname=$(ls ${tc_string}/${platform}/*-${version}-*.tar.bz2);
+            ls -lrth $tc_string $fname
         fi
         msg Dirname $(ls -lrth $(dirname $fname))
         ls $fname && anaconda_upload ${fname} "${version}" $pkg;
