@@ -85,6 +85,7 @@ anaconda_upload(){
     export ret=0;
     export version=$2;
     export pkg=$3;
+
     if [ "$OSPC_ANACONDA_CHANNEL" = "" ];then
         export OSPC_ANACONDA_CHANNEL=dev;
     fi
@@ -116,6 +117,14 @@ convert_packages(){
     export build_file=$1;
     export version=$2;
     export pkg=$3;
+    export tc_string="-taxcalc-${TAXCALC_TAG}";
+    export base_fname=$(echo $build_file | sed 's/tar\.bz2//');
+    export combo_name="${base_fname}-${tc_string}.tar.bz2";
+    if [ "$BUILDING_PKG" = "ogusa" ];then
+        mv $build_file $combo_name;
+    elif [ "$BUILDING_PKG" = "btax" ]; then
+        mv $build_file $combo_name;
+    fi
     cd $PKGS_TO_UPLOAD || return 1;
     msg Convert $build_file for platforms;
     msg conda convert -p all $build_file -o .
@@ -153,14 +162,17 @@ build_one_pkg(){
     export is_btax=0;
     echo $1 | grep OG-USA && export is_ogusa=1;
     echo $1 | grep B-Tax && export is_btax=1;
-    export replacement="    - taxcalc ==${TAXCALC_TAG}";
+    export replacement="    - taxcalc >=${TAXCALC_TAG}";
     if [ "$is_ogusa" = "1" ];then
         replace_version "$replacement" taxcalc;
-        echo OGUSA CHANGED META: $(cat meta.yaml)
+        echo OGUSA CHANGED META: $(cat meta.yaml);
+        export BUILDING_PKG=ogusa;
     elif [ "$is_btax" = "" ];then
         replace_version "$replacement" taxcalc;
-        echo B-Tax CHANGED META: $(cat meta.yaml)
+        echo B-Tax CHANGED META: $(cat meta.yaml);
+        export BUILDING_PKG=btax;
     else
+        export BUILDING_PKG=taxcalc;
         echo Tax-Calculator CHANGED META: $(cat meta.yaml)
     fi
     cd ${PKGS_TO_UPLOAD}/$1 || return 1;
