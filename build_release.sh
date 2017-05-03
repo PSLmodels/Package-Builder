@@ -58,6 +58,8 @@ fetch_checkout(){
     git fetch origin --tags;
     export latest_tag=$(git describe --abbrev=0 --tags);
     if [ "$TAXCALC_TAG" = "" ];then
+        echo
+    else
         pwd | grep Tax-Calculator && export latest_tag=$TAXCALC_TAG
     fi
     export "$2_TAG"="$latest_tag";
