@@ -118,22 +118,19 @@ convert_packages(){
     export version=$2;
     export pkg=$3;
     export tc_string="taxcalc-${TAXCALC_TAG}";
-    export base_fname=$(echo $build_file | sed 's/tar\.bz2//');
-    export combo_name="${base_fname}-${tc_string}.tar.bz2";
-    if [ "$BUILDING_PKG" = "ogusa" ];then
-        mv $build_file $combo_name;
-        export build_file=$combo_name;
-    elif [ "$BUILDING_PKG" = "btax" ]; then
-        mv $build_file $combo_name;
-        export build_file=$combo_name;
-    fi
     cd $PKGS_TO_UPLOAD || return 1;
     msg Convert $build_file for platforms;
     msg conda convert -p all $build_file -o .;
 
     conda convert -p all $build_file -o . || return 1;
     for platform in win-32 win-64 linux-64 linux-32 osx-64; do
-        ls $platform && anaconda_upload ./${platform}/*-${version}-*.tar.bz2 "${version}" $pkg;
+        export fname="${platform}/*-${version}-*.tar.bz2";
+        if [ "$BUILDING_PKG" = "ogusa" ] || [ "$BUILDING_PKG" = "btax" ];then
+            mkdir -p $tc_string;
+            mv $fname "${tc_string}/${fname}";
+            export fname="${tc_string}/${fname}";
+        fi
+        ls $platform && anaconda_upload ${fname} "${version}" $pkg;
     done
     anaconda_upload $build_file || return 1;
     return 0;
