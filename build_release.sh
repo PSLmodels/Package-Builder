@@ -139,8 +139,8 @@ convert_packages(){
             export fname="${tc_string}/${fname}";
             ls -lrth $tc_string
         fi
-        msg $(ls -lrth $(dirname $fname))
-        ls $platform && anaconda_upload ${fname} "${version}" $pkg;
+        msg Dirname $(ls -lrth $(dirname $fname))
+        ls $fname && anaconda_upload ${fname} "${version}" $pkg;
     done
     anaconda_upload $build_file || return 1;
     return 0;
