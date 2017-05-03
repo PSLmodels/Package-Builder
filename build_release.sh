@@ -122,12 +122,14 @@ convert_packages(){
     export combo_name="${base_fname}-${tc_string}.tar.bz2";
     if [ "$BUILDING_PKG" = "ogusa" ];then
         mv $build_file $combo_name;
+        export build_file=$combo_name;
     elif [ "$BUILDING_PKG" = "btax" ]; then
         mv $build_file $combo_name;
+        export build_file=$combo_name;
     fi
     cd $PKGS_TO_UPLOAD || return 1;
     msg Convert $build_file for platforms;
-    msg conda convert -p all $build_file -o .
+    msg conda convert -p all $build_file -o .;
 
     conda convert -p all $build_file -o . || return 1;
     for platform in win-32 win-64 linux-64 linux-32 osx-64; do
