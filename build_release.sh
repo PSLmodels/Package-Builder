@@ -117,7 +117,7 @@ convert_packages(){
     export build_file=$1;
     export version=$2;
     export pkg=$3;
-    export tc_string="-taxcalc-${TAXCALC_TAG}";
+    export tc_string="taxcalc-${TAXCALC_TAG}";
     export base_fname=$(echo $build_file | sed 's/tar\.bz2//');
     export combo_name="${base_fname}-${tc_string}.tar.bz2";
     if [ "$BUILDING_PKG" = "ogusa" ];then
