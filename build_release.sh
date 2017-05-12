@@ -129,7 +129,7 @@ convert_packages(){
     conda convert -p all $build_file -o . || return 1;
     for platform in win-32 win-64 linux-64 linux-32 osx-64; do
         ls -lrth
-        export fname=$(ls ./${platform}/*-${version}-*.tar.bz2);
+        export fname=$(ls ${PKGS_TO_UPLOAD}/${platform}/*-${version}-*.tar.bz2);
         msg Upload $fname
         ls $fname && anaconda_upload ${fname} "${version}" $pkg;
     done
