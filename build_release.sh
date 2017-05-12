@@ -10,9 +10,6 @@ export OGUSA_REPO="${OSPC_REPOS}/OG-USA"
 if [ "$WORKSPACE" = "" ];then
     export WORKSPACE="/tmp";
 fi
-if [ "${OSPC_PYTHONS}" = "" ];then
-    export OSPC_PYTHONS="2.7 3.4 3.5 3.6";
-fi
 
 export PKGS_TO_UPLOAD=$WORKSPACE/code
 export OSPC_CLONE_DIR=$WORKSPACE/ospc_clones
@@ -132,7 +129,7 @@ convert_packages(){
         ls -lrth
         export fname=$(ls ./${platform}/*-${version}-*.tar.bz2);
         msg Upload $fname
-        ls $fname && anaconda_upload ${fname} "${version}" $pkg;
+        ls $fname && anaconda_upload ${fname} "${version}" $pkg || return 1;
     done
     anaconda_upload $build_file || return 1;
     return 0;
@@ -185,6 +182,10 @@ build_one_pkg(){
 }
 
 build_all_pkgs(){
+    if [ "${OSPC_PYTHONS}" = "" ];then
+        return 1;
+    fi
+
     check_anaconda || return 1;
     clone_all || return 1;
     for python_version in ${OSPC_PYTHONS};do
