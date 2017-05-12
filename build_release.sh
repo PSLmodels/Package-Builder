@@ -122,7 +122,7 @@ convert_packages(){
     export pkg=$3;
     export tc_string="taxcalc-${TAXCALC_TAG}";
     cd $PKGS_TO_UPLOAD || return 1;
-    msg convert_packages $build_file $version $pkg;
+    msg convert packages $build_file $version $pkg;
     msg Convert $build_file for platforms;
     msg conda convert -p all $build_file -o .;
 
