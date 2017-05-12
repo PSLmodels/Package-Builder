@@ -87,6 +87,7 @@ anaconda_upload(){
     export ret=0;
     export version=$2;
     export pkg=$3;
+    msg $pkg building version $version;
 
     if [ "$OSPC_ANACONDA_CHANNEL" = "" ];then
         export OSPC_ANACONDA_CHANNEL=dev;
@@ -121,6 +122,7 @@ convert_packages(){
     export pkg=$3;
     export tc_string="taxcalc-${TAXCALC_TAG}";
     cd $PKGS_TO_UPLOAD || return 1;
+    msg convert_packages $build_file $version $pkg;
     msg Convert $build_file for platforms;
     msg conda convert -p all $build_file -o .;
 
@@ -130,7 +132,6 @@ convert_packages(){
         export fname=$(ls ./${platform}/*-${version}-*.tar.bz2);
         msg Upload $fname
         ls $fname && anaconda_upload ${fname} "${version}" $pkg;
-        cd $PKGS_TO_UPLOAD || return 1;
     done
     anaconda_upload $build_file || return 1;
     return 0;
