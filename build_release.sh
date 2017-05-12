@@ -132,6 +132,7 @@ convert_packages(){
         export fname=$(ls ${PKGS_TO_UPLOAD}/${platform}/*-${version}-*.tar.bz2);
         msg Upload $fname
         ls $fname && anaconda_upload ${fname} "${version}" $pkg;
+        cd $PKGS_TO_UPLOAD || return 1;
     done
     anaconda_upload $build_file || return 1;
     return 0;
