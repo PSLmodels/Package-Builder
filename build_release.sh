@@ -128,7 +128,7 @@ convert_packages(){
 
     conda convert -p all $build_file -o . || return 1;
     anaconda_upload $build_file || return 1;
-    anaconda_upload $PKGS_TO_UPLOAD/*/*.tar.bz2;
+    anaconda_upload $PKGS_TO_UPLOAD/*/*.tar.bz2 $version $pkg;
     return 0;
 }
 replace_version(){
