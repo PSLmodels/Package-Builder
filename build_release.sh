@@ -83,6 +83,7 @@ clone_all(){
 }
 
 anaconda_upload(){
+    echo upload $1;
     cd $PKGS_TO_UPLOAD || return 1;
     export ret=0;
     export version=$2;
@@ -125,10 +126,10 @@ convert_packages(){
     msg convert packages $build_file $version $pkg;
     msg Convert $build_file for platforms;
     msg conda convert -p all $build_file -o .;
-
     conda convert -p all $build_file -o . || return 1;
     anaconda_upload $build_file || return 1;
-    anaconda_upload $PKGS_TO_UPLOAD/*/*.tar.bz2 $version $pkg;
+    msg $(ls ./*/*.tar.bz2) $(pwd)
+    anaconda_upload ./*/*.tar.bz2 $version $pkg;
     return 0;
 }
 replace_version(){
@@ -171,6 +172,7 @@ build_one_pkg(){
         echo Tax-Calculator CHANGED META: $(cat meta.yaml)
     fi
     cd ${PKGS_TO_UPLOAD}/$1 || return 1;
+    msg $(ls -lrth)
     msg RUN: conda build --use-local --python $python_version ${USE_PYTHON_RECIPE};
     conda build -c ospc --python $python_version ${USE_PYTHON_RECIPE} || return 1;
     msg RUN: conda convert packages for python $python_version;
