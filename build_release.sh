@@ -53,7 +53,8 @@ fetch_checkout(){
     msg git fetch origin;
     git fetch origin;
     git fetch origin --tags;
-    export latest_tag=$(git describe --abbrev=0 --tags);
+    export latest_tag=$(git tag | sort | tail -n 1);
+    msg Latest tag $latest_tag
     if [ "$TAXCALC_TAG" = "" ];then
         echo
     else
