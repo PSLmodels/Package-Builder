@@ -25,8 +25,8 @@ The login username you give for `anaconda login` will be the user under which th
 By default the `build_release.sh` script will clone from the [https://github.com/open-source-economics](https://github.com/open-source-economics) the master branches of each of the 3 repos, then fetch the tags.  
 
 Control which versions of Python are built:
- * `export OSPC_PYTHONS="2.7 3.4 3.5 3.6";`
- * By default it builds for `2.7 3.4 3.5 3.6` and may error out on some
+ * `export OSPC_PYTHONS="2.7 3.5 3.6";`
+ * By default it builds for `2.7 3.5 3.6` and may error out on some
 
 Another environment variable is `OSPC_ANACONDA_CHANNEL` this controls whether you are uploading to the `dev` or `main` label within your anaconda.org account.  A package labeled as `dev` is not installed by conda by default even if it is the highest version available.  Here's how to install from a `dev` labeled package within the `ospc` account:
 ```

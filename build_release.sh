@@ -7,6 +7,11 @@ export OSPC_REPOS="http://github.com/open-source-economics"
 export BTAX_REPO="${OSPC_REPOS}/B-Tax"
 export TAXCALC_REPO="${OSPC_REPOS}/Tax-Calculator"
 export OGUSA_REPO="${OSPC_REPOS}/OG-USA"
+
+if [ "$OSPC_PYTHONS" = "" ];then
+    export OSPC_PYTHONS="2.7 3.5 3.6";
+fi
+
 if [ "$WORKSPACE" = "" ];then
     export WORKSPACE="/tmp";
 fi
@@ -184,10 +189,6 @@ build_one_pkg(){
 }
 
 build_all_pkgs(){
-    if [ "${OSPC_PYTHONS}" = "" ];then
-        return 1;
-    fi
-
     check_anaconda || return 1;
     clone_all || return 1;
     for python_version in ${OSPC_PYTHONS};do
