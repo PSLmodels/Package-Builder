@@ -3,7 +3,14 @@ import logging.handlers
 import sys
 
 
-def setup_logging(log_level=logging.WARNING):
+def setup_logging(verbose=0):
+    if verbose > 1:
+        log_level = logging.DEBUG
+    elif verbose > 0:
+        log_level = logging.INFO
+    else:
+        log_level = logging.WARNING
+
     # Hide messages if we log before setting up handler
     logging.root.manager.emittedNoHandlerWarning = True
 
@@ -23,9 +30,3 @@ def setup_logging(log_level=logging.WARNING):
             break
     if add_handler:
         logger.addHandler(console_handler)
-
-
-def get_packages(names):
-    if not names:
-        return ('taxcalc', 'btax', 'ogusa')
-    return names

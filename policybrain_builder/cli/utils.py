@@ -1,8 +1,11 @@
+import contextlib
 import functools
+import logging
+import os
 import subprocess
 import sys
 
-import click
+logger = logging.getLogger(__name__)
 
 
 def required_commands(*commands):
@@ -16,9 +19,9 @@ def required_commands(*commands):
             for command in commands:
                 try:
                     # Unix-specific command lookup
-                    subprocess.check_output("which {}".format(command), shell=True)
+                    check_output("which {}".format(command))
                 except subprocess.CalledProcessError:
-                    click.echo("Required command does not exist: {}".format(command), err=True)
+                    logger.error("Required command does not exist: %s", command)
                     failed = True
             if failed:
                 sys.exit(1)
@@ -27,11 +30,24 @@ def required_commands(*commands):
     return decorator
 
 
+@contextlib.contextmanager
+def change_working_directory(path):
+    old_path = os.getcwd()
+    logger.debug("saved previous working directory: %s", old_path)
+    try:
+        os.chdir(path)
+        logger.debug("changed working directory: %s", path)
+        yield
+    finally:
+        os.chdir(old_path)
+        logger.debug("restored previous working directory: %s", old_path)
+
+
 def call(cmd):
-    click.secho("executing: {}".format(cmd), fg='green')
-    subprocess.call(cmd, shell=True)
+    logger.debug(cmd)
+    subprocess.check_call(cmd, shell=True)
 
 
 def check_output(cmd):
-    click.secho("executing: {}".format(cmd), fg='green')
+    logger.debug(cmd)
     return subprocess.check_output(cmd, shell=True).decode("utf-8")

@@ -6,7 +6,8 @@ import traceback
 
 import click
 
-from .config import setup_logging, get_packages
+from .config import setup_logging
+from .package import get_packages
 from .utils import required_commands
 
 
@@ -15,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 def start():
     try:
-        setup_logging(logging.DEBUG)
         cli(obj={})
     except KeyboardInterrupt:
         click.echo("Interrupted by Ctrl-C.")
@@ -42,33 +42,65 @@ def cli(ctx):
 @cli.command(short_help="Build packages.")
 @click.pass_context
 @click.argument('names', nargs=-1)
-def build(ctx, names):
-    for name in get_packages(names):
-        click.echo("building {}".format(click.style(name, fg='green')))
+@click.option("--tag",
+              default=None,
+              show_default=True,
+              required=False)
+@click.option("--workdir", "-w",
+              default="/tmp",
+              show_default=True,
+              required=False)
+@click.option('-v', '--verbose', count=True)
+def build(ctx, names, tag, workdir, verbose):
+    setup_logging(verbose)
+
+    for pkg in get_packages(names, workdir):
+        pkg.build(tag)
 
 
 @cli.command(short_help='Display information about packages.')
 @click.pass_context
 @click.argument('names', nargs=-1)
-def info(ctx, names):
-    for name in get_packages(names):
-        click.echo("looking for {}".format(click.style(name, fg='green')))
+@click.option("--workdir", "-w",
+              default="/tmp",
+              show_default=True,
+              required=False)
+@click.option('-v', '--verbose', count=True)
+def info(ctx, names, workdir, verbose):
+    setup_logging(verbose)
+
+    for pkg in get_packages(names, workdir):
+        click.echo("looking for {}".format(click.style(pkg.name, fg='green')))
 
 
 @cli.command(short_help='Release packages.')
 @click.pass_context
 @click.argument('names', nargs=-1)
-def release(ctx, names):
-    for name in get_packages(names):
-        click.echo("releasing {}".format(click.style(name, fg='green')))
+@click.option("--workdir", "-w",
+              default="/tmp",
+              show_default=True,
+              required=False)
+@click.option('-v', '--verbose', count=True)
+def release(ctx, names, workdir, verbose):
+    setup_logging(verbose)
+
+    for pkg in get_packages(names, workdir):
+        click.echo("releasing {}".format(click.style(pkg.name, fg='green')))
 
 
 @cli.command(short_help='Upload packages.')
 @click.pass_context
 @click.argument('names', nargs=-1)
-def upload(ctx, names):
-    for name in get_packages(names):
-        click.echo("uploading {}".format(click.style(name, fg='green')))
+@click.option("--workdir", "-w",
+              default="/tmp",
+              show_default=True,
+              required=False)
+@click.option('-v', '--verbose', count=True)
+def upload(ctx, names, workdir, verbose):
+    setup_logging(verbose)
+
+    for pkg in get_packages(names, workdir):
+        click.echo("uploading {}".format(click.style(pkg.name, fg='green')))
 
 
 if __name__ == '__main__':
