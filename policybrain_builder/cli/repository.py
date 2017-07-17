@@ -3,7 +3,7 @@ import shutil
 
 import click
 
-from .utils import call, change_working_directory, check_output
+from . import utils as u
 
 
 class Repository(object):
@@ -26,20 +26,32 @@ class Repository(object):
 
     def clone(self):
         click.echo("cloning {} to {}".format(self.url, self.path))
-        call("git clone {} {}".format(self.url, self.path))
+        u.call("git clone {} {}".format(self.url, self.path))
 
     def latest_tag(self):
         tags = None
-        with change_working_directory(self.path):
-            output = check_output("git tag")
+        with u.change_working_directory(self.path):
+            output = u.check_output("git tag")
             tags = sorted(output.splitlines())
         return tags[-1] if tags else None
 
     def fetch(self):
-        with change_working_directory(self.path):
+        with u.change_working_directory(self.path):
             click.echo("fetching origin/tags for {}".format(self.path))
-            call("git fetch origin")
-            call("git fetch origin --tags")
+            u.call("git fetch origin")
+            u.call("git fetch origin --tags")
 
     def checkout(self, branch='master', tag=None):
-        pass
+        with u.change_working_directory(self.path):
+            if tag:
+                click.echo("checking out tag '{}'".format(tag))
+                u.call("git checkout " + tag)
+            else:
+                click.echo("checking out branch '{}'".format(branch))
+                u.call("git checkout " + branch)
+
+    def archive(self, name, tag, archive_path):
+        with u.change_working_directory(self.path):
+            click.echo("archiving {}".format(self.path))
+            u.ensure_directory_exists(archive_path)
+            u.call("git archive --prefix={0}/ -o {2}/{0}.tar {1}".format(name, tag, archive_path))

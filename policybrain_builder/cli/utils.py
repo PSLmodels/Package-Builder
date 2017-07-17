@@ -51,3 +51,8 @@ def call(cmd):
 def check_output(cmd):
     logger.debug(cmd)
     return subprocess.check_output(cmd, shell=True).decode("utf-8")
+
+
+def ensure_directory_exists(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
