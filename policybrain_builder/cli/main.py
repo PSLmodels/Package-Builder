@@ -7,8 +7,7 @@ import traceback
 
 import click
 
-from .config import setup_logging
-from .package import get_packages
+from .config import get_packages, setup_logging
 from . import utils as u
 
 

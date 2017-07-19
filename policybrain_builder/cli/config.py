@@ -1,6 +1,10 @@
 import logging
 import logging.handlers
+import os
 import sys
+
+from .package import Package
+from .repository import Repository
 
 
 def setup_logging(verbose=0):
@@ -30,3 +34,27 @@ def setup_logging(verbose=0):
             break
     if add_handler:
         logger.addHandler(console_handler)
+
+
+def get_packages(names, workdir):
+    pkgs = {
+        'taxcalc': Package(
+            'taxcalc',
+            Repository(
+                'https://github.com/open-source-economics/Tax-Calculator',
+                os.path.join(workdir, 'src', 'taxcalc')),
+            os.path.join(workdir, 'pkg')),
+        'btax': Package(
+            'btax',
+            Repository(
+                'https://github.com/open-source-economics/B-Tax',
+                os.path.join(workdir, 'src', 'btax')),
+            os.path.join(workdir, 'pkg')),
+        'ogusa': Package(
+            'ogusa',
+            Repository(
+                'https://github.com/open-source-economics/OG-USA',
+                os.path.join(workdir, 'src', 'ogusa')),
+            os.path.join(workdir, 'pkg'))}
+    keys = names if names else pkgs.keys()
+    return [pkgs[name] for name in keys]

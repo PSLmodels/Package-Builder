@@ -2,6 +2,7 @@ import contextlib
 import functools
 import logging
 import os
+import re
 import subprocess
 import sys
 
@@ -61,3 +62,22 @@ def ensure_directory_exists(path):
     if not os.path.exists(path):
         logger.debug("creating directory: %s", path)
         os.makedirs(path)
+
+
+def find_first_filename(path, *filenames):
+    for filename in filenames:
+        full_path = os.path.join(path, filename)
+        if os.path.exists(full_path):
+            return filename
+    return None
+
+
+def replace_all(filename, needle, replacement):
+    logger.debug("replacing all relevant lines in %s", filename)
+    lines = []
+    with open(filename) as f:
+        for line in f.readlines():
+            lines.append(re.sub(needle, replacement, line))
+    with open(filename, 'w') as f:
+        for line in lines:
+            f.write(line)

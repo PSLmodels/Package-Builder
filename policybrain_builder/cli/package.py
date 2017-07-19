@@ -2,7 +2,7 @@ import os.path
 
 import click
 
-from .repository import Repository
+from . import utils as u
 
 
 class Package(object):
@@ -58,40 +58,32 @@ class Package(object):
         self.repo.checkout(tag=self.tag)
 
     def build(self):
-        click.echo("[{}] {}".format(self.header, click.style("archiving", fg='green')))
-        return
-        self.repo.archive(self.name, self.tag, self._cachedir)
-
         channel = "ospc"
-        for py_version in ('2.7', '3.5', '3.6'):
-            u.call("conda build -c {} --no-anaconda-upload --python {} {}".format(channel, py_version, conda_recipe))
-            build_file = u.call("conda build --python {} {} --output")
-            u.call("conda convert -p all {} -o .".format(build_file))
+        conda_recipe = u.find_first_filename(self.repo.path, "conda.recipe", "Python/conda.recipe")
+
+        py_versions = ('2.7', '3.5', '3.6')
+        platforms = ('osx-64', 'linux-32', 'linux-64', 'win-32', 'win-64')
+
+        conda_meta = os.path.join(self.repo.path, conda_recipe, "meta.yaml")
+        u.replace_all(conda_meta, r'version: .*', "version: " + self.tag)
+        #u.replace_all(conda_meta, r'taxcalc.*', "taxcalc >=" + self.tag)
+
+        with u.change_working_directory(self.repo.path):
+            for py_version in py_versions:
+                click.echo("[{}] {}".format(self.header, click.style("building {}".format(py_version), fg='green')))
+                u.call("conda build -c {} --no-anaconda-upload --python {} {}".format(channel, py_version, conda_recipe))
+                build_file = u.check_output("conda build --python {} {} --output".format(py_version, conda_recipe)).strip()
+                build_dir = os.path.dirname(build_file)
+                current_platform = os.path.basename(build_dir)
+                package = os.path.basename(build_file)
+
+                with u.change_working_directory(build_dir):
+                    for platform in platforms:
+                        if platform == current_platform:
+                            continue
+                        click.echo("[{}] {}".format(self.header, click.style("converting to {}".format(platform), fg='green')))
+                        u.call("conda convert --platform {} {} -o ../".format(platform, package))
 
     def upload(self):
         click.echo("[{}] {}".format(self.header, click.style("uploading", fg='green')))
         #u.call("anaconda [-t $OSPC_UPLOAD_TOKEN] upload $force --no-progress $1 --label $OSPC_ANACONDA_CHANNEL")
-
-
-def get_packages(names, workdir):
-    pkgs = {
-        'taxcalc': Package(
-            'taxcalc',
-            Repository(
-                'https://github.com/open-source-economics/Tax-Calculator',
-                os.path.join(workdir, 'src', 'taxcalc')),
-            os.path.join(workdir, 'pkg')),
-        'btax': Package(
-            'btax',
-            Repository(
-                'https://github.com/open-source-economics/B-Tax',
-                os.path.join(workdir, 'src', 'btax')),
-            os.path.join(workdir, 'pkg')),
-        'ogusa': Package(
-            'ogusa',
-            Repository(
-                'https://github.com/open-source-economics/OG-USA',
-                os.path.join(workdir, 'src', 'ogusa')),
-            os.path.join(workdir, 'pkg'))}
-    keys = names if names else pkgs.keys()
-    return [pkgs[name] for name in keys]
