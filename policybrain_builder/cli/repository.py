@@ -19,10 +19,26 @@ class Repository(object):
     def path(self):
         return self._path
 
+    def is_valid(self):
+        if not os.path.exists(self.path):
+            return False
+        with u.change_working_directory(self.path):
+            is_git = u.check_output("git rev-parse --is-inside-work-tree").strip()
+            if is_git != "true":
+                return False
+            url = u.check_output("git ls-remote --get-url").strip()
+            if url != self.url:
+                return False
+        return True
+
     def remove(self):
         click.echo("removing {}".format(self.path))
         if os.path.exists(self.path):
             shutil.rmtree(self.path)
+
+    def reset(self):
+        with u.change_working_directory(self.path):
+            u.call("git checkout .")
 
     def clone(self):
         click.echo("cloning {} to {}".format(self.url, self.path))
@@ -40,6 +56,10 @@ class Repository(object):
             click.echo("fetching origin/tags for {}".format(self.path))
             u.call("git fetch origin")
             u.call("git fetch origin --tags")
+
+    def pull(self):
+        with u.change_working_directory(self.path):
+            u.call("git pull origin master")
 
     def checkout(self, branch='master', tag=None):
         with u.change_working_directory(self.path):

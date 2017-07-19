@@ -50,9 +50,14 @@ def call(cmd):
 
 def check_output(cmd):
     logger.debug(cmd)
-    return subprocess.check_output(cmd, shell=True).decode("utf-8")
+    try:
+        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True).decode("utf-8")
+    except subprocess.CalledProcessError as e:
+        output = str(e)
+    return output
 
 
 def ensure_directory_exists(path):
     if not os.path.exists(path):
+        logger.debug("creating directory: %s", path)
         os.makedirs(path)

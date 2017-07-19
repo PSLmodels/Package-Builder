@@ -28,16 +28,25 @@ class Package(object):
     def tag(self, value):
         self._tag = value
 
-    def build(self, tag):
-        header = click.style(self.name, fg='cyan')
+    @property
+    def header(self):
+        return click.style(self.name, fg='cyan')
 
-        click.echo("[{}] {}".format(header, click.style("removing", fg='green')))
-        self.repo.remove()
+    def pull(self, tag):
+        if self.repo.is_valid():
+            click.echo("[{}] {}".format(self.header, click.style("resetting", fg='green')))
+            self.repo.reset()
 
-        click.echo("[{}] {}".format(header, click.style("cloning", fg='green')))
-        self.repo.clone()
+            click.echo("[{}] {}".format(self.header, click.style("pulling", fg='green')))
+            self.repo.pull()
+        else:
+            click.echo("[{}] {}".format(self.header, click.style("removing", fg='green')))
+            self.repo.remove()
 
-        click.echo("[{}] {}".format(header, click.style("fetching", fg='green')))
+            click.echo("[{}] {}".format(self.header, click.style("cloning", fg='green')))
+            self.repo.clone()
+
+        click.echo("[{}] {}".format(self.header, click.style("fetching", fg='green')))
         self.repo.fetch()
 
         if tag:
@@ -45,11 +54,23 @@ class Package(object):
         else:
             self.tag = self.repo.latest_tag()
 
-        click.echo("[{}] {}".format(header, click.style("checking out '{}'".format(self.tag), fg='green')))
+        click.echo("[{}] {}".format(self.header, click.style("checking out '{}'".format(self.tag), fg='green')))
         self.repo.checkout(tag=self.tag)
 
-        click.echo("[{}] {}".format(header, click.style("archiving", fg='green')))
+    def build(self):
+        click.echo("[{}] {}".format(self.header, click.style("archiving", fg='green')))
+        return
         self.repo.archive(self.name, self.tag, self._cachedir)
+
+        channel = "ospc"
+        for py_version in ('2.7', '3.5', '3.6'):
+            u.call("conda build -c {} --no-anaconda-upload --python {} {}".format(channel, py_version, conda_recipe))
+            build_file = u.call("conda build --python {} {} --output")
+            u.call("conda convert -p all {} -o .".format(build_file))
+
+    def upload(self):
+        click.echo("[{}] {}".format(self.header, click.style("uploading", fg='green')))
+        #u.call("anaconda [-t $OSPC_UPLOAD_TOKEN] upload $force --no-progress $1 --label $OSPC_ANACONDA_CHANNEL")
 
 
 def get_packages(names, workdir):
