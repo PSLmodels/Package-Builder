@@ -74,4 +74,4 @@ class Repository(object):
         with u.change_working_directory(self.path):
             click.echo("archiving {}".format(self.path))
             u.ensure_directory_exists(archive_path)
-            u.call("git archive --prefix={0}/ -o {2}/{0}.tar {1}".format(name, tag, archive_path))
+            u.call("git archive --prefix={0}-{1}/ -o {2}/{0}-{1}.tar {1}".format(name, tag, archive_path))

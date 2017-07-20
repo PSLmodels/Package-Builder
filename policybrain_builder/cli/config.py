@@ -37,24 +37,33 @@ def setup_logging(verbose=0):
 
 
 def get_packages(names, workdir):
-    pkgs = {
-        'taxcalc': Package(
-            'taxcalc',
-            Repository(
-                'https://github.com/open-source-economics/Tax-Calculator',
-                os.path.join(workdir, 'src', 'taxcalc')),
-            os.path.join(workdir, 'pkg')),
-        'btax': Package(
-            'btax',
-            Repository(
-                'https://github.com/open-source-economics/B-Tax',
-                os.path.join(workdir, 'src', 'btax')),
-            os.path.join(workdir, 'pkg')),
-        'ogusa': Package(
-            'ogusa',
-            Repository(
-                'https://github.com/open-source-economics/OG-USA',
-                os.path.join(workdir, 'src', 'ogusa')),
-            os.path.join(workdir, 'pkg'))}
+    pkg_cache_dir = os.path.join(workdir, 'pkg')
+    repo_cache_dir = os.path.join(workdir, 'src')
+
+    pkgs = {}
+
+    pkgs['taxcalc'] = Package(
+        name='taxcalc',
+        repo=Repository(
+            url='https://github.com/open-source-economics/Tax-Calculator',
+            path=os.path.join(repo_cache_dir, 'taxcalc')),
+        cachedir=pkg_cache_dir)
+
+    pkgs['btax'] = Package(
+        name='btax',
+        repo=Repository(
+            url='https://github.com/open-source-economics/B-Tax',
+            path=os.path.join(repo_cache_dir, 'btax')),
+        dependencies=[pkgs['taxcalc']],
+        cachedir=pkg_cache_dir)
+
+    pkgs['ogusa'] = Package(
+        name='ogusa',
+        repo=Repository(
+            url='https://github.com/open-source-economics/OG-USA',
+            path=os.path.join(repo_cache_dir, 'ogusa')),
+        dependencies=[pkgs['taxcalc']],
+        cachedir=pkg_cache_dir)
+
     keys = names if names else pkgs.keys()
     return [pkgs[name] for name in keys]

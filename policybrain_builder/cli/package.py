@@ -1,4 +1,5 @@
 import os.path
+import shutil
 
 import click
 
@@ -6,9 +7,10 @@ from . import utils as u
 
 
 class Package(object):
-    def __init__(self, name, repo, cachedir):
+    def __init__(self, name, repo, cachedir, dependencies=[]):
         self._name = name
         self._repo = repo
+        self._dependencies = dependencies
         self._cachedir = cachedir
         self._tag = None
 
@@ -19,6 +21,14 @@ class Package(object):
     @property
     def repo(self):
         return self._repo
+
+    @property
+    def dependencies(self):
+        return self._dependencies
+
+    @property
+    def cachedir(self):
+        return self._cachedir
 
     @property
     def tag(self):
@@ -57,18 +67,26 @@ class Package(object):
         click.echo("[{}] {}".format(self.header, click.style("checking out '{}'".format(self.tag), fg='green')))
         self.repo.checkout(tag=self.tag)
 
+        click.echo("[{}] {}".format(self.header, click.style("archiving", fg='green')))
+        self.repo.archive(self.name, self.tag, self.cachedir)
+
     def build(self):
         channel = "ospc"
-        conda_recipe = u.find_first_filename(self.repo.path, "conda.recipe", "Python/conda.recipe")
-
         py_versions = ('2.7', '3.5', '3.6')
         platforms = ('osx-64', 'linux-32', 'linux-64', 'win-32', 'win-64')
 
-        conda_meta = os.path.join(self.repo.path, conda_recipe, "meta.yaml")
-        u.replace_all(conda_meta, r'version: .*', "version: " + self.tag)
-        #u.replace_all(conda_meta, r'taxcalc.*', "taxcalc >=" + self.tag)
+        with u.change_working_directory(self.cachedir):
+            u.call("tar xvf {}-{}.tar".format(self.name, self.tag))
 
-        with u.change_working_directory(self.repo.path):
+        archivedir = os.path.join(self.cachedir, "{}-{}".format(self.name, self.tag))
+        conda_recipe = u.find_first_filename(archivedir, "conda.recipe", "Python/conda.recipe")
+        conda_meta = os.path.join(archivedir, conda_recipe, "meta.yaml")
+
+        u.replace_all(conda_meta, r'version: .*', "version: " + self.tag)
+        for pkg in self.dependencies:
+            u.replace_all(conda_meta, "- {}.*".format(pkg.name), "- {} >={}".format(pkg.name, pkg.tag))
+
+        with u.change_working_directory(archivedir):
             for py_version in py_versions:
                 click.echo("[{}] {}".format(self.header, click.style("building {}".format(py_version), fg='green')))
                 u.call("conda build -c {} --no-anaconda-upload --python {} {}".format(channel, py_version, conda_recipe))
@@ -83,6 +101,13 @@ class Package(object):
                             continue
                         click.echo("[{}] {}".format(self.header, click.style("converting to {}".format(platform), fg='green')))
                         u.call("conda convert --platform {} {} -o ../".format(platform, package))
+
+                # Copy package to cache directory for upload
+                click.echo("[{}] {}".format(self.header, click.style("caching packages", fg='green')))
+                for platform in platforms:
+                    dst = os.path.join(self.cachedir, self.name, platform)
+                    u.ensure_directory_exists(dst)
+                    shutil.copy(build_file, os.path.join(dst, package))
 
     def upload(self):
         click.echo("[{}] {}".format(self.header, click.style("uploading", fg='green')))
