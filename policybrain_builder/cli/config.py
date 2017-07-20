@@ -5,6 +5,7 @@ import sys
 
 from .package import Package
 from .repository import Repository
+from . import utils as u
 
 
 def setup_logging(verbose=0):
@@ -68,13 +69,24 @@ def get_packages(names, workdir):
     if not names:
         names = pkgs.keys()
 
-    keys = []
+    dag = ""
     for name in names:
         fields = name.split('=')
         if len(fields) == 1:
             fields.append(None)
         key, tag = fields
-        keys.append(key)
         pkgs[key].tag = tag
+        if pkgs[key].dependencies:
+            for pkg in pkgs[key].dependencies:
+                dag += "{} {} ".format(key, pkg.name)
+        else:
+            dag += "{} . ".format(key)
+
+    # Topological sort of package dependencies
+    keys = u.check_output("echo '{}' | tsort | tail -r | xargs".format(dag)).strip().split()
+
+    # Remove sentinel marker (aka '.') if it exists
+    if keys[0] == '.':
+        keys = keys[1:]
 
     return [pkgs[name] for name in keys]

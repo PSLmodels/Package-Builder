@@ -47,7 +47,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.group(context_settings=CONTEXT_SETTINGS)
 @click.version_option(prog_name="pb", version="0.0.1")
 @click.pass_context
-@u.required_commands("anaconda", "conda", "git", "tar")
+@u.required_commands("anaconda", "conda", "git", "tar", "tsort")
 def cli(ctx):
     """
     Manage Open Source Policy Center (OSPC) packages.
@@ -63,7 +63,7 @@ def cli(ctx):
               show_default=True,
               required=False)
 @click.option('-v', '--verbose', count=True)
-def build(ctx, names, tag, workdir, verbose):
+def build(ctx, names, workdir, verbose):
     setup_logging(verbose)
 
     for pkg in get_packages(names, workdir):
@@ -82,7 +82,7 @@ def build(ctx, names, tag, workdir, verbose):
               show_default=True,
               required=False)
 @click.option('-v', '--verbose', count=True)
-def release(ctx, names, tag, token, workdir, verbose):
+def release(ctx, names, token, workdir, verbose):
     setup_logging(verbose)
 
     if token or is_authenticated_user():
