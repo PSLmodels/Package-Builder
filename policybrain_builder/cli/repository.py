@@ -7,9 +7,9 @@ from . import utils as u
 
 
 class Repository(object):
-    def __init__(self, url, path):
+    def __init__(self, url):
         self._url = url
-        self._path = path
+        self._path = "."
 
     @property
     def url(self):
@@ -18,6 +18,10 @@ class Repository(object):
     @property
     def path(self):
         return self._path
+
+    @path.setter
+    def path(self, value):
+        self._path = value
 
     def is_valid(self):
         if not os.path.exists(self.path):

@@ -58,23 +58,40 @@ def cli(ctx):
 @cli.command(short_help="Build packages.")
 @click.pass_context
 @click.argument('names', nargs=-1)
+@click.option("--channel", "-c",
+              default="ospc",
+              show_default=True,
+              required=False)
 @click.option('--only-last', is_flag=True)
 @click.option("--workdir", "-w",
               default="/tmp",
               show_default=True,
               required=False)
 @click.option('-v', '--verbose', count=True)
-def build(ctx, names, only_last, workdir, verbose):
+def build(ctx, names, channel, only_last, workdir, verbose):
     setup_logging(verbose)
 
     for pkg in get_packages(names, workdir, only_last):
         pkg.pull()
-        pkg.build()
+        pkg.build(channel)
 
 
 @cli.command(short_help='Release packages.')
 @click.pass_context
 @click.argument('names', nargs=-1)
+@click.option("--channel", "-c",
+              default="ospc",
+              show_default=True,
+              required=False)
+@click.option("--label", "-l",
+              default="dev",
+              show_default=True,
+              required=False)
+@click.option("--user", "-u",
+              default=None,
+              show_default=True,
+              required=False)
+@click.option('--force', is_flag=True)
 @click.option('--only-last', is_flag=True)
 @click.option('--token',
               envvar='OSPC_ANACONDA_TOKEN',
@@ -84,21 +101,30 @@ def build(ctx, names, only_last, workdir, verbose):
               show_default=True,
               required=False)
 @click.option('-v', '--verbose', count=True)
-def release(ctx, names, only_last, token, workdir, verbose):
+def release(ctx, names, channel, label, user, force, only_last, token, workdir, verbose):
     setup_logging(verbose)
 
     if token or is_authenticated_user():
         pkgs = get_packages(names, workdir, only_last)
         for pkg in pkgs:
             pkg.pull()
-            pkg.build()
+            pkg.build(channel)
         for pkg in pkgs:
-            pkg.upload()
+            pkg.upload(token, label, user, force)
 
 
 @cli.command(short_help='Upload packages.')
 @click.pass_context
 @click.argument('names', nargs=-1)
+@click.option("--label", "-l",
+              default="dev",
+              show_default=True,
+              required=False)
+@click.option("--user", "-u",
+              default=None,
+              show_default=True,
+              required=False)
+@click.option('--force', is_flag=True)
 @click.option('--only-last', is_flag=True)
 @click.option('--token',
               envvar='OSPC_ANACONDA_TOKEN',
@@ -108,12 +134,12 @@ def release(ctx, names, only_last, token, workdir, verbose):
               show_default=True,
               required=False)
 @click.option('-v', '--verbose', count=True)
-def upload(ctx, names, only_last, token, workdir, verbose):
+def upload(ctx, names, label, user, force, only_last, token, workdir, verbose):
     setup_logging(verbose)
 
     if token or is_authenticated_user():
         for pkg in get_packages(names, workdir, only_last):
-            pkg.upload()
+            pkg.upload(token, label, user, force)
 
 
 if __name__ == '__main__':

@@ -38,31 +38,24 @@ def setup_logging(verbose=0):
 
 
 def get_packages(names, workdir, only_last=None):
-    pkg_cache_dir = os.path.join(workdir, 'pkg')
-    repo_cache_dir = os.path.join(workdir, 'src')
+    pkg_cache_dir = os.path.join(workdir, 'policybrain-builder')
 
     pkgs = {}
 
     pkgs['taxcalc'] = Package(
         name='taxcalc',
-        repo=Repository(
-            url='https://github.com/open-source-economics/Tax-Calculator',
-            path=os.path.join(repo_cache_dir, 'taxcalc')),
+        repo=Repository('https://github.com/open-source-economics/Tax-Calculator'),
         cachedir=pkg_cache_dir)
 
     pkgs['btax'] = Package(
         name='btax',
-        repo=Repository(
-            url='https://github.com/open-source-economics/B-Tax',
-            path=os.path.join(repo_cache_dir, 'btax')),
+        repo=Repository('https://github.com/open-source-economics/B-Tax'),
         dependencies=[pkgs['taxcalc']],
         cachedir=pkg_cache_dir)
 
     pkgs['ogusa'] = Package(
         name='ogusa',
-        repo=Repository(
-            url='https://github.com/open-source-economics/OG-USA',
-            path=os.path.join(repo_cache_dir, 'ogusa')),
+        repo=Repository('https://github.com/open-source-economics/OG-USA'),
         dependencies=[pkgs['taxcalc']],
         cachedir=pkg_cache_dir)
 

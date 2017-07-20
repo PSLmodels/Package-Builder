@@ -1,18 +1,23 @@
-import os.path
+import logging
+import os
 import shutil
 
 import click
 
 from . import utils as u
 
+logger = logging.getLogger(__name__)
+
 
 class Package(object):
     def __init__(self, name, repo, cachedir, dependencies=[]):
         self._name = name
-        self._repo = repo
         self._dependencies = dependencies
         self._cachedir = cachedir
         self._tag = None
+
+        repo.path = os.path.join(self.pull_cachedir, name)
+        self._repo = repo
 
     @property
     def name(self):
@@ -29,6 +34,18 @@ class Package(object):
     @property
     def cachedir(self):
         return self._cachedir
+
+    @property
+    def pull_cachedir(self):
+        return os.path.join(self.cachedir, "pull")
+
+    @property
+    def build_cachedir(self):
+        return os.path.join(self.cachedir, "build")
+
+    @property
+    def upload_cachedir(self):
+        return os.path.join(self.cachedir, "upload")
 
     @property
     def tag(self):
@@ -66,17 +83,22 @@ class Package(object):
         self.repo.checkout(tag=self.tag)
 
         click.echo("[{}] {}".format(self.header, click.style("archiving", fg='green')))
-        self.repo.archive(self.name, self.tag, self.cachedir)
+        self.repo.archive(self.name, self.tag, self.build_cachedir)
 
-    def build(self):
-        channel = "ospc"
+    def build(self, channel):
         py_versions = ('2.7', '3.5', '3.6')
         platforms = ('osx-64', 'linux-32', 'linux-64', 'win-32', 'win-64')
 
-        with u.change_working_directory(self.cachedir):
+        # Clear cached directory for uploads
+        for platform in platforms:
+            dst = os.path.join(self.upload_cachedir, self.name, platform)
+            if os.path.exists(dst):
+                shutil.rmtree(dst)
+
+        with u.change_working_directory(self.build_cachedir):
             u.call("tar xvf {}-{}.tar".format(self.name, self.tag))
 
-        archivedir = os.path.join(self.cachedir, "{}-{}".format(self.name, self.tag))
+        archivedir = os.path.join(self.build_cachedir, "{}-{}".format(self.name, self.tag))
         conda_recipe = u.find_first_filename(archivedir, "conda.recipe", "Python/conda.recipe")
         conda_meta = os.path.join(archivedir, conda_recipe, "meta.yaml")
 
@@ -103,10 +125,46 @@ class Package(object):
                 # Copy package to cache directory for upload
                 click.echo("[{}] {}".format(self.header, click.style("caching packages", fg='green')))
                 for platform in platforms:
-                    dst = os.path.join(self.cachedir, self.name, platform)
+                    dst = os.path.join(self.upload_cachedir, self.name, platform)
                     u.ensure_directory_exists(dst)
                     shutil.copy(build_file, os.path.join(dst, package))
 
-    def upload(self):
-        click.echo("[{}] {}".format(self.header, click.style("uploading", fg='green')))
-        #u.call("anaconda [-t $OSPC_UPLOAD_TOKEN] upload $force --no-progress $1 --label $OSPC_ANACONDA_CHANNEL")
+    def upload(self, token, label, user=None, force=False):
+        platforms = ('osx-64', 'linux-32', 'linux-64', 'win-32', 'win-64')
+
+        cmd = "anaconda"
+
+        if token:
+            logger.info("config for anaconda upload: token was provided")
+            cmd += " --token " + token
+        else:
+            logger.info("config for anaconda upload: token was not provided")
+
+        cmd += " upload --no-progress"
+
+        if force:
+            logger.info("config for anaconda upload: force is enabled")
+            cmd += " --force"
+        else:
+            logger.info("config for anaconda upload: force is disabled")
+
+        logger.info("config for anaconda upload: label={}".format(label))
+        if label:
+            cmd += " --label " + label
+
+        logger.info("config for anaconda upload: user={}".format(user))
+        if user:
+            cmd += " --user " + user
+
+        for platform in platforms:
+            click.echo("[{}] {}".format(self.header, click.style("uploading {} packages".format(platform), fg='green')))
+            tmpdir = os.path.join(self.upload_cachedir, self.name, platform)
+
+            pkgs = [f for f in os.listdir(tmpdir) if os.path.isfile(os.path.join(tmpdir, f))]
+            for pkg in pkgs:
+                fullpkg = os.path.join(tmpdir, pkg)
+                logger.info("uploading " + fullpkg)
+                try:
+                    u.call("{} {}".format(cmd, fullpkg))
+                except:
+                    logger.error("Failed on anaconda upload likely because version already exists - continuing")
