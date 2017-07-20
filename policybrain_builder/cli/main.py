@@ -71,9 +71,10 @@ def cli(ctx):
 def build(ctx, names, channel, only_last, workdir, verbose):
     setup_logging(verbose)
 
-    for pkg in get_packages(names, workdir, only_last):
-        pkg.pull()
-        pkg.build(channel)
+    with u.set_and_rollback_conda_config("always_yes", True):
+        for pkg in get_packages(names, workdir, only_last):
+            pkg.pull()
+            pkg.build(channel)
 
 
 @cli.command(short_help='Release packages.')
@@ -105,12 +106,13 @@ def release(ctx, names, channel, label, user, force, only_last, token, workdir, 
     setup_logging(verbose)
 
     if token or is_authenticated_user():
-        pkgs = get_packages(names, workdir, only_last)
-        for pkg in pkgs:
-            pkg.pull()
-            pkg.build(channel)
-        for pkg in pkgs:
-            pkg.upload(token, label, user, force)
+        with u.set_and_rollback_conda_config("always_yes", True):
+            pkgs = get_packages(names, workdir, only_last)
+            for pkg in pkgs:
+                pkg.pull()
+                pkg.build(channel)
+            for pkg in pkgs:
+                pkg.upload(token, label, user, force)
 
 
 @cli.command(short_help='Upload packages.')
@@ -138,8 +140,9 @@ def upload(ctx, names, label, user, force, only_last, token, workdir, verbose):
     setup_logging(verbose)
 
     if token or is_authenticated_user():
-        for pkg in get_packages(names, workdir, only_last):
-            pkg.upload(token, label, user, force)
+        with u.set_and_rollback_conda_config("always_yes", True):
+            for pkg in get_packages(names, workdir, only_last):
+                pkg.upload(token, label, user, force)
 
 
 if __name__ == '__main__':

@@ -32,16 +32,29 @@ def required_commands(*commands):
 
 
 @contextlib.contextmanager
+def set_and_rollback_conda_config(key, value):
+    args = check_output("conda config --get " + key)
+    logger.info("saved previous conda config: %s", key)
+    try:
+        call("conda config --set {} {}".format(key, value))
+        logger.info("changed conda config: %s %s", key, value)
+        yield
+    finally:
+        call("conda config " + args)
+        logger.info("restored previous conda config: %s", key)
+
+
+@contextlib.contextmanager
 def change_working_directory(path):
     old_path = os.getcwd()
-    logger.debug("saved previous working directory: %s", old_path)
+    logger.info("saved previous working directory: %s", old_path)
     try:
         os.chdir(path)
-        logger.debug("changed working directory: %s", path)
+        logger.info("changed working directory: %s", path)
         yield
     finally:
         os.chdir(old_path)
-        logger.debug("restored previous working directory: %s", old_path)
+        logger.info("restored previous working directory: %s", old_path)
 
 
 def call(cmd):
@@ -60,7 +73,7 @@ def check_output(cmd):
 
 def ensure_directory_exists(path):
     if not os.path.exists(path):
-        logger.debug("creating directory: %s", path)
+        logger.info("creating directory: %s", path)
         os.makedirs(path)
 
 
@@ -73,7 +86,7 @@ def find_first_filename(path, *filenames):
 
 
 def replace_all(filename, needle, replacement):
-    logger.debug("replacing all relevant lines in %s", filename)
+    logger.info("replacing all relevant lines in %s", filename)
     lines = []
     with open(filename) as f:
         for line in f.readlines():
