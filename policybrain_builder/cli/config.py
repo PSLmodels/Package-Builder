@@ -37,7 +37,7 @@ def setup_logging(verbose=0):
         logger.addHandler(console_handler)
 
 
-def get_packages(names, workdir):
+def get_packages(names, workdir, only_last=None):
     pkg_cache_dir = os.path.join(workdir, 'pkg')
     repo_cache_dir = os.path.join(workdir, 'src')
 
@@ -88,5 +88,8 @@ def get_packages(names, workdir):
     # Remove sentinel marker (aka '.') if it exists
     if keys[0] == '.':
         keys = keys[1:]
+
+    if only_last:
+        keys = keys[-1:]
 
     return [pkgs[name] for name in keys]

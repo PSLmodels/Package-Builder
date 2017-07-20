@@ -58,15 +58,16 @@ def cli(ctx):
 @cli.command(short_help="Build packages.")
 @click.pass_context
 @click.argument('names', nargs=-1)
+@click.option('--only-last', is_flag=True)
 @click.option("--workdir", "-w",
               default="/tmp",
               show_default=True,
               required=False)
 @click.option('-v', '--verbose', count=True)
-def build(ctx, names, workdir, verbose):
+def build(ctx, names, only_last, workdir, verbose):
     setup_logging(verbose)
 
-    for pkg in get_packages(names, workdir):
+    for pkg in get_packages(names, workdir, only_last):
         pkg.pull()
         pkg.build()
 
@@ -74,6 +75,7 @@ def build(ctx, names, workdir, verbose):
 @cli.command(short_help='Release packages.')
 @click.pass_context
 @click.argument('names', nargs=-1)
+@click.option('--only-last', is_flag=True)
 @click.option('--token',
               envvar='OSPC_ANACONDA_TOKEN',
               default=default_token_config)
@@ -82,11 +84,11 @@ def build(ctx, names, workdir, verbose):
               show_default=True,
               required=False)
 @click.option('-v', '--verbose', count=True)
-def release(ctx, names, token, workdir, verbose):
+def release(ctx, names, only_last, token, workdir, verbose):
     setup_logging(verbose)
 
     if token or is_authenticated_user():
-        pkgs = get_packages(names, workdir)
+        pkgs = get_packages(names, workdir, only_last)
         for pkg in pkgs:
             pkg.pull()
             pkg.build()
@@ -97,6 +99,7 @@ def release(ctx, names, token, workdir, verbose):
 @cli.command(short_help='Upload packages.')
 @click.pass_context
 @click.argument('names', nargs=-1)
+@click.option('--only-last', is_flag=True)
 @click.option('--token',
               envvar='OSPC_ANACONDA_TOKEN',
               default=default_token_config)
@@ -105,11 +108,11 @@ def release(ctx, names, token, workdir, verbose):
               show_default=True,
               required=False)
 @click.option('-v', '--verbose', count=True)
-def upload(ctx, names, token, workdir, verbose):
+def upload(ctx, names, only_last, token, workdir, verbose):
     setup_logging(verbose)
 
     if token or is_authenticated_user():
-        for pkg in get_packages(names, workdir):
+        for pkg in get_packages(names, workdir, only_last):
             pkg.upload()
 
 
