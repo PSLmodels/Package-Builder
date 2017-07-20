@@ -65,5 +65,16 @@ def get_packages(names, workdir):
         dependencies=[pkgs['taxcalc']],
         cachedir=pkg_cache_dir)
 
-    keys = names if names else pkgs.keys()
+    if not names:
+        names = pkgs.keys()
+
+    keys = []
+    for name in names:
+        fields = name.split('=')
+        if len(fields) == 1:
+            fields.append(None)
+        key, tag = fields
+        keys.append(key)
+        pkgs[key].tag = tag
+
     return [pkgs[name] for name in keys]

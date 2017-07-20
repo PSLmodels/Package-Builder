@@ -42,7 +42,7 @@ class Package(object):
     def header(self):
         return click.style(self.name, fg='cyan')
 
-    def pull(self, tag):
+    def pull(self):
         if self.repo.is_valid():
             click.echo("[{}] {}".format(self.header, click.style("resetting", fg='green')))
             self.repo.reset()
@@ -59,9 +59,7 @@ class Package(object):
         click.echo("[{}] {}".format(self.header, click.style("fetching", fg='green')))
         self.repo.fetch()
 
-        if tag:
-            self.tag = tag
-        else:
+        if not self.tag:
             self.tag = self.repo.latest_tag()
 
         click.echo("[{}] {}".format(self.header, click.style("checking out '{}'".format(self.tag), fg='green')))
