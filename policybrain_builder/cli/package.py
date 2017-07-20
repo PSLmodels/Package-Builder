@@ -8,6 +8,8 @@ from . import utils as u
 
 logger = logging.getLogger(__name__)
 
+PLATFORMS = ('osx-64', 'linux-32', 'linux-64', 'win-32', 'win-64')
+
 
 class Package(object):
     def __init__(self, name, repo, cachedir, dependencies=[]):
@@ -87,10 +89,9 @@ class Package(object):
 
     def build(self, channel):
         py_versions = ('2.7', '3.5', '3.6')
-        platforms = ('osx-64', 'linux-32', 'linux-64', 'win-32', 'win-64')
 
         # Clear cached directory for uploads
-        for platform in platforms:
+        for platform in PLATFORMS:
             dst = os.path.join(self.upload_cachedir, self.name, platform)
             if os.path.exists(dst):
                 shutil.rmtree(dst)
@@ -116,7 +117,7 @@ class Package(object):
                 package = os.path.basename(build_file)
 
                 with u.change_working_directory(build_dir):
-                    for platform in platforms:
+                    for platform in PLATFORMS:
                         if platform == current_platform:
                             continue
                         click.echo("[{}] {}".format(self.header, click.style("converting to {}".format(platform), fg='green')))
@@ -124,14 +125,12 @@ class Package(object):
 
                 # Copy package to cache directory for upload
                 click.echo("[{}] {}".format(self.header, click.style("caching packages", fg='green')))
-                for platform in platforms:
+                for platform in PLATFORMS:
                     dst = os.path.join(self.upload_cachedir, self.name, platform)
                     u.ensure_directory_exists(dst)
                     shutil.copy(build_file, os.path.join(dst, package))
 
     def upload(self, token, label, user=None, force=False):
-        platforms = ('osx-64', 'linux-32', 'linux-64', 'win-32', 'win-64')
-
         cmd = "anaconda"
 
         if token:
@@ -156,7 +155,7 @@ class Package(object):
         if user:
             cmd += " --user " + user
 
-        for platform in platforms:
+        for platform in PLATFORMS:
             click.echo("[{}] {}".format(self.header, click.style("uploading {} packages".format(platform), fg='green')))
             tmpdir = os.path.join(self.upload_cachedir, self.name, platform)
 
