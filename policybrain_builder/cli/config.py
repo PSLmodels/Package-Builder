@@ -76,7 +76,8 @@ def get_packages(names, workdir, only_last=None):
             dag += "{} . ".format(key)
 
     # Topological sort of package dependencies
-    keys = reversed(u.check_output("echo '{}' | tsort | xargs".format(dag)).strip().split())
+    output = u.check_output("echo '{}' | tsort | xargs".format(dag))
+    keys = list(reversed(output.strip().split()))
 
     # Remove sentinel marker (aka '.') if it exists
     if keys[0] == '.':
