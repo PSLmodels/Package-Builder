@@ -59,11 +59,13 @@ def cli(ctx):
 @click.pass_context
 @click.argument('names', nargs=-1)
 @click.option("--channel", "-c",
+              envvar='OSPC_ANACONDA_CHANNEL',
               default="ospc",
               show_default=True,
               required=False)
 @click.option('--only-last', is_flag=True)
 @click.option("--workdir", "-w",
+              envvar='WORKSPACE',
               default="/tmp",
               show_default=True,
               required=False)
@@ -81,10 +83,12 @@ def build(ctx, names, channel, only_last, workdir, verbose):
 @click.pass_context
 @click.argument('names', nargs=-1)
 @click.option("--channel", "-c",
+              envvar='OSPC_ANACONDA_CHANNEL',
               default="ospc",
               show_default=True,
               required=False)
 @click.option("--label", "-l",
+              envvar='OSPC_ANACONDA_LABEL',
               default="dev",
               show_default=True,
               required=False)
@@ -92,12 +96,15 @@ def build(ctx, names, channel, only_last, workdir, verbose):
               default=None,
               show_default=True,
               required=False)
-@click.option('--force', is_flag=True)
+@click.option('--force',
+              envvar='ANACONDA_FORCE',
+              is_flag=True)
 @click.option('--only-last', is_flag=True)
 @click.option('--token',
               envvar='OSPC_ANACONDA_TOKEN',
               default=default_token_config)
 @click.option("--workdir", "-w",
+              envvar='WORKSPACE',
               default="/tmp",
               show_default=True,
               required=False)
@@ -119,6 +126,7 @@ def release(ctx, names, channel, label, user, force, only_last, token, workdir, 
 @click.pass_context
 @click.argument('names', nargs=-1)
 @click.option("--label", "-l",
+              envvar='OSPC_ANACONDA_LABEL',
               default="dev",
               show_default=True,
               required=False)
@@ -126,12 +134,15 @@ def release(ctx, names, channel, label, user, force, only_last, token, workdir, 
               default=None,
               show_default=True,
               required=False)
-@click.option('--force', is_flag=True)
+@click.option('--force',
+              envvar='ANACONDA_FORCE',
+              is_flag=True)
 @click.option('--only-last', is_flag=True)
 @click.option('--token',
               envvar='OSPC_ANACONDA_TOKEN',
               default=default_token_config)
 @click.option("--workdir", "-w",
+              envvar='WORKSPACE',
               default="/tmp",
               show_default=True,
               required=False)
