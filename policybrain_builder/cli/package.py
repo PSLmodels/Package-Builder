@@ -87,9 +87,7 @@ class Package(object):
         click.echo("[{}] {}".format(self.header, click.style("archiving", fg='green')))
         self.repo.archive(self.name, self.tag, self.build_cachedir)
 
-    def build(self, channel):
-        py_versions = ('2.7', '3.5', '3.6')
-
+    def build(self, channel, py_versions):
         # Clear cached directory for uploads
         for platform in PLATFORMS:
             dst = os.path.join(self.upload_cachedir, self.name, platform)

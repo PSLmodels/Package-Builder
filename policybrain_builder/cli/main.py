@@ -13,6 +13,8 @@ from . import utils as u
 
 logger = logging.getLogger(__name__)
 
+PYTHON_VERSIONS = ('2.7', '3.5', '3.6')
+
 
 def start():
     try:
@@ -64,19 +66,24 @@ def cli(ctx):
               show_default=True,
               required=False)
 @click.option('--only-last', is_flag=True)
+@click.option('py_versions', '--python',
+              envvar='OSPC_PYTHONS',
+              default=PYTHON_VERSIONS,
+              show_default=True,
+              required=False)
 @click.option("--workdir", "-w",
               envvar='WORKSPACE',
               default="/tmp",
               show_default=True,
               required=False)
 @click.option('-v', '--verbose', count=True)
-def build(ctx, names, channel, only_last, workdir, verbose):
+def build(ctx, names, channel, only_last, py_versions, workdir, verbose):
     setup_logging(verbose)
 
     with u.set_and_rollback_conda_config("always_yes", True):
         for pkg in get_packages(names, workdir, only_last):
             pkg.pull()
-            pkg.build(channel)
+            pkg.build(channel, py_versions)
 
 
 @cli.command(short_help='Release packages.')
@@ -100,6 +107,11 @@ def build(ctx, names, channel, only_last, workdir, verbose):
               envvar='ANACONDA_FORCE',
               is_flag=True)
 @click.option('--only-last', is_flag=True)
+@click.option('py_versions', '--python',
+              envvar='OSPC_PYTHONS',
+              default=PYTHON_VERSIONS,
+              show_default=True,
+              required=False)
 @click.option('--token',
               envvar='OSPC_ANACONDA_TOKEN',
               default=default_token_config)
@@ -109,7 +121,7 @@ def build(ctx, names, channel, only_last, workdir, verbose):
               show_default=True,
               required=False)
 @click.option('-v', '--verbose', count=True)
-def release(ctx, names, channel, label, user, force, only_last, token, workdir, verbose):
+def release(ctx, names, channel, label, user, force, only_last, py_versions, token, workdir, verbose):
     setup_logging(verbose)
 
     if token or is_authenticated_user():
@@ -117,7 +129,7 @@ def release(ctx, names, channel, label, user, force, only_last, token, workdir, 
             pkgs = get_packages(names, workdir, only_last)
             for pkg in pkgs:
                 pkg.pull()
-                pkg.build(channel)
+                pkg.build(channel, py_versions)
             for pkg in pkgs:
                 pkg.upload(token, label, user, force)
 

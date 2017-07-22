@@ -90,6 +90,7 @@ pb build --only-last taxcalc=0.9.1 btax
   * `OSPC_ANACONDA_CHANNEL`: Additional channel to search for packages (use for `build` and `release`)
   * `OSPC_ANACONDA_LABEL`: Add packages to a specific label (use for `release` and `upload`)
   * `OSPC_ANACONDA_TOKEN`: Authentication token (use for `release` and `upload`)
+  * `OSPC_PYTHONS`: Set Python versions for building packages (use for `build` and `release`)
   * `WORKSPACE`: Directory used for cloning, building, and uploading (use for all subcommands)
 
 ## Additional Notes
