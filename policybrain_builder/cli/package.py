@@ -1,6 +1,5 @@
 import logging
 import os
-import shutil
 
 import click
 
@@ -9,6 +8,14 @@ from . import utils as u
 logger = logging.getLogger(__name__)
 
 PLATFORMS = ('osx-64', 'linux-32', 'linux-64', 'win-32', 'win-64')
+
+
+def conda_build_directory():
+    conda_path = u.check_output("which conda").strip()
+    anaconda_path = os.path.dirname(os.path.dirname(conda_path))
+    if "envs" in anaconda_path:
+        anaconda_path = os.path.dirname(os.path.dirname(anaconda_path))
+    return os.path.join(anaconda_path, "conda-bld")
 
 
 class Package(object):
@@ -44,10 +51,6 @@ class Package(object):
     @property
     def build_cachedir(self):
         return os.path.join(self.cachedir, "build")
-
-    @property
-    def upload_cachedir(self):
-        return os.path.join(self.cachedir, "upload")
 
     @property
     def tag(self):
@@ -88,12 +91,6 @@ class Package(object):
         self.repo.archive(self.name, self.tag, self.build_cachedir)
 
     def build(self, channel, py_versions):
-        # Clear cached directory for uploads
-        for platform in PLATFORMS:
-            dst = os.path.join(self.upload_cachedir, self.name, platform)
-            if os.path.exists(dst):
-                shutil.rmtree(dst)
-
         with u.change_working_directory(self.build_cachedir):
             u.call("tar xvf {}-{}.tar".format(self.name, self.tag))
 
@@ -121,13 +118,6 @@ class Package(object):
                         click.echo("[{}] {}".format(self.header, click.style("converting to {}".format(platform), fg='green')))
                         u.call("conda convert --platform {} {} -o ../".format(platform, package))
 
-                # Copy package to cache directory for upload
-                click.echo("[{}] {}".format(self.header, click.style("caching packages", fg='green')))
-                for platform in PLATFORMS:
-                    dst = os.path.join(self.upload_cachedir, self.name, platform)
-                    u.ensure_directory_exists(dst)
-                    shutil.copy(build_file, os.path.join(dst, package))
-
     def upload(self, token, label, user=None, force=False):
         cmd = "anaconda"
 
@@ -137,7 +127,7 @@ class Package(object):
         else:
             logger.info("config for anaconda upload: token was not provided")
 
-        cmd += " upload --no-progress"
+        cmd += " upload -t conda --no-progress"
 
         if force:
             logger.info("config for anaconda upload: force is enabled")
@@ -153,15 +143,18 @@ class Package(object):
         if user:
             cmd += " --user " + user
 
-        for platform in PLATFORMS:
-            click.echo("[{}] {}".format(self.header, click.style("uploading {} packages".format(platform), fg='green')))
-            tmpdir = os.path.join(self.upload_cachedir, self.name, platform)
+        build_dir = conda_build_directory()
 
-            pkgs = [f for f in os.listdir(tmpdir) if os.path.isfile(os.path.join(tmpdir, f))]
-            for pkg in pkgs:
-                fullpkg = os.path.join(tmpdir, pkg)
-                logger.info("uploading " + fullpkg)
+        if not self.tag:
+            self.tag = self.repo.latest_tag()
+
+        with u.change_working_directory(build_dir):
+            for platform in PLATFORMS:
+                click.echo("[{}] {}".format(self.header, click.style("uploading {} packages".format(platform), fg='green')))
+                pkgs = os.path.join(build_dir, platform, "{}-{}*.tar.bz2".format(self.name, self.tag))
+
+                logger.info("uploading " + pkgs)
                 try:
-                    u.call("{} {}".format(cmd, fullpkg))
+                    u.call("{} {}".format(cmd, pkgs))
                 except:
                     logger.error("Failed on anaconda upload likely because version already exists - continuing")
