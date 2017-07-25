@@ -7,13 +7,11 @@ import traceback
 
 import click
 
-from .config import get_packages, setup_logging
+from .config import get_packages, setup_logging, PYTHON_VERSIONS
 from . import utils as u
 
 
 logger = logging.getLogger(__name__)
-
-PYTHON_VERSIONS = ('2.7', '3.5', '3.6')
 
 
 def start():

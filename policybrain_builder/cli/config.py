@@ -8,6 +8,9 @@ from .repository import Repository
 from . import utils as u
 
 
+PYTHON_VERSIONS = ('2.7', '3.5', '3.6')
+
+
 def setup_logging(verbose=0):
     if verbose > 1:
         log_level = logging.DEBUG
@@ -45,17 +48,20 @@ def get_packages(names, workdir, only_last=None):
     pkgs['taxcalc'] = Package(
         name='taxcalc',
         repo=Repository('https://github.com/open-source-economics/Tax-Calculator'),
+        supported_versions=PYTHON_VERSIONS,
         cachedir=pkg_cache_dir)
 
     pkgs['btax'] = Package(
         name='btax',
         repo=Repository('https://github.com/open-source-economics/B-Tax'),
+        supported_versions=PYTHON_VERSIONS,
         dependencies=[pkgs['taxcalc']],
         cachedir=pkg_cache_dir)
 
     pkgs['ogusa'] = Package(
         name='ogusa',
         repo=Repository('https://github.com/open-source-economics/OG-USA'),
+        supported_versions=('2.7',),
         dependencies=[pkgs['taxcalc']],
         cachedir=pkg_cache_dir)
 

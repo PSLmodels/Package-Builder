@@ -19,10 +19,11 @@ def conda_build_directory():
 
 
 class Package(object):
-    def __init__(self, name, repo, cachedir, dependencies=[]):
+    def __init__(self, name, repo, cachedir, supported_versions, dependencies=[]):
         self._name = name
-        self._dependencies = dependencies
         self._cachedir = cachedir
+        self._dependencies = dependencies
+        self._supported_versions = supported_versions
         self._tag = None
 
         repo.path = os.path.join(self.pull_cachedir, name)
@@ -35,6 +36,10 @@ class Package(object):
     @property
     def repo(self):
         return self._repo
+
+    @property
+    def supported_versions(self):
+        return self._supported_versions
 
     @property
     def dependencies(self):
@@ -103,7 +108,7 @@ class Package(object):
             u.replace_all(conda_meta, "- {}.*".format(pkg.name), "- {} >={}".format(pkg.name, pkg.tag))
 
         with u.change_working_directory(archivedir):
-            for py_version in py_versions:
+            for py_version in tuple(set(py_versions) & set(self.supported_versions)):
                 click.echo("[{}] {}".format(self.header, click.style("building {}".format(py_version), fg='green')))
                 u.call("conda build -c {} --no-anaconda-upload --python {} {}".format(channel, py_version, conda_recipe))
                 build_file = u.check_output("conda build --python {} {} --output".format(py_version, conda_recipe)).strip()
