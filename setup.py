@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from io import open
-from setuptools import setup
+from setuptools import find_packages, setup
 
 
 with open('README.md', encoding='utf-8') as f:
@@ -23,7 +23,7 @@ setup(name="policybrain-builder",
           'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',
       ],
-      packages=['policybrain_builder'],
+      packages=find_packages(),
       package_dirs={'policybrain_builder': ['policybrain_builder']},
       install_requires=['click'],
       zip_safe=False,
