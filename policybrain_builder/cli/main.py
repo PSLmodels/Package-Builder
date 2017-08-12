@@ -66,8 +66,9 @@ def cli(ctx):
 @click.option('--only-last', is_flag=True)
 @click.option('py_versions', '--python',
               envvar='OSPC_PYTHONS',
-              default=PYTHON_VERSIONS,
               show_default=True,
+              default=lambda: PYTHON_VERSIONS,
+              multiple=True,
               required=False)
 @click.option("--workdir", "-w",
               envvar='WORKSPACE',
