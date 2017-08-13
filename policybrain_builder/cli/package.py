@@ -26,6 +26,10 @@ def conda_build_directory():
     return os.path.join(anaconda_path, "conda-bld")
 
 
+def py_int(s):
+    return int("".join(s.split('.')[:2]))
+
+
 class Package(object):
     def __init__(self, name, repo, cachedir, supported_versions, dependencies=[]):
         self._name = name
@@ -132,7 +136,7 @@ class Package(object):
                         click.echo("[{}] {}".format(self.header, click.style("converting to {}".format(platform), fg='green')))
                         u.call("conda convert --platform {} {} -o ../".format(platform, package))
 
-    def upload(self, token, label, user=None, force=False):
+    def upload(self, token, label, py_versions, user=None, force=False):
         cmd = "anaconda"
 
         if token:
@@ -165,10 +169,12 @@ class Package(object):
         with u.change_working_directory(build_dir):
             for platform in PLATFORMS:
                 click.echo("[{}] {}".format(self.header, click.style("uploading {} packages".format(platform), fg='green')))
-                pkgs = os.path.join(build_dir, platform, "{}-{}*.tar.bz2".format(self.name, self.tag))
+                for py_version in tuple(set(py_versions) & set(self.supported_versions)):
+                    build_pkg = "{0}-{1}-py{2}_0.tar.bz2".format(self.name, self.tag, py_int(py_version))
+                    pkg = os.path.join(build_dir, platform, build_pkg)
 
-                logger.info("uploading " + pkgs)
-                try:
-                    u.call("{} {}".format(cmd, pkgs))
-                except:
-                    logger.error("Failed on anaconda upload likely because version already exists - continuing")
+                    logger.info("uploading " + pkg)
+                    try:
+                        u.call("{} {}".format(cmd, pkg))
+                    except:
+                        logger.error("Failed on anaconda upload likely because version already exists - continuing")

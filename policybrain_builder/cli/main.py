@@ -108,8 +108,9 @@ def build(ctx, names, channel, only_last, py_versions, workdir, verbose):
 @click.option('--only-last', is_flag=True)
 @click.option('py_versions', '--python',
               envvar='OSPC_PYTHONS',
-              default=PYTHON_VERSIONS,
               show_default=True,
+              default=lambda: PYTHON_VERSIONS,
+              multiple=True,
               required=False)
 @click.option('--token',
               envvar='OSPC_ANACONDA_TOKEN',
@@ -130,7 +131,7 @@ def release(ctx, names, channel, label, user, force, only_last, py_versions, tok
                 pkg.pull()
                 pkg.build(channel, py_versions)
             for pkg in pkgs:
-                pkg.upload(token, label, user, force)
+                pkg.upload(token, label, py_versions, user, force)
 
 
 @cli.command(short_help='Upload packages.')
@@ -149,6 +150,12 @@ def release(ctx, names, channel, label, user, force, only_last, py_versions, tok
               envvar='ANACONDA_FORCE',
               is_flag=True)
 @click.option('--only-last', is_flag=True)
+@click.option('py_versions', '--python',
+              envvar='OSPC_PYTHONS',
+              show_default=True,
+              default=lambda: PYTHON_VERSIONS,
+              multiple=True,
+              required=False)
 @click.option('--token',
               envvar='OSPC_ANACONDA_TOKEN',
               default=default_token_config)
@@ -158,13 +165,13 @@ def release(ctx, names, channel, label, user, force, only_last, py_versions, tok
               show_default=True,
               required=False)
 @click.option('-v', '--verbose', count=True)
-def upload(ctx, names, label, user, force, only_last, token, workdir, verbose):
+def upload(ctx, names, label, user, force, only_last, py_versions, token, workdir, verbose):
     setup_logging(verbose)
 
     if token or is_authenticated_user():
         with u.set_and_rollback_conda_config("always_yes", True):
             for pkg in get_packages(names, workdir, only_last):
-                pkg.upload(token, label, user, force)
+                pkg.upload(token, label, py_versions, user, force)
 
 
 if __name__ == '__main__':
