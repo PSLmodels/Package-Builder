@@ -10,6 +10,14 @@ logger = logging.getLogger(__name__)
 PLATFORMS = ('osx-64', 'linux-32', 'linux-64', 'win-32', 'win-64')
 
 
+def conda_build():
+    _, version = u.check_output("conda build -V").strip().split()
+    major = int(version.split('.')[0])
+    if major >= 3:
+        return "conda build --old-build-string"
+    return "conda build"
+
+
 def conda_build_directory():
     conda_path = u.check_output("which conda").strip()
     anaconda_path = os.path.dirname(os.path.dirname(conda_path))
@@ -100,6 +108,7 @@ class Package(object):
             u.call("tar xvf {}-{}.tar".format(self.name, self.tag))
 
         archivedir = os.path.join(self.build_cachedir, "{}-{}".format(self.name, self.tag))
+        cmd = conda_build()
         conda_recipe = u.find_first_filename(archivedir, "conda.recipe", "Python/conda.recipe")
         conda_meta = os.path.join(archivedir, conda_recipe, "meta.yaml")
 
@@ -110,8 +119,8 @@ class Package(object):
         with u.change_working_directory(archivedir):
             for py_version in tuple(set(py_versions) & set(self.supported_versions)):
                 click.echo("[{}] {}".format(self.header, click.style("building {}".format(py_version), fg='green')))
-                u.call("conda build -c {} --no-anaconda-upload --python {} {}".format(channel, py_version, conda_recipe))
-                build_file = u.check_output("conda build --python {} {} --output".format(py_version, conda_recipe)).strip()
+                u.call("{} -c {} --no-anaconda-upload --python {} {}".format(cmd, channel, py_version, conda_recipe))
+                build_file = u.check_output("{} --python {} {} --output".format(cmd, py_version, conda_recipe)).strip()
                 build_dir = os.path.dirname(build_file)
                 current_platform = os.path.basename(build_dir)
                 package = os.path.basename(build_file)
