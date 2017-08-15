@@ -66,10 +66,11 @@ def cli(ctx):
 @click.option('--only-last', is_flag=True)
 @click.option('py_versions', '--python',
               envvar='OSPC_PYTHONS',
-              show_default=True,
+              show_default=False,
               default=lambda: PYTHON_VERSIONS,
               multiple=True,
-              required=False)
+              required=False,
+              help="Default supported versions: " + " ".join(PYTHON_VERSIONS))
 @click.option("--workdir", "-w",
               envvar='WORKSPACE',
               default="/tmp",
@@ -108,10 +109,11 @@ def build(ctx, names, channel, only_last, py_versions, workdir, verbose):
 @click.option('--only-last', is_flag=True)
 @click.option('py_versions', '--python',
               envvar='OSPC_PYTHONS',
-              show_default=True,
+              show_default=False,
               default=lambda: PYTHON_VERSIONS,
               multiple=True,
-              required=False)
+              required=False,
+              help="Default supported versions: " + " ".join(PYTHON_VERSIONS))
 @click.option('--token',
               envvar='OSPC_ANACONDA_TOKEN',
               default=default_token_config)
@@ -152,10 +154,11 @@ def release(ctx, names, channel, label, user, force, only_last, py_versions, tok
 @click.option('--only-last', is_flag=True)
 @click.option('py_versions', '--python',
               envvar='OSPC_PYTHONS',
-              show_default=True,
+              show_default=False,
               default=lambda: PYTHON_VERSIONS,
               multiple=True,
-              required=False)
+              required=False,
+              help="Default supported versions: " + " ".join(PYTHON_VERSIONS))
 @click.option('--token',
               envvar='OSPC_ANACONDA_TOKEN',
               default=default_token_config)
