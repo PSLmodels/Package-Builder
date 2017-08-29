@@ -62,6 +62,7 @@ def call(cmd):
     try:
         subprocess.check_call(cmd, shell=True)
     except subprocess.CalledProcessError as e:
+        logger.error(e)
         sys.exit(e.returncode)
 
 
@@ -70,6 +71,7 @@ def check_output(cmd):
     try:
         output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True).decode("utf-8")
     except subprocess.CalledProcessError as e:
+        logger.error(e)
         sys.exit(e.returncode)
     return output
 

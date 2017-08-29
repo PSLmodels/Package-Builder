@@ -26,6 +26,8 @@ class Repository(object):
     def is_valid(self):
         if not os.path.exists(self.path):
             return False
+        if not os.path.exists(os.path.join(self.path, ".git")):
+            return False
         with u.change_working_directory(self.path):
             is_git = u.check_output("git rev-parse --is-inside-work-tree").strip()
             if is_git != "true":
