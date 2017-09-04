@@ -74,7 +74,10 @@ def check_output(cmd):
     return output
 
 
-def ensure_directory_exists(path):
+def ensure_directory_exists(path, clean=False):
+    if clean and os.path.exists(path):
+        logger.info("removing directory: %s", path)
+        shutil.rmtree(path)
     if not os.path.exists(path):
         logger.info("creating directory: %s", path)
         os.makedirs(path)
