@@ -76,11 +76,15 @@ def cli(ctx):
               default="/tmp",
               show_default=True,
               required=False)
+@click.option('--clean',
+              is_flag=True,
+              help='Remove working directory upon start')
 @click.option('-v', '--verbose', count=True)
-def build(ctx, names, channel, only_last, py_versions, workdir, verbose):
+def build(ctx, names, channel, only_last, py_versions, workdir, clean, verbose):
     setup_logging(verbose)
 
     with u.set_and_rollback_conda_config("always_yes", True):
+        u.ensure_directory_exists(workdir, clean)
         for pkg in get_packages(names, workdir, only_last):
             pkg.pull()
             pkg.build(channel, py_versions)
@@ -122,12 +126,16 @@ def build(ctx, names, channel, only_last, py_versions, workdir, verbose):
               default="/tmp",
               show_default=True,
               required=False)
+@click.option('--clean',
+              is_flag=True,
+              help='Remove working directory upon start')
 @click.option('-v', '--verbose', count=True)
-def release(ctx, names, channel, label, user, force, only_last, py_versions, token, workdir, verbose):
+def release(ctx, names, channel, label, user, force, only_last, py_versions, token, workdir, clean, verbose):
     setup_logging(verbose)
 
     if token or is_authenticated_user():
         with u.set_and_rollback_conda_config("always_yes", True):
+            u.ensure_directory_exists(workdir, clean)
             pkgs = get_packages(names, workdir, only_last)
             for pkg in pkgs:
                 pkg.pull()
@@ -167,12 +175,16 @@ def release(ctx, names, channel, label, user, force, only_last, py_versions, tok
               default="/tmp",
               show_default=True,
               required=False)
+@click.option('--clean',
+              is_flag=True,
+              help='Remove working directory upon start')
 @click.option('-v', '--verbose', count=True)
-def upload(ctx, names, label, user, force, only_last, py_versions, token, workdir, verbose):
+def upload(ctx, names, label, user, force, only_last, py_versions, token, workdir, clean, verbose):
     setup_logging(verbose)
 
     if token or is_authenticated_user():
         with u.set_and_rollback_conda_config("always_yes", True):
+            u.ensure_directory_exists(workdir, clean)
             for pkg in get_packages(names, workdir, only_last):
                 pkg.upload(token, label, py_versions, user, force)
 
