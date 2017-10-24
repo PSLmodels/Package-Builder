@@ -40,8 +40,12 @@ def setup_logging(verbose=0):
         logger.addHandler(console_handler)
 
 
+def get_package_cache_directory(workdir):
+    return os.path.join(workdir, 'policybrain-builder')
+
+
 def get_packages(names, workdir, only_last=None):
-    pkg_cache_dir = os.path.join(workdir, 'policybrain-builder')
+    pkg_cache_dir = get_package_cache_directory(workdir)
 
     pkgs = {}
 
