@@ -84,6 +84,15 @@ for local verification.
 pb build --only-last taxcalc=0.9.1 btax
 ```
 
+### Build packages for only some Python versions
+
+This command will clone and build all packages, but only for the specified
+Python versions (in this case, 2.7 and 3.6).
+
+```
+pb build --python 2.7 --python 3.6
+```
+
 ## Environment variables
 
   * `ANACONDA_FORCE`: Force a package upload regardless of errors (use for `release` and `upload`)
