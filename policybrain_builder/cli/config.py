@@ -8,7 +8,7 @@ from .repository import Repository
 from . import utils as u
 
 
-PYTHON_VERSIONS = ('2.7', '3.5', '3.6')
+PYTHON_VERSIONS = ('2.7', '3.6')
 
 
 def setup_logging(verbose=0):
