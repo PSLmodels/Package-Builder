@@ -8,7 +8,7 @@ with open('README.md', encoding='utf-8') as f:
     readme = f.read()
 
 setup(name="policybrain-builder",
-      version="0.0.1",
+      version="0.1.0",
       description="Open Source Policy Center (OSPC) package management",
       url="https://github.com/open-source-economics/policybrain-builder",
       author="Joseph Crail",
@@ -20,7 +20,6 @@ setup(name="policybrain-builder",
           'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
-          'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',
       ],
       packages=find_packages(),
