@@ -84,14 +84,17 @@ for local verification.
 pb build --only-last taxcalc=0.9.1 btax
 ```
 
-### Build packages for only some Python versions
+### Build packages for only one Python version
 
 This command will clone and build all packages, but only for the specified
-Python versions (in this case, 2.7 and 3.6).
+Python version (in this case, 3.6).
 
 ```
-pb build --python 2.7 --python 3.6
+pb build --python 3.6
 ```
+
+Note that the default (that is, using no `--python` option) implies
+packages will be built for both Python 2.7 and Python 3.6.
 
 ## Environment variables
 
