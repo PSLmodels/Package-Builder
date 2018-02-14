@@ -15,8 +15,9 @@ python setup.py install
 
 ## Configuration
 
-To upload packages to [anaconda.org](https://anaconda.org/), make sure you have
-installed `anaconda-client` and logged into [anaconda.org](https://anaconda.org/ospc/):
+To upload packages to [anaconda.org](https://anaconda.org/), make sure
+you have installed `anaconda-client` and logged into
+[anaconda.org](https://anaconda.org/ospc/):
 
 ```
 conda install anaconda-client
@@ -24,8 +25,8 @@ anaconda login
 ```
 
 The login username you give for `anaconda login` will be the user under which
-the packages are uploaded on the [anaconda.org](https://anaconda.org/), for
-example `psteinberg` or `ospc`.
+the packages are uploaded on the [anaconda.org](https://anaconda.org/), which
+should be `ospc`.
 
 Alternatively if you prefer not to login to anaconda-client but still want to
 upload packages to anaconda.org, you can use the `OSPC_ANACONDA_TOKEN`
@@ -38,8 +39,7 @@ anaconda.org token valid for conda uploads and it may be the auth token string
 itself (about 40 to 60 characters) or a path to a text file on local machine
 that has the token as its only contents. Contact Matt Jensen
 (matt.jensen@aei.org) for access to the `ospc` user if you are uploading on
-behalf of Open Source Policy Center, or contact me
-(Peter Steinberg - psteinberg@continuum.io) for help on using this repo.
+behalf of Open Source Policy Center.
 
 ## Usage
 
@@ -95,6 +95,10 @@ pb build --python 3.6
 
 Note that the default (that is, using no `--python` option) implies
 packages will be built for both Python 2.7 and Python 3.6.
+
+### Complete bash script that creates `taxcalc` packages
+
+See the full explanation in [this comment](https://github.com/open-source-economics/policybrain-builder/issues/74#issue-268242989).
 
 ## Environment variables
 
