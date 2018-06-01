@@ -3,6 +3,19 @@ import subprocess as sp
 import os
 import re
 
+
+"""
+Release a package with the following commands:
+export TOKEN=yourtoken
+python builder.py gh-username repo-name package-name package-version
+
+e.g. python builder.py open-source-economics OG-USA ogusa 0.5.11
+
+Note: `CURRENT_DIST` will have to be changed to your computer's operating
+system
+"""
+
+
 CURRENT_DIST = 'linux-64'
 DISTS = {'linux-32', 'linux-64', 'win-32', 'win-64', 'osx-64'}
 
