@@ -36,7 +36,6 @@ def build(python_version, repo, package, vers):
     vspl = python_version.split('.')
     python_string = vspl[0] + vspl[1]
     run(f'conda build conda.recipe --token $TOKEN --output-folder artifacts --no-anaconda-upload --python {python_version}')
-    # need to swap out the 0.5.10 for vers
     run(f'conda convert artifacts/{CURRENT_DIST}/{package}-{vers}-py{python_string}_0.tar.bz2 -p all -o artifacts/')
 
     # check that we have the platforms we want
