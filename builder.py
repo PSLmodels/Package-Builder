@@ -22,7 +22,7 @@ system
 
 
 CURRENT_DIST = 'linux-64'
-DISTS = {'linux-32', 'linux-64', 'win-32', 'win-64', 'osx-64'}
+DISTS = {'linux-64', 'win-32', 'win-64', 'osx-64'}
 
 def run(cmd):
     """
