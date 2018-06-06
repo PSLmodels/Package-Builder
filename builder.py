@@ -2,6 +2,7 @@ import sys
 import subprocess as sp
 import os
 import re
+import platform
 
 
 """
@@ -16,8 +17,7 @@ the purposes of building and packaging instead of a user's fork of it.
 If a user's fork is used, then it may not be up-to-date with the most recent
 changes.
 
-Note: `CURRENT_DIST` will have to be changed to your computer's operating
-system. To release a package that is outside of the open-source-economics
+Note: To release a package that is outside of the open-source-economics
 GitHub organization, change `GITHUB_ORGANIZATION` to the desired username or
 GitHub organization name.
 """
@@ -25,7 +25,23 @@ GitHub organization name.
 GITHUB_ORGANIZATION = 'open-source-economics'
 PYTHON_VERSIONS = ['2.7', '3.6']
 OPERATING_SYSTEMS = ['linux-64', 'win-32', 'win-64', 'osx-64']
-CURRENT_DIST = 'linux-64'
+
+def get_current_dist():
+    """
+    Get the system corresponding to OPERATING_SYSTEMS
+    """
+    conda_map = {
+        'Darwin': 'osx',
+        'Linux': 'linux',
+        'Windows': 'win'
+    }
+    os_ = platform.system()
+    # see https://docs.python.org/3.6/library/platform.html#platform.architecture
+    is_64bit = sys.maxsize > 2 **32
+    n_bits = '64' if is_64bit else '32'
+    conda_os = conda_map[os_] + '-' + n_bits
+    assert conda_os in OPERATING_SYSTEMS
+    return conda_os
 
 def run(cmd):
     """
@@ -43,8 +59,9 @@ def build_and_upload(python_version, repo, package, vers):
     """
     vspl = python_version.split('.')
     python_string = vspl[0] + vspl[1]
+    current_dist = get_current_dist()
     run(f'conda build conda.recipe --token $TOKEN --output-folder artifacts --no-anaconda-upload --python {python_version}')
-    run(f'conda convert artifacts/{CURRENT_DIST}/{package}-{vers}-py{python_string}_0.tar.bz2 -p all -o artifacts/')
+    run(f'conda convert artifacts/{current_dist}/{package}-{vers}-py{python_string}_0.tar.bz2 -p all -o artifacts/')
 
     # check that we have the operating systems we want
     assert len(OPERATING_SYSTEMS - set(os.listdir('artifacts'))) == 0
