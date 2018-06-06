@@ -26,7 +26,7 @@ GITHUB_ORGANIZATION = 'open-source-economics'
 PYTHON_VERSIONS = ['2.7', '3.6']
 OPERATING_SYSTEMS = ['linux-64', 'win-32', 'win-64', 'osx-64']
 
-def get_current_dist():
+def get_current_os():
     """
     Get the system corresponding to OPERATING_SYSTEMS
     """
@@ -55,19 +55,19 @@ def run(cmd):
 
 def build_and_upload(python_version, repo, package, vers):
     """
-    Build package for each distribution and upload to conda
+    Build package for each os and upload to conda
     """
     vspl = python_version.split('.')
     python_string = vspl[0] + vspl[1]
-    current_dist = get_current_dist()
+    current_os = get_current_os()
     run(f'conda build conda.recipe --token $TOKEN --output-folder artifacts --no-anaconda-upload --python {python_version}')
-    run(f'conda convert artifacts/{current_dist}/{package}-{vers}-py{python_string}_0.tar.bz2 -p all -o artifacts/')
+    run(f'conda convert artifacts/{current_os}/{package}-{vers}-py{python_string}_0.tar.bz2 -p all -o artifacts/')
 
     # check that we have the operating systems we want
     assert len(OPERATING_SYSTEMS - set(os.listdir('artifacts'))) == 0
 
-    for dist in OPERATING_SYSTEMS:
-        run(f'anaconda --token $TOKEN  upload --force --user ospc artifacts/{dist}/{package}-{vers}-py{python_string}_0.tar.bz2')
+    for os_ in OPERATING_SYSTEMS:
+        run(f'anaconda --token $TOKEN  upload --force --user ospc artifacts/{os_}/{package}-{vers}-py{python_string}_0.tar.bz2')
 
 
 def replace_version(version):
