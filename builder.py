@@ -7,9 +7,9 @@ import re
 """
 Release a package with the following commands:
 export TOKEN=yourtoken
-python builder.py gh-username repo-name package-name package-version
+python builder.py repo-name package-name package-version
 
-e.g. python builder.py open-source-economics OG-USA ogusa 0.5.11
+e.g. python builder.py OG-USA ogusa 0.5.11
 
 WARNING: It is highly recommended that the upstream repository is cloned for
 the purposes of building and packaging instead of a user's fork of it.
@@ -17,12 +17,15 @@ If a user's fork is used, then it may not be up-to-date with the most recent
 changes.
 
 Note: `CURRENT_DIST` will have to be changed to your computer's operating
-system
+system. To release a package that is outside of the open-source-economics
+GitHub organization, change `GITHUB_ORGANIZATION` to the desired username or
+GitHub organization name.
 """
 
-
+GITHUB_ORGANIZATION = 'open-source-economics'
+PYTHON_VERSIONS = ['2.7', '3.6']
+OPERATING_SYSTEMS = ['linux-64', 'win-32', 'win-64', 'osx-64']
 CURRENT_DIST = 'linux-64'
-DISTS = {'linux-64', 'win-32', 'win-64', 'osx-64'}
 
 def run(cmd):
     """
@@ -43,10 +46,10 @@ def build_and_upload(python_version, repo, package, vers):
     run(f'conda build conda.recipe --token $TOKEN --output-folder artifacts --no-anaconda-upload --python {python_version}')
     run(f'conda convert artifacts/{CURRENT_DIST}/{package}-{vers}-py{python_string}_0.tar.bz2 -p all -o artifacts/')
 
-    # check that we have the platforms we want
-    assert len(DISTS - set(os.listdir('artifacts'))) == 0
+    # check that we have the operating systems we want
+    assert len(OPERATING_SYSTEMS - set(os.listdir('artifacts'))) == 0
 
-    for dist in DISTS:
+    for dist in OPERATING_SYSTEMS:
         run(f'anaconda --token $TOKEN  upload --force --user ospc artifacts/{dist}/{package}-{vers}-py{python_string}_0.tar.bz2')
 
 
@@ -68,12 +71,11 @@ def replace_version(version):
 
 
 if __name__ == '__main__':
-    owner, repo, package, vers = sys.argv[1:]
-    print('owner', owner)
+    repo, package, vers = sys.argv[1:]
     print('repo name', repo)
     print('package name', package
     print('package version', vers)
-    run(f'git clone https://github.com/{owner}/{repo}/')
+    run(f'git clone https://github.com/{GITHUB_ORGANIZATION}/{repo}/')
     os.chdir(repo)
     run(f'git checkout -b v{vers} {vers}')
     replace_version(vers)
@@ -82,5 +84,5 @@ if __name__ == '__main__':
     if not os.path.isdir('artifacts'):
         os.mkdir('artifacts')
 
-    for python_version in ('2.7', '3.6'):
+    for python_version in PYTHON_VERSIONS:
         build_and_upload(python_version, repo, package, vers)
