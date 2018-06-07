@@ -12,11 +12,6 @@ python builder.py repo-name package-name package-version
 
 e.g. python builder.py OG-USA ogusa 0.5.11
 
-WARNING: It is highly recommended that the upstream repository is cloned for
-the purposes of building and packaging instead of a user's fork of it.
-If a user's fork is used, then it may not be up-to-date with the most recent
-changes.
-
 Note: To release a package that is outside of the open-source-economics
 GitHub organization, change `GITHUB_ORGANIZATION` to the desired username or
 GitHub organization name.
