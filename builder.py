@@ -37,7 +37,7 @@ def get_current_os():
                "Expected operating systems are windows, linux, or osx.")
         raise OSError(msg.format(system_))
     # see https://docs.python.org/3.6/library/platform.html#platform.architecture
-    is_64bit = sys.maxsize > 2 **32
+    is_64bit = sys.maxsize > 2 ** 32
     n_bits = '64' if is_64bit else '32'
     return conda_name + '-' + n_bits
 
