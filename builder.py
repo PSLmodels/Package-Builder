@@ -15,9 +15,20 @@ e.g. python builder.py OG-USA ogusa 0.5.11
 Note: To release a package that is outside of the open-source-economics
 GitHub organization, change `GITHUB_ORGANIZATION` to the desired username or
 GitHub organization name.
+
+Global variables:
+- GITHUB_ORGANIZATION: set either GH username or organization
+- DEP_CONDA_CHANNEL: if package depends on another package in a non-standard
+                     channel (for multiple channels use a space delimited
+                     string like 'ospc conda-forge')
+- CONDA_USER: the username for the package upload
+- PYTHON_VERSIONS: versions of Python for which the package should be built
+- OPERATING_SYSTEMS: operating systems for which the package should be built
 """
 
 GITHUB_ORGANIZATION = 'open-source-economics'
+DEP_CONDA_CHANNEL = 'ospc'
+CONDA_USER = 'ospc'
 PYTHON_VERSIONS = ['2.7', '3.6']
 OPERATING_SYSTEMS = ['linux-64', 'win-32', 'win-64', 'osx-64']
 
@@ -66,7 +77,7 @@ def build_and_upload(python_version, repo, package, vers):
     assert len(OPERATING_SYSTEMS - set(os.listdir('artifacts'))) == 0
 
     for os_ in OPERATING_SYSTEMS:
-        run(f'anaconda --token $TOKEN  upload --force --user ospc artifacts/{os_}/{package}-{vers}-py{python_string}_0.tar.bz2')
+        run(f'anaconda --token $TOKEN  upload --force --user {USER} artifacts/{os_}/{package}-{vers}-py{python_string}_0.tar.bz2')
 
 
 def replace_version(version):
@@ -95,7 +106,9 @@ if __name__ == '__main__':
     os.chdir(repo)
     run(f'git checkout -b v{vers} {vers}')
     replace_version(vers)
-    run(f'conda config --add channels ospc')
+    # add depenedent channels if specified
+    if DEP_CONDA_CHANNEL:
+        run(f'conda config --add channels {DEP_CONDA_CHANNEL}')
 
     if not os.path.isdir('artifacts'):
         os.mkdir('artifacts')
