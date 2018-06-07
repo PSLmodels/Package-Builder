@@ -30,18 +30,22 @@ def get_current_os():
     """
     Get the system corresponding to OPERATING_SYSTEMS
     """
-    conda_map = {
-        'Darwin': 'osx',
-        'Linux': 'linux',
-        'Windows': 'win'
-    }
-    os_ = platform.system()
+    system_ = platform.system()
+    if system_ == 'Darwin':
+        conda_name = 'osx'
+    elif system_ == 'Linux':
+        conda_name = 'linux'
+    elif system_ == 'Windows':
+        conda_name = 'win'
+    else:
+        msg = ("The user is using an unexpected operating system: {}.\n"
+               "Expected operating systems are windows, linux, or osx.")
+        raise OSError(msg.format(system_))
     # see https://docs.python.org/3.6/library/platform.html#platform.architecture
     is_64bit = sys.maxsize > 2 **32
     n_bits = '64' if is_64bit else '32'
-    conda_os = conda_map[os_] + '-' + n_bits
-    assert conda_os in OPERATING_SYSTEMS
-    return conda_os
+    return conda_name + '-' + n_bits
+
 
 def run(cmd):
     """
