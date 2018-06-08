@@ -18,16 +18,17 @@ GitHub organization name.
 
 Global variables:
 - GITHUB_ORGANIZATION: set either GH username or organization
-- DEP_CONDA_CHANNEL: if package depends on another package in a non-standard
-                     channel (for multiple channels use a space delimited
-                     string like 'ospc conda-forge')
+- DEP_CONDA_CHANNEL: A list of non-default conda channels. The target package
+                     may depend on packages that are in non-default channels.
+                     This is where those non-default channels should be
+                     specified.
 - CONDA_USER: the username for the package upload
 - PYTHON_VERSIONS: versions of Python for which the package should be built
 - OPERATING_SYSTEMS: operating systems for which the package should be built
 """
 
 GITHUB_ORGANIZATION = 'open-source-economics'
-DEP_CONDA_CHANNEL = 'ospc'
+DEP_CONDA_CHANNELS = ['ospc']
 CONDA_USER = 'ospc'
 PYTHON_VERSIONS = ['2.7', '3.6']
 OPERATING_SYSTEMS = ['linux-64', 'win-32', 'win-64', 'osx-64']
@@ -107,8 +108,8 @@ if __name__ == '__main__':
     run(f'git checkout -b v{vers} {vers}')
     replace_version(vers)
     # add depenedent channels if specified
-    if DEP_CONDA_CHANNEL:
-        run(f'conda config --add channels {DEP_CONDA_CHANNEL}')
+    for channel in DEP_CONDA_CHANNELS:
+        run(f'conda config --add channels {channel}')
 
     if not os.path.isdir('artifacts'):
         os.mkdir('artifacts')
