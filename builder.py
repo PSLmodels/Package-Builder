@@ -77,7 +77,7 @@ def build_and_upload(python_version, repo, package, vers):
     assert len(OPERATING_SYSTEMS - set(os.listdir('artifacts'))) == 0
 
     for os_ in OPERATING_SYSTEMS:
-        run(f'anaconda --token $TOKEN  upload --force --user {USER} artifacts/{os_}/{package}-{vers}-py{python_string}_0.tar.bz2')
+        run(f'anaconda --token $TOKEN  upload --force --user {CONDA_USER} artifacts/{os_}/{package}-{vers}-py{python_string}_0.tar.bz2')
 
 
 def replace_version(version):
