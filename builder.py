@@ -17,14 +17,14 @@ GitHub organization, change `GITHUB_ORGANIZATION` to the desired username or
 GitHub organization name.
 
 Global variables:
-- GITHUB_ORGANIZATION: set either GH username or organization
+- GITHUB_ORGANIZATION: Set either GH username or organization
 - DEP_CONDA_CHANNEL: A list of non-default conda channels. The target package
                      may depend on packages that are in non-default channels.
                      This is where those non-default channels should be
                      specified.
-- CONDA_USER: the username for the package upload
-- PYTHON_VERSIONS: versions of Python for which the package should be built
-- OPERATING_SYSTEMS: operating systems for which the package should be built
+- CONDA_USER: The username for the package upload
+- PYTHON_VERSIONS: Versions of Python for which the package should be built
+- OPERATING_SYSTEMS: Operating systems for which the package should be built
 """
 
 GITHUB_ORGANIZATION = 'open-source-economics'
