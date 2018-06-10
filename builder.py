@@ -71,14 +71,18 @@ def build_and_upload(python_version, repo, package, vers):
     vspl = python_version.split('.')
     python_string = vspl[0] + vspl[1]
     current_os = get_current_os()
-    run(f'conda build conda.recipe --token $TOKEN --output-folder artifacts --no-anaconda-upload --python {python_version}')
-    run(f'conda convert artifacts/{current_os}/{package}-{vers}-py{python_string}_0.tar.bz2 -p all -o artifacts/')
+    run(f'conda build conda.recipe --token $TOKEN --output-folder artifacts '
+        f'--no-anaconda-upload --python {python_version}')
+    run(f'conda convert '
+        f'artifacts/{current_os}/{package}-{vers}-py{python_string}_0.tar.bz2 '
+        f'-p all -o artifacts/')
 
     # check that we have the operating systems we want
     assert len(OPERATING_SYSTEMS - set(os.listdir('artifacts'))) == 0
 
     for os_ in OPERATING_SYSTEMS:
-        run(f'anaconda --token $TOKEN  upload --force --user {CONDA_USER} artifacts/{os_}/{package}-{vers}-py{python_string}_0.tar.bz2')
+        run(f'anaconda --token $TOKEN  upload --force --user {CONDA_USER} '
+            f'artifacts/{os_}/{package}-{vers}-py{python_string}_0.tar.bz2')
 
 
 def replace_version(version):
