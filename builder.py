@@ -32,7 +32,7 @@ GITHUB_ORGANIZATION = 'open-source-economics'
 DEP_CONDA_CHANNELS = ['ospc']
 CONDA_USER = 'ospc'
 PYTHON_VERSIONS = ['2.7', '3.6']
-OPERATING_SYSTEMS = ['linux-64', 'win-32', 'win-64', 'osx-64']
+OPERATING_SYSTEMS = {'linux-64', 'win-32', 'win-64', 'osx-64'}
 
 
 def get_current_os():
