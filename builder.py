@@ -97,12 +97,12 @@ def replace_version(version):
     pattern = r'version: .*'
     replacement = f'version: {version}'
     lines = []
-    with open(filename) as f:
-        for line in f.readlines():
+    with open(filename) as meta_file:
+        for line in meta_file.readlines():
             lines.append(re.sub(pattern, replacement, line))
-    with open(filename, 'w') as f:
+    with open(filename, 'w') as meta_file:
         for line in lines:
-            f.write(line)
+            meta_file.write(line)
 
 
 if __name__ == '__main__':
