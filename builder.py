@@ -27,11 +27,13 @@ Global variables:
 - OPERATING_SYSTEMS: Operating systems for which the package should be built
 """
 
+
 GITHUB_ORGANIZATION = 'open-source-economics'
 DEP_CONDA_CHANNELS = ['ospc']
 CONDA_USER = 'ospc'
 PYTHON_VERSIONS = ['2.7', '3.6']
 OPERATING_SYSTEMS = ['linux-64', 'win-32', 'win-64', 'osx-64']
+
 
 def get_current_os():
     """
@@ -48,7 +50,8 @@ def get_current_os():
         msg = ("The user is using an unexpected operating system: {}.\n"
                "Expected operating systems are windows, linux, or osx.")
         raise OSError(msg.format(system_))
-    # see https://docs.python.org/3.6/library/platform.html#platform.architecture
+    # see link:
+    # https://docs.python.org/3.6/library/platform.html#platform.architecture
     is_64bit = sys.maxsize > 2 ** 32
     n_bits = '64' if is_64bit else '32'
     return conda_name + '-' + n_bits
@@ -71,7 +74,7 @@ def build_and_upload(python_version, repo, package, vers):
     vspl = python_version.split('.')
     python_string = vspl[0] + vspl[1]
     current_os = get_current_os()
-    run(f'conda build conda.recipe --token $TOKEN --output-folder artifacts '
+    run(f'conda build conda.recipe --output-folder artifacts '
         f'--no-anaconda-upload --python {python_version}')
     run(f'conda convert '
         f'artifacts/{current_os}/{package}-{vers}-py{python_string}_0.tar.bz2 '
@@ -105,7 +108,7 @@ def replace_version(version):
 if __name__ == '__main__':
     repo, package, vers = sys.argv[1:]
     print('repo name', repo)
-    print('package name', package
+    print('package name', package)
     print('package version', vers)
     run(f'git clone https://github.com/{GITHUB_ORGANIZATION}/{repo}/')
     os.chdir(repo)
@@ -120,3 +123,5 @@ if __name__ == '__main__':
 
     for python_version in PYTHON_VERSIONS:
         build_and_upload(python_version, repo, package, vers)
+
+    print('build and upload complete...')
