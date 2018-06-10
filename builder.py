@@ -67,7 +67,7 @@ def run(cmd):
     assert proc.poll() == 0
 
 
-def build_and_upload(python_version, repo, package, vers):
+def build_and_upload(python_version, package, vers):
     """
     Build package for each os and upload to conda
     """
@@ -122,6 +122,6 @@ if __name__ == '__main__':
         os.mkdir('artifacts')
 
     for python_version in PYTHON_VERSIONS:
-        build_and_upload(python_version, repo, package, vers)
+        build_and_upload(python_version, package, vers)
 
     print('build and upload complete...')
