@@ -1,7 +1,4 @@
 *.pyc
-*.swp
-*.egg-info/
-build/
-dist/
-.ipynb_checkpoints
 __pycache__
+.DS_Store
+make-taxcalc-packages*
