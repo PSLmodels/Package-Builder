@@ -74,18 +74,23 @@ def build_and_upload(python_version, package, vers):
     vspl = python_version.split('.')
     python_string = vspl[0] + vspl[1]
     current_os = get_current_os()
-    run(f'conda build conda.recipe --output-folder artifacts '
-        f'--no-anaconda-upload --python {python_version}')
-    run(f'conda convert '
-        f'artifacts/{current_os}/{package}-{vers}-py{python_string}_0.tar.bz2 '
-        f'-p all -o artifacts/')
+    cmd = ('conda build conda.recipe --output-folder artifacts '
+           '--no-anaconda-upload --python {python_version}')
+    run(cmd.format(python_version=python_version))
+    cmd = ('conda convert '
+           'artifacts/{current_os}/{package}-{vers}-py{python_string}_0.tar.bz2 '
+           '-p all -o artifacts/')
+    run(cmd.format(current_os=current_os, package=package, vers=vers,
+                   python_string=python_string))
 
     # check that we have the operating systems we want
     assert len(OPERATING_SYSTEMS - set(os.listdir('artifacts'))) == 0
 
     for os_ in OPERATING_SYSTEMS:
-        run(f'anaconda --token $TOKEN  upload --force --user {CONDA_USER} '
-            f'artifacts/{os_}/{package}-{vers}-py{python_string}_0.tar.bz2')
+        cmd = ('anaconda --token $TOKEN  upload --force --user {CONDA_USER} '
+               'artifacts/{os_}/{package}-{vers}-py{python_string}_0.tar.bz2')
+        run(cmd.format(CONDA_USER=CONDA_USER, os_=os_, package=package,
+                       vers=vers, python_string=python_string))
 
 
 def replace_version(version):
@@ -95,7 +100,7 @@ def replace_version(version):
     """
     filename = 'conda.recipe/meta.yaml'
     pattern = r'version: .*'
-    replacement = f'version: {version}'
+    replacement = 'version: {version}'.format(version=version)
     lines = []
     with open(filename) as meta_file:
         for line in meta_file.readlines():
@@ -110,13 +115,14 @@ if __name__ == '__main__':
     print('repo name', repo)
     print('package name', package)
     print('package version', vers)
-    run(f'git clone https://github.com/{GITHUB_ORGANIZATION}/{repo}/')
+    cmd = 'git clone https://github.com/{GITHUB_ORGANIZATION}/{repo}/'
+    run(cmd.format(GITHUB_ORGANIZATION=GITHUB_ORGANIZATION, repo=repo))
     os.chdir(repo)
-    run(f'git checkout -b v{vers} {vers}')
+    run('git checkout -b v{vers} {vers}'.format(vers=vers))
     replace_version(vers)
     # add depenedent channels if specified
     for channel in DEP_CONDA_CHANNELS:
-        run(f'conda config --add channels {channel}')
+        run('conda config --add channels {channel}'.format(channel=channel))
 
     if not os.path.isdir('artifacts'):
         os.mkdir('artifacts')
