@@ -74,7 +74,8 @@ def build_and_upload(python_version, package, vers):
     vspl = python_version.split('.')
     python_string = vspl[0] + vspl[1]
     current_os = get_current_os()
-    cmd = ('conda build conda.recipe --output-folder artifacts '
+    cmd = ('conda build --old-build-string conda.recipe '
+           '--output-folder artifacts '
            '--no-anaconda-upload --python {python_version}')
     run(cmd.format(python_version=python_version))
     cmd = ('conda convert '
