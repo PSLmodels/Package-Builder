@@ -12,9 +12,12 @@ python builder.py repo-name package-name package-version
 
 e.g. python builder.py OG-USA ogusa 0.5.11
 
-Note: To release a package that is outside of the open-source-economics
-GitHub organization, change `GITHUB_ORGANIZATION` to the desired username or
-GitHub organization name.
+Note:
+- To release a package that is outside of the open-source-economics
+  GitHub organization, change `GITHUB_ORGANIZATION` to the desired username or
+  GitHub organization name.
+-  This script expects modern versions of conda and conda-build: conda>=4.5
+   and conda-build>=3.5
 
 Global variables:
 - GITHUB_ORGANIZATION: Set either GH username or organization
