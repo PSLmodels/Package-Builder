@@ -134,5 +134,7 @@ if __name__ == '__main__':
     for python_version in PYTHON_VERSIONS:
         build_and_upload(python_version, package, vers)
 
+    os.chdir('..')
     run('rm -rf {repo}'.format(repo))
+
     print('build and upload complete...')
