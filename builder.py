@@ -1,41 +1,47 @@
-import sys
-import subprocess as sp
-import os
-import re
-import platform
-
-
 """
-Release a package with the following commands:
+==========================================================================
+WARNING: this script is still under development is is not yet ready to use
+==========================================================================
+
+Build and upload a conda package with the following commands:
+
 export TOKEN=yourtoken
 python builder.py repo-name package-name package-version
 
-e.g. python builder.py OG-USA ogusa 0.5.11
+EXAMPLE: python builder.py OG-USA ogusa 0.5.11
 
-Note:
-- To release a package that is outside of the open-source-economics
-  GitHub organization, change `GITHUB_ORGANIZATION` to the desired username or
-  GitHub organization name.
--  This script expects modern versions of conda and conda-build: conda>=4.5
-   and conda-build>=3.5
+GLOBAL VARIABLES:
+- GITHUB_ORGANIZATION: set to either GitHub username or organization
+- DEP_CONDA_CHANNEL: list of non-default conda channels (if target package
+                     depends on packages that are in non-default channels,
+                     this is where those non-default channels should be
+                     specified)
+- CONDA_USER: the username for the package upload
+- PYTHON_VERSIONS: versions of Python for which the package should be built
+- OPERATING_SYSTEMS: operating systems for which the package should be built
 
-Global variables:
-- GITHUB_ORGANIZATION: Set either GH username or organization
-- DEP_CONDA_CHANNEL: A list of non-default conda channels. The target package
-                     may depend on packages that are in non-default channels.
-                     This is where those non-default channels should be
-                     specified.
-- CONDA_USER: The username for the package upload
-- PYTHON_VERSIONS: Versions of Python for which the package should be built
-- OPERATING_SYSTEMS: Operating systems for which the package should be built
+NOTES:
+
+(1) This script expects modern versions of conda and conda-build:
+    conda >= 4.5 and conda-build >= 3.5
+
+(2) To build/upload a conda package that is outside of the
+    open-source-economics GitHub organization, change `GITHUB_ORGANIZATION`
+    to the desired GitHub username or organization name
 """
+
+import os
+import sys
+import re
+import subprocess as sp
+import platform
 
 
 GITHUB_ORGANIZATION = 'open-source-economics'
 DEP_CONDA_CHANNELS = ['ospc']
 CONDA_USER = 'ospc'
 PYTHON_VERSIONS = ['2.7', '3.6']
-OPERATING_SYSTEMS = {'linux-64', 'win-32', 'win-64', 'osx-64'}
+OPERATING_SYSTEMS = ['linux-64', 'win-32', 'win-64', 'osx-64']
 
 
 def get_current_os():
@@ -82,13 +88,13 @@ def build_and_upload(python_version, package, vers):
            '--no-anaconda-upload --python {python_version}')
     run(cmd.format(python_version=python_version))
     cmd = ('conda convert '
-           'artifacts/{current_os}/{package}-{vers}-py{python_string}_0.tar.bz2 '
+           'artifacts/{os}/{package}-{vers}-py{python_string}_0.tar.bz2 '
            '-p all -o artifacts/')
-    run(cmd.format(current_os=current_os, package=package, vers=vers,
+    run(cmd.format(os=current_os, package=package, vers=vers,
                    python_string=python_string))
 
     # check that we have the operating systems we want
-    assert len(OPERATING_SYSTEMS - set(os.listdir('artifacts'))) == 0
+    assert len(set(OPERATING_SYSTEMS) - set(os.listdir('artifacts'))) == 0
 
     for os_ in OPERATING_SYSTEMS:
         cmd = ('anaconda --token $TOKEN  upload --force --user {CONDA_USER} '
@@ -135,6 +141,6 @@ if __name__ == '__main__':
         build_and_upload(python_version, package, vers)
 
     os.chdir('..')
-    run('rm -rf {repo}'.format(repo))
+    run('rm -rf {repo}'.format(repo=repo))
 
     print('build and upload complete...')
