@@ -1,7 +1,8 @@
 """
-==========================================================================
-WARNING: this script is still under development is is not yet ready to use
-==========================================================================
+NOTE: this Python script was developed by Hank Doupe as an alternative
+to the pb CLI tool documented in the policybrain-builder/README.md file.
+If you have questions about or problems with this builder.py script,
+please direct your questions to Hank, @hdoupe, on GitHub.
 
 Build and upload a conda package with the following commands:
 

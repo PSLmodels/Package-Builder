@@ -96,9 +96,9 @@ pb build --python 3.6
 Note that the default (that is, using no `--python` option) implies
 packages will be built for both Python 2.7 and Python 3.6.
 
-### Complete bash script that creates `taxcalc` packages
+### Complete bash shell script that creates `taxcalc` packages
 
-See the full explanation in [this comment](https://github.com/open-source-economics/policybrain-builder/issues/74#issue-268242989).
+See the full explanation in [this comment](https://github.com/open-source-economics/policybrain-builder/issues/86).
 
 ## Environment variables
 
