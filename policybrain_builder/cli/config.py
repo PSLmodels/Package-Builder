@@ -55,6 +55,13 @@ def get_packages(names, workdir, only_last=None):
         supported_versions=PYTHON_VERSIONS,
         cachedir=pkg_cache_dir)
 
+    pkgs['behresp'] = Package(
+        name='behresp',
+        repo=Repository('https://github.com/open-source-economics/Behavioral-Responses'),
+        supported_versions=PYTHON_VERSIONS,
+        dependencies=[pkgs['taxcalc']],
+        cachedir=pkg_cache_dir)
+
     pkgs['btax'] = Package(
         name='btax',
         repo=Repository('https://github.com/open-source-economics/B-Tax'),
@@ -65,7 +72,7 @@ def get_packages(names, workdir, only_last=None):
     pkgs['ogusa'] = Package(
         name='ogusa',
         repo=Repository('https://github.com/open-source-economics/OG-USA'),
-        supported_versions=('2.7',),
+        supported_versions=PYTHON_VERSIONS,
         dependencies=[pkgs['taxcalc']],
         cachedir=pkg_cache_dir)
 
