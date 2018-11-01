@@ -23,7 +23,8 @@ def required_commands(*commands):
                     # Unix-specific command lookup
                     check_output("which {}".format(command))
                 except subprocess.CalledProcessError:
-                    logger.error("Required command does not exist: %s", command)
+                    msg = "Required command does not exist: %s"
+                    logger.error(msg, command)
                     failed = True
             if failed:
                 sys.exit(1)
@@ -70,7 +71,9 @@ def call(cmd):
 def check_output(cmd):
     logger.debug(cmd)
     try:
-        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True).decode("utf-8")
+        output = subprocess.check_output(cmd,
+                                         stderr=subprocess.STDOUT,
+                                         shell=True).decode("utf-8")
     except subprocess.CalledProcessError as e:
         logger.error(e)
         sys.exit(e.returncode)
