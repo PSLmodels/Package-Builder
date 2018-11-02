@@ -8,7 +8,9 @@ from .repository import Repository
 from . import utils as u
 
 
-PYTHON_VERSIONS = ('3.6',)
+PYTHON_VERSIONS = ("3.6",)
+
+OSE_URL = "https://github.com/open-source-economics/"
 
 
 def setup_logging(verbose=0):
@@ -41,7 +43,7 @@ def setup_logging(verbose=0):
 
 
 def get_package_cache_directory(workdir):
-    return os.path.join(workdir, 'policybrain-builder')
+    return os.path.join(workdir, "policybrain-builder")
 
 
 def get_packages(names, workdir, only_last=None):
@@ -49,31 +51,31 @@ def get_packages(names, workdir, only_last=None):
 
     pkgs = {}
 
-    pkgs['taxcalc'] = Package(
-        name='taxcalc',
-        repo=Repository('https://github.com/open-source-economics/Tax-Calculator'),
+    pkgs["taxcalc"] = Package(
+        name="taxcalc",
+        repo=Repository(OSE_URL + "Tax-Calculator"),
         supported_versions=PYTHON_VERSIONS,
         cachedir=pkg_cache_dir)
 
-    pkgs['behresp'] = Package(
-        name='behresp',
-        repo=Repository('https://github.com/open-source-economics/Behavioral-Responses'),
+    pkgs["behresp"] = Package(
+        name="behresp",
+        repo=Repository(OSE_URL + "Behavioral-Responses"),
         supported_versions=PYTHON_VERSIONS,
-        dependencies=[pkgs['taxcalc']],
+        dependencies=[pkgs["taxcalc"]],
         cachedir=pkg_cache_dir)
 
-    pkgs['btax'] = Package(
-        name='btax',
-        repo=Repository('https://github.com/open-source-economics/B-Tax'),
+    pkgs["btax"] = Package(
+        name="btax",
+        repo=Repository(OSE_URL + "B-Tax"),
         supported_versions=PYTHON_VERSIONS,
-        dependencies=[pkgs['taxcalc']],
+        dependencies=[pkgs["taxcalc"]],
         cachedir=pkg_cache_dir)
 
-    pkgs['ogusa'] = Package(
-        name='ogusa',
-        repo=Repository('https://github.com/open-source-economics/OG-USA'),
+    pkgs["ogusa"] = Package(
+        name="ogusa",
+        repo=Repository(OSE_URL + "OG-USA"),
         supported_versions=PYTHON_VERSIONS,
-        dependencies=[pkgs['taxcalc']],
+        dependencies=[pkgs["taxcalc"]],
         cachedir=pkg_cache_dir)
 
     if not names:
@@ -81,7 +83,7 @@ def get_packages(names, workdir, only_last=None):
 
     dag = ""
     for name in names:
-        fields = name.split('=')
+        fields = name.split("=")
         if len(fields) == 1:
             fields.append(None)
         key, tag = fields
@@ -96,8 +98,8 @@ def get_packages(names, workdir, only_last=None):
     output = u.check_output("echo '{}' | tsort | xargs".format(dag))
     keys = list(reversed(output.strip().split()))
 
-    # Remove sentinel marker (aka '.') if it exists
-    if keys[0] == '.':
+    # Remove sentinel marker (aka ".") if it exists
+    if keys[0] == ".":
         keys = keys[1:]
 
     if only_last:

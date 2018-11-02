@@ -29,7 +29,8 @@ class Repository(object):
         if not os.path.exists(os.path.join(self.path, ".git")):
             return False
         with u.change_working_directory(self.path):
-            is_git = u.check_output("git rev-parse --is-inside-work-tree").strip()
+            git_cmd = "git rev-parse --is-inside-work-tree"
+            is_git = u.check_output(git_cmd).strip()
             if is_git != "true":
                 return False
             url = u.check_output("git ls-remote --get-url").strip()
@@ -67,17 +68,18 @@ class Repository(object):
         with u.change_working_directory(self.path):
             u.call("git pull origin master")
 
-    def checkout(self, branch='master', tag=None):
+    def checkout(self, branch="master", tag=None):
         with u.change_working_directory(self.path):
             if tag:
-                click.echo("checking out tag '{}'".format(tag))
+                click.echo("checking out tag {}".format(tag))
                 u.call("git checkout " + tag)
             else:
-                click.echo("checking out branch '{}'".format(branch))
+                click.echo("checking out branch {}".format(branch))
                 u.call("git checkout " + branch)
 
     def archive(self, name, tag, archive_path):
         with u.change_working_directory(self.path):
             click.echo("archiving {}".format(self.path))
             u.ensure_directory_exists(archive_path)
-            u.call("git archive --prefix={0}-{1}/ -o {2}/{0}-{1}.tar {1}".format(name, tag, archive_path))
+            git_cmd = "git archive --prefix={0}-{1}/ -o {2}/{0}-{1}.tar {1}"
+            u.call(git_cmd.format(name, tag, archive_path))

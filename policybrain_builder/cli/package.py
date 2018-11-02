@@ -7,12 +7,12 @@ from . import utils as u
 
 logger = logging.getLogger(__name__)
 
-PLATFORMS = ('osx-64', 'linux-64', 'win-32', 'win-64')
+PLATFORMS = ("osx-64", "linux-64", "win-32", "win-64")
 
 
 def conda_build():
     lasttoken = u.check_output("conda build -V").split()[-1]
-    major_version = int(lasttoken.split('.')[0])
+    major_version = int(lasttoken.split(".")[0])
     if major_version >= 3:
         return "conda build --old-build-string"
     return "conda build"
@@ -27,7 +27,7 @@ def conda_build_directory():
 
 
 def py_int(s):
-    return int("".join(s.split('.')[:2]))
+    return int("".join(s.split(".")[:2]))
 
 
 class Package(object):
@@ -79,39 +79,39 @@ class Package(object):
 
     @property
     def header(self):
-        return click.style(self.name, fg='cyan')
+        return click.style(self.name, fg="cyan")
 
     def pull(self):
         if self.repo.is_valid():
             click.echo("[{}] {}".format(self.header,
-                                        click.style("resetting", fg='green')))
+                                        click.style("resetting", fg="green")))
             self.repo.reset()
 
             click.echo("[{}] {}".format(self.header,
-                                        click.style("pulling", fg='green')))
+                                        click.style("pulling", fg="green")))
             self.repo.pull()
         else:
             click.echo("[{}] {}".format(self.header,
-                                        click.style("removing", fg='green')))
+                                        click.style("removing", fg="green")))
             self.repo.remove()
 
             click.echo("[{}] {}".format(self.header,
-                                        click.style("cloning", fg='green')))
+                                        click.style("cloning", fg="green")))
             self.repo.clone()
 
         click.echo("[{}] {}".format(self.header,
-                                    click.style("fetching", fg='green')))
+                                    click.style("fetching", fg="green")))
         self.repo.fetch()
 
         if not self.tag:
             self.tag = self.repo.latest_tag()
 
-        chkout = click.style("checking out '{}'".format(self.tag), fg='green')
+        chkout = click.style("checking out {}".format(self.tag), fg="green")
         click.echo("[{}] {}".format(self.header, chkout))
         self.repo.checkout(tag=self.tag)
 
         click.echo("[{}] {}".format(self.header,
-                                    click.style("archiving", fg='green')))
+                                    click.style("archiving", fg="green")))
         self.repo.archive(self.name, self.tag, self.build_cachedir)
 
     def build(self, channel, py_versions):
@@ -126,7 +126,7 @@ class Package(object):
                                              "Python/conda.recipe")
         conda_meta = os.path.join(archivedir, conda_recipe, "meta.yaml")
 
-        u.replace_all(conda_meta, r'version: .*', "version: " + self.tag)
+        u.replace_all(conda_meta, r"version: .*", "version: " + self.tag)
         for pkg in self.dependencies:
             u.replace_all(conda_meta,
                           "- {}.*".format(pkg.name),
@@ -135,7 +135,7 @@ class Package(object):
         with u.change_working_directory(archivedir):
             for py_version in (tuple(set(py_versions) &
                                      set(self.supported_versions))):
-                bld = click.style("building {}".format(py_version), fg='green')
+                bld = click.style("building {}".format(py_version), fg="green")
                 click.echo("[{}] {}".format(self.header, bld))
                 cmdstr = "{} -c {} --no-anaconda-upload --python {} {}"
                 u.call(cmdstr.format(cmd, channel, py_version, conda_recipe))
@@ -152,7 +152,7 @@ class Package(object):
                         if platform == current_platform:
                             continue
                         conv = click.style("converting to {}".format(platform),
-                                           fg='green')
+                                           fg="green")
                         click.echo("[{}] {}".format(self.header, conv))
                         cmdstr = "conda convert --platform {} {} -o ../"
                         u.call(cmdstr.format(platform, package))
@@ -190,7 +190,7 @@ class Package(object):
         with u.change_working_directory(build_dir):
             for platform in PLATFORMS:
                 upstr = click.style("uploading {} packages".format(platform),
-                                    fg='green')
+                                    fg="green")
                 click.echo("[{}] {}".format(self.header, upstr))
                 for py_version in (tuple(set(py_versions) &
                                          set(self.supported_versions))):
