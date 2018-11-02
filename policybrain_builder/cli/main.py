@@ -80,7 +80,7 @@ def cli(ctx):
               required=False)
 @click.option("--clean",
               is_flag=True,
-              help="Remove working directory upon start")
+              help="Remove working directory upon start.")
 @click.option("-v", "--verbose", count=True)
 def build(ctx, names, channel, only_last, py_versions,
           workdir, clean, verbose):
@@ -131,7 +131,7 @@ def build(ctx, names, channel, only_last, py_versions,
               required=False)
 @click.option("--clean",
               is_flag=True,
-              help="Remove working directory upon start")
+              help="Remove working directory upon start.")
 @click.option("-v", "--verbose", count=True)
 def release(ctx, names, channel, label, user, force, only_last,
             py_versions, token, workdir, clean, verbose):
@@ -181,7 +181,7 @@ def release(ctx, names, channel, label, user, force, only_last,
               required=False)
 @click.option("--clean",
               is_flag=True,
-              help="Remove working directory upon start")
+              help="Remove working directory upon start.")
 @click.option("-v", "--verbose", count=True)
 def upload(ctx, names, label, user, force, only_last, py_versions,
            token, workdir, clean, verbose):
