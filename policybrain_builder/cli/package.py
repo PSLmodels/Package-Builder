@@ -140,8 +140,9 @@ class Package(object):
                 cmdstr = "{} -c {} --no-anaconda-upload --python {} {}"
                 u.call(cmdstr.format(cmd, channel, py_version, conda_recipe))
                 cmdstr = "{} --python {} {} --output"
-                build_file = u.check_output(
-                    cmdstr.format(cmd, py_version, conda_recipe)).split()[-1]
+                cmdall = cmdstr.format(cmd, py_version, conda_recipe)
+                build_output = u.check_output(cmdall)
+                build_file = build_output.split()[-1]
                 build_dir = os.path.dirname(build_file)
                 current_platform = os.path.basename(build_dir)
                 package = os.path.basename(build_file)
