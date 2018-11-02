@@ -28,20 +28,22 @@ def start():
 def is_authenticated_user():
     output = u.check_output("anaconda whoami")
     if "anonymous" not in output.lower():
-        click.secho("ERROR: cannot upload packages when Anaconda user is anonymous", fg="red")
-        click.secho("To resolve, log in as an authenticated user or provide a token", fg="red")
+        click.secho(("ERROR: cannot upload packages when Anaconda user "
+                    "is anonymous"), fg="red")
+        click.secho(("To resolve, log in as an authenticated user "
+                     "or provide a token"), fg="red")
         return False
     return True
 
 
 def default_token_config():
-    path = os.path.join(os.path.expanduser('~'), '.ospc_anaconda_token')
+    path = os.path.join(os.path.expanduser("~"), ".ospc_anaconda_token")
     if os.path.exists(path):
         return path
     return None
 
 
-CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
@@ -57,85 +59,87 @@ def cli(ctx):
 
 @cli.command(short_help="Build packages.")
 @click.pass_context
-@click.argument('names', nargs=-1)
+@click.argument("names", nargs=-1)
 @click.option("--channel", "-c",
-              envvar='OSPC_ANACONDA_CHANNEL',
+              envvar="OSPC_ANACONDA_CHANNEL",
               default="ospc",
               show_default=True,
               required=False)
-@click.option('--only-last', is_flag=True)
-@click.option('py_versions', '--python',
-              envvar='OSPC_PYTHONS',
+@click.option("--only-last", is_flag=True)
+@click.option("py_versions", "--python",
+              envvar="OSPC_PYTHONS",
               show_default=False,
               default=lambda: config.PYTHON_VERSIONS,
               multiple=True,
               required=False,
-              help="Default supported versions: " + " ".join(config.PYTHON_VERSIONS))
+              help="[default: " + " ".join(config.PYTHON_VERSIONS) + "]")
 @click.option("--workdir", "-w",
-              envvar='WORKSPACE',
+              envvar="WORKSPACE",
               default="/tmp",
               show_default=True,
               required=False)
-@click.option('--clean',
+@click.option("--clean",
               is_flag=True,
-              help='Remove working directory upon start')
-@click.option('-v', '--verbose', count=True)
-def build(ctx, names, channel, only_last, py_versions, workdir, clean, verbose):
+              help="Remove working directory upon start")
+@click.option("-v", "--verbose", count=True)
+def build(ctx, names, channel, only_last, py_versions,
+          workdir, clean, verbose):
     config.setup_logging(verbose)
-
     with u.set_and_rollback_conda_config("always_yes", True):
-        u.ensure_directory_exists(config.get_package_cache_directory(workdir), clean)
+        cache_dir = config.get_package_cache_directory(workdir)
+        u.ensure_directory_exists(cache_dir, clean)
         for pkg in config.get_packages(names, workdir, only_last):
             pkg.pull()
             pkg.build(channel, py_versions)
 
 
-@cli.command(short_help='Release packages.')
+@cli.command(short_help="Release packages.")
 @click.pass_context
-@click.argument('names', nargs=-1)
+@click.argument("names", nargs=-1)
 @click.option("--channel", "-c",
-              envvar='OSPC_ANACONDA_CHANNEL',
+              envvar="OSPC_ANACONDA_CHANNEL",
               default="ospc",
               show_default=True,
               required=False)
 @click.option("--label", "-l",
-              envvar='OSPC_ANACONDA_LABEL',
-              default="dev",
+              envvar="OSPC_ANACONDA_LABEL",
+              default="main",
               show_default=True,
               required=False)
 @click.option("--user", "-u",
               default=None,
               show_default=True,
               required=False)
-@click.option('--force',
-              envvar='ANACONDA_FORCE',
+@click.option("--force",
+              envvar="ANACONDA_FORCE",
               is_flag=True)
-@click.option('--only-last', is_flag=True)
-@click.option('py_versions', '--python',
-              envvar='OSPC_PYTHONS',
+@click.option("--only-last", is_flag=True)
+@click.option("py_versions", "--python",
+              envvar="OSPC_PYTHONS",
               show_default=False,
               default=lambda: config.PYTHON_VERSIONS,
               multiple=True,
               required=False,
-              help="Default supported versions: " + " ".join(config.PYTHON_VERSIONS))
-@click.option('--token',
-              envvar='OSPC_ANACONDA_TOKEN',
+              help="[default: " + " ".join(config.PYTHON_VERSIONS) + "]")
+@click.option("--token",
+              envvar="OSPC_ANACONDA_TOKEN",
               default=default_token_config)
 @click.option("--workdir", "-w",
-              envvar='WORKSPACE',
+              envvar="WORKSPACE",
               default="/tmp",
               show_default=True,
               required=False)
-@click.option('--clean',
+@click.option("--clean",
               is_flag=True,
-              help='Remove working directory upon start')
-@click.option('-v', '--verbose', count=True)
-def release(ctx, names, channel, label, user, force, only_last, py_versions, token, workdir, clean, verbose):
+              help="Remove working directory upon start")
+@click.option("-v", "--verbose", count=True)
+def release(ctx, names, channel, label, user, force, only_last,
+            py_versions, token, workdir, clean, verbose):
     config.setup_logging(verbose)
-
     if token or is_authenticated_user():
         with u.set_and_rollback_conda_config("always_yes", True):
-            u.ensure_directory_exists(config.get_package_cache_directory(workdir), clean)
+            cache_dir = config.get_package_cache_directory(workdir)
+            u.ensure_directory_exists(cache_dir, clean)
             pkgs = config.get_packages(names, workdir, only_last)
             for pkg in pkgs:
                 pkg.pull()
@@ -144,50 +148,51 @@ def release(ctx, names, channel, label, user, force, only_last, py_versions, tok
                 pkg.upload(token, label, py_versions, user, force)
 
 
-@cli.command(short_help='Upload packages.')
+@cli.command(short_help="Upload packages.")
 @click.pass_context
-@click.argument('names', nargs=-1)
+@click.argument("names", nargs=-1)
 @click.option("--label", "-l",
-              envvar='OSPC_ANACONDA_LABEL',
-              default="dev",
+              envvar="OSPC_ANACONDA_LABEL",
+              default="main",
               show_default=True,
               required=False)
 @click.option("--user", "-u",
               default=None,
               show_default=True,
               required=False)
-@click.option('--force',
-              envvar='ANACONDA_FORCE',
+@click.option("--force",
+              envvar="ANACONDA_FORCE",
               is_flag=True)
-@click.option('--only-last', is_flag=True)
-@click.option('py_versions', '--python',
-              envvar='OSPC_PYTHONS',
+@click.option("--only-last", is_flag=True)
+@click.option("py_versions", "--python",
+              envvar="OSPC_PYTHONS",
               show_default=False,
               default=lambda: config.PYTHON_VERSIONS,
               multiple=True,
               required=False,
-              help="Default supported versions: " + " ".join(config.PYTHON_VERSIONS))
-@click.option('--token',
-              envvar='OSPC_ANACONDA_TOKEN',
+              help="[default: " + " ".join(config.PYTHON_VERSIONS) + "]")
+@click.option("--token",
+              envvar="OSPC_ANACONDA_TOKEN",
               default=default_token_config)
 @click.option("--workdir", "-w",
-              envvar='WORKSPACE',
+              envvar="WORKSPACE",
               default="/tmp",
               show_default=True,
               required=False)
-@click.option('--clean',
+@click.option("--clean",
               is_flag=True,
-              help='Remove working directory upon start')
-@click.option('-v', '--verbose', count=True)
-def upload(ctx, names, label, user, force, only_last, py_versions, token, workdir, clean, verbose):
+              help="Remove working directory upon start")
+@click.option("-v", "--verbose", count=True)
+def upload(ctx, names, label, user, force, only_last, py_versions,
+           token, workdir, clean, verbose):
     config.setup_logging(verbose)
-
     if token or is_authenticated_user():
         with u.set_and_rollback_conda_config("always_yes", True):
-            u.ensure_directory_exists(config.get_package_cache_directory(workdir), clean)
+            cache_dir = config.get_package_cache_directory(workdir)
+            u.ensure_directory_exists(cache_dir, clean)
             for pkg in config.get_packages(names, workdir, only_last):
                 pkg.upload(token, label, py_versions, user, force)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     start()
