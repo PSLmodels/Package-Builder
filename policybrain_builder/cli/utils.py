@@ -103,6 +103,6 @@ def replace_all(filename, needle, replacement):
     with open(filename) as f:
         for line in f.readlines():
             lines.append(re.sub(needle, replacement, line))
-    with open(filename, 'w') as f:
+    with open(filename, "w") as f:
         for line in lines:
             f.write(line)

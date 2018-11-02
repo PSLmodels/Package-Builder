@@ -18,7 +18,7 @@ def start():
     try:
         cli(obj={})
     except KeyboardInterrupt:
-        click.echo("Interrupted by Ctrl-C.")
+        click.echo("Interrupted by Ctrl-C")
         sys.exit(1)
     except Exception:
         click.echo(traceback.format_exc(), err=True)
@@ -47,7 +47,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
-@click.version_option(prog_name="pb", version="0.3.0")
+@click.version_option(prog_name="pb", version="0.4.0")
 @click.pass_context
 @u.required_commands("anaconda", "conda", "git", "tar", "tsort")
 def cli(ctx):
