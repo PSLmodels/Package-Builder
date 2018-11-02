@@ -71,10 +71,10 @@ class Repository(object):
     def checkout(self, branch="master", tag=None):
         with u.change_working_directory(self.path):
             if tag:
-                click.echo("checking out tag {}".format(tag))
+                click.echo("checking-out tag {}".format(tag))
                 u.call("git checkout " + tag)
             else:
-                click.echo("checking out branch {}".format(branch))
+                click.echo("checking-out branch {}".format(branch))
                 u.call("git checkout " + branch)
 
     def archive(self, name, tag, archive_path):
