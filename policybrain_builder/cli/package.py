@@ -106,7 +106,7 @@ class Package(object):
         if not self.tag:
             self.tag = self.repo.latest_tag()
 
-        chkout = click.style("checking out {}".format(self.tag), fg="green")
+        chkout = click.style("checking-out {}".format(self.tag), fg="green")
         click.echo("[{}] {}".format(self.header, chkout))
         self.repo.checkout(tag=self.tag)
 
@@ -151,7 +151,7 @@ class Package(object):
                     for platform in PLATFORMS:
                         if platform == current_platform:
                             continue
-                        conv = click.style("converting to {}".format(platform),
+                        conv = click.style("converting-to {}".format(platform),
                                            fg="green")
                         click.echo("[{}] {}".format(self.header, conv))
                         cmdstr = "conda convert --platform {} {} -o ../"
