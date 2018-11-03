@@ -47,7 +47,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
-@click.version_option(prog_name="pb", version="0.4.0")
+@click.version_option(prog_name="pb", version="0.5.0")
 @click.pass_context
 @u.required_commands("anaconda", "conda", "git", "tar", "tsort")
 def cli(ctx):
@@ -75,7 +75,7 @@ def cli(ctx):
               help="[default: " + " ".join(config.PYTHON_VERSIONS) + "]")
 @click.option("--workdir", "-w",
               envvar="WORKSPACE",
-              default="/tmp",
+              default=os.path.expanduser("~/tmp"),
               show_default=True,
               required=False)
 @click.option("--clean",
@@ -126,7 +126,7 @@ def build(ctx, names, channel, only_last, py_versions,
               default=default_token_config)
 @click.option("--workdir", "-w",
               envvar="WORKSPACE",
-              default="/tmp",
+              default=os.path.expanduser("~/tmp"),
               show_default=True,
               required=False)
 @click.option("--clean",
@@ -176,7 +176,7 @@ def release(ctx, names, channel, label, user, force, only_last,
               default=default_token_config)
 @click.option("--workdir", "-w",
               envvar="WORKSPACE",
-              default="/tmp",
+              default=os.path.expanduser("~/tmp"),
               show_default=True,
               required=False)
 @click.option("--clean",
