@@ -1,4 +1,6 @@
 *.pyc
 __pycache__
 .DS_Store
-make-taxcalc-packages*
+policybrain_builder.egg-info/
+build/
+dist/
