@@ -37,7 +37,7 @@ def is_authenticated_user():
 
 
 def default_token_config():
-    path = os.path.join(os.path.expanduser("~"), ".ospc_anaconda_token")
+    path = os.path.expanduser("~/.ospc_anaconda_token")
     if os.path.exists(path):
         return path
     return None
@@ -47,7 +47,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
-@click.version_option(prog_name="pb", version="0.5.0")
+@click.version_option(prog_name="pb", version="0.6.0")
 @click.pass_context
 @u.required_commands("anaconda", "conda", "git", "tar", "tsort")
 def cli(ctx):
