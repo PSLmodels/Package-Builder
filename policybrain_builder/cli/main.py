@@ -37,7 +37,7 @@ def is_authenticated_user():
 
 
 def default_token_config():
-    path = os.path.expanduser("~/.ospc_anaconda_token")
+    path = os.path.expanduser("~/.pslmodels_anaconda_token")
     if os.path.exists(path):
         return path
     return None
@@ -47,12 +47,12 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
-@click.version_option(prog_name="pb", version="0.6.0")
+@click.version_option(prog_name="pb", version="0.7.0")
 @click.pass_context
 @u.required_commands("anaconda", "conda", "git", "tar", "tsort")
 def cli(ctx):
     """
-    Manage Open Source Policy Center (OSPC) packages.
+    Manage Policy Simulation Library (PSL) packages.
     """
     ctx.obj = {}
 
@@ -61,29 +61,28 @@ def cli(ctx):
 @click.pass_context
 @click.argument("names", nargs=-1)
 @click.option("--channel", "-c",
-              envvar="OSPC_ANACONDA_CHANNEL",
-              default="ospc",
+              envvar="PSLMODELS_ANACONDA_CHANNEL",
+              default="pslmodels",
               show_default=True,
               required=False)
 @click.option("--only-last", is_flag=True)
-@click.option("py_versions", "--python",
-              envvar="OSPC_PYTHONS",
-              show_default=False,
+@click.option("--python",
+              envvar="PSLMODELS_PYTHON_VERSIONS",
               default=lambda: config.PYTHON_VERSIONS,
+              show_default=False,
               multiple=True,
               required=False,
               help="[default: " + " ".join(config.PYTHON_VERSIONS) + "]")
 @click.option("--workdir", "-w",
-              envvar="WORKSPACE",
-              default=os.path.expanduser("~/tmp"),
+              envvar="WORKDIR",
+              default=os.path.expanduser("~/tmp/Package-Builder"),
               show_default=True,
               required=False)
 @click.option("--clean",
               is_flag=True,
               help="Remove working directory upon start.")
 @click.option("-v", "--verbose", count=True)
-def build(ctx, names, channel, only_last, py_versions,
-          workdir, clean, verbose):
+def build(ctx, names, channel, only_last, python, workdir, clean, verbose):
     config.setup_logging(verbose)
     with u.set_and_rollback_conda_config("always_yes", True):
         cache_dir = config.get_package_cache_directory(workdir)
@@ -97,12 +96,12 @@ def build(ctx, names, channel, only_last, py_versions,
 @click.pass_context
 @click.argument("names", nargs=-1)
 @click.option("--channel", "-c",
-              envvar="OSPC_ANACONDA_CHANNEL",
-              default="ospc",
+              envvar="PSLMODELS_ANACONDA_CHANNEL",
+              default="pslmodels",
               show_default=True,
               required=False)
 @click.option("--label", "-l",
-              envvar="OSPC_ANACONDA_LABEL",
+              envvar="PSLMODELS_ANACONDA_LABEL",
               default="main",
               show_default=True,
               required=False)
@@ -114,19 +113,19 @@ def build(ctx, names, channel, only_last, py_versions,
               envvar="ANACONDA_FORCE",
               is_flag=True)
 @click.option("--only-last", is_flag=True)
-@click.option("py_versions", "--python",
-              envvar="OSPC_PYTHONS",
-              show_default=False,
+@click.option("--python",
+              envvar="PSLMODELS_PYTHON_VERSIONS",
               default=lambda: config.PYTHON_VERSIONS,
+              show_default=False,
               multiple=True,
               required=False,
               help="[default: " + " ".join(config.PYTHON_VERSIONS) + "]")
 @click.option("--token",
-              envvar="OSPC_ANACONDA_TOKEN",
+              envvar="PSLMODELS_ANACONDA_TOKEN",
               default=default_token_config)
 @click.option("--workdir", "-w",
-              envvar="WORKSPACE",
-              default=os.path.expanduser("~/tmp"),
+              envvar="WORKDIR",
+              default=os.path.expanduser("~/tmp/Package-Builder"),
               show_default=True,
               required=False)
 @click.option("--clean",
@@ -134,7 +133,7 @@ def build(ctx, names, channel, only_last, py_versions,
               help="Remove working directory upon start.")
 @click.option("-v", "--verbose", count=True)
 def release(ctx, names, channel, label, user, force, only_last,
-            py_versions, token, workdir, clean, verbose):
+            python, token, workdir, clean, verbose):
     config.setup_logging(verbose)
     if token or is_authenticated_user():
         with u.set_and_rollback_conda_config("always_yes", True):
@@ -143,16 +142,16 @@ def release(ctx, names, channel, label, user, force, only_last,
             pkgs = config.get_packages(names, workdir, only_last)
             for pkg in pkgs:
                 pkg.pull()
-                pkg.build(channel, py_versions)
+                pkg.build(channel, python)
             for pkg in pkgs:
-                pkg.upload(token, label, py_versions, user, force)
+                pkg.upload(token, label, python, user, force)
 
 
 @cli.command(short_help="Upload packages.")
 @click.pass_context
 @click.argument("names", nargs=-1)
 @click.option("--label", "-l",
-              envvar="OSPC_ANACONDA_LABEL",
+              envvar="PSLMODELS_ANACONDA_LABEL",
               default="main",
               show_default=True,
               required=False)
@@ -164,26 +163,26 @@ def release(ctx, names, channel, label, user, force, only_last,
               envvar="ANACONDA_FORCE",
               is_flag=True)
 @click.option("--only-last", is_flag=True)
-@click.option("py_versions", "--python",
-              envvar="OSPC_PYTHONS",
-              show_default=False,
+@click.option("--python",
+              envvar="PSLMODELS_PYTHON_VERSIONS",
               default=lambda: config.PYTHON_VERSIONS,
+              show_default=False,
               multiple=True,
               required=False,
               help="[default: " + " ".join(config.PYTHON_VERSIONS) + "]")
 @click.option("--token",
-              envvar="OSPC_ANACONDA_TOKEN",
+              envvar="PSLMODELS_ANACONDA_TOKEN",
               default=default_token_config)
 @click.option("--workdir", "-w",
-              envvar="WORKSPACE",
-              default=os.path.expanduser("~/tmp"),
+              envvar="WORKDIR",
+              default=os.path.expanduser("~/tmp/Package-Builder"),
               show_default=True,
               required=False)
 @click.option("--clean",
               is_flag=True,
               help="Remove working directory upon start.")
 @click.option("-v", "--verbose", count=True)
-def upload(ctx, names, label, user, force, only_last, py_versions,
+def upload(ctx, names, label, user, force, only_last, python,
            token, workdir, clean, verbose):
     config.setup_logging(verbose)
     if token or is_authenticated_user():
@@ -191,7 +190,7 @@ def upload(ctx, names, label, user, force, only_last, py_versions,
             cache_dir = config.get_package_cache_directory(workdir)
             u.ensure_directory_exists(cache_dir, clean)
             for pkg in config.get_packages(names, workdir, only_last):
-                pkg.upload(token, label, py_versions, user, force)
+                pkg.upload(token, label, python, user, force)
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ from . import utils as u
 
 PYTHON_VERSIONS = ("3.6",)
 
-OSE_URL = "https://github.com/open-source-economics/"
+PSL_URL = "https://github.com/open-source-economics/"
 
 
 def setup_logging(verbose=0):
@@ -24,7 +24,7 @@ def setup_logging(verbose=0):
     # Hide messages if we log before setting up handler
     logging.root.manager.emittedNoHandlerWarning = True
 
-    logger = logging.getLogger("policybrain_builder")
+    logger = logging.getLogger("package-builder")
     logger.setLevel(log_level)
     logger.propagate = False
 
@@ -43,7 +43,7 @@ def setup_logging(verbose=0):
 
 
 def get_package_cache_directory(workdir):
-    return os.path.join(workdir, "policybrain-builder")
+    return os.path.join(workdir, "package-builder")
 
 
 def get_packages(names, workdir, only_last=None):
@@ -53,27 +53,27 @@ def get_packages(names, workdir, only_last=None):
 
     pkgs["taxcalc"] = Package(
         name="taxcalc",
-        repo=Repository(OSE_URL + "Tax-Calculator"),
+        repo=Repository(PSL_URL + "Tax-Calculator"),
         supported_versions=PYTHON_VERSIONS,
         cachedir=pkg_cache_dir)
 
     pkgs["behresp"] = Package(
         name="behresp",
-        repo=Repository(OSE_URL + "Behavioral-Responses"),
+        repo=Repository(PSL_URL + "Behavioral-Responses"),
         supported_versions=PYTHON_VERSIONS,
         dependencies=[pkgs["taxcalc"]],
         cachedir=pkg_cache_dir)
 
     pkgs["btax"] = Package(
         name="btax",
-        repo=Repository(OSE_URL + "B-Tax"),
+        repo=Repository(PSL_URL + "B-Tax"),
         supported_versions=PYTHON_VERSIONS,
         dependencies=[pkgs["taxcalc"]],
         cachedir=pkg_cache_dir)
 
     pkgs["ogusa"] = Package(
         name="ogusa",
-        repo=Repository(OSE_URL + "OG-USA"),
+        repo=Repository(PSL_URL + "OG-USA"),
         supported_versions=PYTHON_VERSIONS,
         dependencies=[pkgs["taxcalc"]],
         cachedir=pkg_cache_dir)

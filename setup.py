@@ -7,13 +7,13 @@ from setuptools import find_packages, setup
 with open('README.md', encoding='utf-8') as f:
     readme = f.read()
 
-setup(name="policybrain-builder",
-      version="0.6.0",
-      description="Open Source Policy Center (OSPC) package management",
-      url="https://github.com/open-source-economics/policybrain-builder",
+setup(name="Package-Builder",
+      version="0.7.0",
+      description="Policy Simulation Library (PSL) package management",
+      url="https://github.com/open-source-economics/Package-Builder",
       author="Joseph Crail",
       author_email="jbcrail@gmail.com",
-      keywords='ospc',
+      keywords='PSL',
       classifiers=[
           'Development Status :: 4 - Beta',
           'Programming Language :: Python',
@@ -28,5 +28,4 @@ setup(name="policybrain-builder",
       entry_points="""
         [console_scripts]
         pb=policybrain_builder.cli.main:start
-        policybrain=policybrain_builder.cli.main:start
       """)

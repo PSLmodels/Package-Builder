@@ -1,14 +1,17 @@
 #!/bin/bash
-# Script to build locally and upload to the Anaconda Cloud conda packages for
-# models in the USA tax collection of the Policy Simulation Library (PSL).
-# The script uses the policybrain-builder CLI, pb, to do the build/upload work.
+# Script to build locally and upload to the Anaconda Cloud conda packages
+# for models in the Policy Simulation Library (PSL).
+# The script uses the Package-Builder CLI, pb, to do the build/upload work.
 # The script requires two command-line arguments:
 #   NAME : name of the model packages to build and upload (e.g., btax)
-#   TAG : model release number (e.g., 0.2.2)
-# The script uses the latest version of taxcalc available in the Anaconda Cloud.
-# NOTE: for this script to work the NAME must be specified in the
-#       policybrain_builder/cli/config.py file's get_packages function
-#       and have taxcalc as a dependency, and
+#   TAG  : model release number (e.g., 0.2.2)
+# The script can build/upload packages for two types of models:
+# (1) independent models that do not depend on Tax-Calculator taxcalc;
+# (2) dependent models that do depend on Tax-Calculator taxcalc, in which
+#     case the latest version of taxcalc available in the Anaconda Cloud is
+#     used.
+# NOTE: for this script to work the NAME must be specified in
+#       the get_packages function in pb/cli/config.py, and
 #       the TAG must be a release in the NAME's repository.
 # USAGE: ./release-packages.sh NAME TAG
 
@@ -50,7 +53,7 @@ else
     OPTIONS="--clean --only-last taxcalc"
     echo "[$NAME] setting-up taxcalc"
     # install newest version of taxcalc package from the Anaconda Cloud
-    conda install -c ospc taxcalc --yes 2>&1 > /dev/null
+    conda install -c pslmodels taxcalc --yes 2>&1 > /dev/null
 fi
 
 # build and upload packages for other model that depends on taxcalc
@@ -70,7 +73,7 @@ fi
 # clean up local files created in the build+upload process
 conda build purge 2> /dev/null
 find ~/anaconda3/conda-bld -name "*tar.bz2" -exec rm -f {} \;
-rm -rf ~/tmp/policybrain-builder
+rm -rf ~/tmp/package-builder
 
 echo "FINISHED : `date`"
 exit 0
