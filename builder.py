@@ -1,6 +1,6 @@
 """
 NOTE: this Python script was developed by Hank Doupe as an alternative
-to the pb CLI tool documented in the policybrain-builder/README.md file.
+to the pb CLI tool documented in the Package-Builder/README.md file.
 If you have questions about or problems with this builder.py script,
 please direct your questions to Hank, @hdoupe, on GitHub.
 
