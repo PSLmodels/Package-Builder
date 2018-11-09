@@ -38,6 +38,8 @@ fi
 # begin script execution
 echo "STARTING : `date`"
 
+echo "[$NAME] using `pb --version`"
+
 echo "[$NAME] clearing-deck"
 
 # uninstall local taxcalc package
