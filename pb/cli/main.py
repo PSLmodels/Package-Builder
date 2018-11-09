@@ -45,7 +45,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
-@click.version_option(prog_name="pb", version="0.7.1")
+@click.version_option(prog_name="pb", version="0.8.0")
 @click.pass_context
 @u.required_commands("anaconda", "conda", "git", "tar", "tsort")
 def cli(ctx):
