@@ -1,6 +1,6 @@
 *.pyc
 __pycache__
 .DS_Store
-policybrain_builder.egg-info/
+Package_Builder.egg-info/
 build/
 dist/
