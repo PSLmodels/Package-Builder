@@ -7,6 +7,7 @@ from . import utils as u
 
 logger = logging.getLogger(__name__)
 
+
 PLATFORMS = ("osx-64", "linux-64", "win-32", "win-64")
 
 
