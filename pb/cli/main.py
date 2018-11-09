@@ -50,7 +50,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 @u.required_commands("anaconda", "conda", "git", "tar", "tsort")
 def cli(ctx):
     """
-    Manage Policy Simulation Library (PSL) packages.
+    Release Policy Simulation Library (PSL) model packages.
     """
     ctx.obj = {}
 
