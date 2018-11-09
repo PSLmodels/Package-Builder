@@ -8,7 +8,7 @@ with open('README.md', encoding='utf-8') as f:
     readme = f.read()
 
 setup(name="Package-Builder",
-      version="0.8.0",
+      version="0.9.0",
       description="Policy Simulation Library (PSL) models package management",
       url="https://github.com/open-source-economics/Package-Builder",
       author="Martin Holmer (based on original work by Joseph Crail)",
@@ -27,5 +27,5 @@ setup(name="Package-Builder",
       long_description=readme,
       entry_points="""
         [console_scripts]
-        pb=pb.cli.main:start
+        pb=pb.main:start
       """)
