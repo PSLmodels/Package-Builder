@@ -1,0 +1,21 @@
+package:
+  name: pkgbld
+  version: 0.0.0
+
+requirements:
+  build:
+    - python=3.6
+    - anaconda
+    - "conda>=4.4.4"
+
+  run:
+    - python=3.6
+    - anaconda
+    - "conda>=4.4.4"
+
+test:
+  imports:
+    - pkgbld
+
+about:
+  home: https://github.com/open-source-economics/Package-Builder
