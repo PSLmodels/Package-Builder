@@ -5,13 +5,13 @@ package:
 requirements:
   build:
     - python=3.6
-    - anaconda
     - "conda>=4.4.4"
+    - conda-build
 
   run:
     - python=3.6
-    - anaconda
     - "conda>=4.4.4"
+    - conda-build
 
 test:
   imports:
