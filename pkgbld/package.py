@@ -203,7 +203,7 @@ class Package(object):
                     logger.info("uploading " + pkg)
                     try:
                         u.call("{} {}".format(cmd, pkg))
-                    except:
+                    except OSError:
                         emsg = ("Failed on anaconda upload likely "
                                 "because version already exists - continuing")
                         logger.error(emsg)
