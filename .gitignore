@@ -1,6 +1,11 @@
-*.pyc
-__pycache__
-.DS_Store
-Package_Builder.egg-info/
-build/
-dist/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Unit test / coverage reports
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Mac OS X
+*.DS_Store

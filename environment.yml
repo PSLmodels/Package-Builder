@@ -1,0 +1,11 @@
+name: pkgbld-dev
+dependencies:
+- python=3.6
+- anaconda
+- "conda>=4.4.4"
+- pytest
+- pytest-pep8
+- pytest-xdist
+- pycodestyle
+- pylint
+- coverage
