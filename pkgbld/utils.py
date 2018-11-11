@@ -1,9 +1,9 @@
 import subprocess
 import sys
+import platform
 """
 import contextlib
 import os
-import re
 import shutil
 """
 
@@ -27,10 +27,25 @@ def call_output(cmd):
     return output
 
 
+def conda_os_name():
+    system_ = platform.system()
+    if system_ == 'Darwin':
+        conda_name = 'osx'
+    elif system_ == 'Linux':
+        conda_name = 'linux'
+    elif system_ == 'Windows':
+        conda_name = 'win'
+    else:
+        msg = 'OS=<{}> is not Windows, Linux, or Darwin(OSX).'
+        raise OSError(msg.format(system_))
+    # For following bit-size code, see this link:
+    # https://docs.python.org/3.6/library/platform.html#platform.architecture
+    is_64bit = sys.maxsize > 2 ** 32
+    n_bits = '64' if is_64bit else '32'
+    return conda_name + '-' + n_bits
+
+
 """
-logger = logging.getLogger(__name__)
-
-
 def required_commands(*commands):
     def decorator(f):
         @functools.wraps(f)
@@ -109,21 +124,20 @@ def ensure_directory_exists(path, clean=False):
         os.makedirs(path)
 
 
-def find_first_filename(path, *filenames):
-    for filename in filenames:
-        full_path = os.path.join(path, filename)
-        if os.path.exists(full_path):
-            return filename
-    return None
-
-
 def replace_all(filename, needle, replacement):
-    logger.info("replacing all relevant lines in %s", filename)
-    lines = []
+    lines = list()
     with open(filename) as f:
         for line in f.readlines():
             lines.append(re.sub(needle, replacement, line))
     with open(filename, "w") as f:
         for line in lines:
             f.write(line)
+
+
+def find_first_filename(path, *filenames):
+    for filename in filenames:
+        full_path = os.path.join(path, filename)
+        if os.path.exists(full_path):
+            return filename
+    return None
 """

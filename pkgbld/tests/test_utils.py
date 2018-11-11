@@ -11,7 +11,7 @@ from pkgbld.utils import call, call_output
 
 def test_call():
     """
-    Test utils call function.
+    Test call utility function.
     """
     call('hostname')
     with pytest.raises(OSError):
@@ -20,9 +20,9 @@ def test_call():
 
 def test_call_output():
     """
-    Test utils call_output function.
+    Test call_output utility function.
     """
     out = call_output('hostname')
-    assert len(out) > 0
+    assert out
     with pytest.raises(OSError):
-        call_output('illegal_os_command')
+        out = call_output('illegal_os_command')
