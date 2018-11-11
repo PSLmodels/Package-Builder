@@ -26,6 +26,7 @@ WORKING_DIR = os.path.join(
     HOME_DIR,
     'temporary_pkgbld_working_dir'
 )
+BUILDS_DIR = 'pkgbuilds'
 
 
 def release(repo_name, pkg_name, version):
@@ -104,14 +105,26 @@ def release(repo_name, pkg_name, version):
     # build and upload model package for each Python version and OS platform
     local_platform = u.conda_platform_name()
     for pyver in PYTHON_VERSIONS:
-        pyver_list = pyver.split('.')
-        pystr = pyver_list[0] + pyver_list[1]
+        # ... build for local_platform
         cmd = ('conda build --python {} --old-build-string '
                '--channel {} --override-channels '
-               '--no-anaconda-upload --output-folder builds '
-               'conda.recipe').format(pyver, ANACONDA_CHANNEL)
+               '--no-anaconda-upload --output-folder {} '
+               'conda.recipe').format(pyver, ANACONDA_CHANNEL, BUILDS_DIR)
         u.os_call(cmd)
-        # TODO: more code here
+        # ... convert local build to other OS_PLATFORMS
+        pyver_parts = pyver.split('.')
+        pystr = pyver_parts[0] + pyver_parts[1]
+        pkgfile = os.path.join(BUILDS_DIR,
+                               '{}'.format(local_platform),
+                               '{}-{}-py{}_0.tar.bz2'.format(pkg_name,
+                                                             version, pystr))
+        for platform in OS_PLATFORMS:
+            if platform == local_platform:
+                continue
+            cmd = 'conda convert -p {} -o {} {}'.format(platform,
+                                                        BUILDS_DIR, pkgfile)
+            u.os_call(cmd)
+        # ... upload to Anaconda Cloud
 
     # remove working directory and its contents
     os.chdir(HOME_DIR)
