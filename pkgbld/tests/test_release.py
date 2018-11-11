@@ -10,14 +10,14 @@ from pkgbld.release import release
 
 
 @pytest.mark.parametrize('rname, pname, version',
-                         [(28, 'taxcalc', '0.23.0'),
-                          ("Tax-Calculator", 28, '0.23.0'),
-                          ("Tax-Calculator", 'taxcalc', 28),
+                         [(99, 'taxcalc', '0.23.0'),
+                          ("Tax-Calculator", 99, '0.23.0'),
+                          ("Tax-Calculator", 'taxcalc', 99),
                           ("Tax-Calculator", 'taxcalc', '0.23'),
                           ("Tax-Calculator", 'taxcalc', '0.23.0rc1')])
 def test_improper_release_calls(rname, pname, version):
     """
-    Test release calls that generate a ValueError.
+    Test release calls with parameters that generate a ValueError.
     """
     with pytest.raises(ValueError):
         release(rname, pname, version)
