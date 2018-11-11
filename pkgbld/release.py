@@ -26,14 +26,14 @@ WORKING_DIR = os.path.join(
     HOME_DIR,
     'temporary_pkgbld_working_dir'
 )
-BUILDS_DIR = 'pkgbuilds'
+BUILDS_DIR = 'pkgbld_output'
 
 
 def release(repo_name, pkg_name, version):
     """
     Conduct local build and upload to Anaconda Cloud of conda packages
-    for each platform for specified Policy Simulation Library (PSL) model
-    and version.
+    for each operating-system platform and Python version for the specified
+    Policy Simulation Library (PSL) model and version.
 
     Parameters
     ----------
@@ -70,7 +70,7 @@ def release(repo_name, pkg_name, version):
         raise ValueError('version is not a string object')
     pattern = r'^[0-9]+\.[0-9]+\.[0-9]+$'
     if re.match(pattern, version) is None:
-        msg = 'version=<{}> does not follow semantic-versioning rules'
+        msg = 'version={} does not follow semantic-versioning rules'
         raise ValueError(msg.format(version))
 
     # get token
@@ -80,17 +80,20 @@ def release(repo_name, pkg_name, version):
     with open(ANACONDA_TOKEN_FILE, 'r') as tfile:
         token = tfile.read()
 
+    # show release details
+    print(': Package-Builder building packages for:')
+    print(':   repository_name = {}'.format(repo_name))
+    print(':   package_name = {}'.format(pkg_name))
+    print(':   model_version = {}'.format(version))
+    print(':   python_versions = {}'.format(PYTHON_VERSIONS))
+    print(': Package-Builder uploading packages to:')
+    print(':   Anaconda channel = {}'.format(ANACONDA_CHANNEL))
+
     # make empty working directory
     if os.path.isdir(WORKING_DIR):
         shutil.rmtree(WORKING_DIR)
     os.mkdir(WORKING_DIR)
     os.chdir(WORKING_DIR)
-
-    print('Package-Builder release:')
-    print('repo_name = {}'.format(repo_name))
-    print('pkg_name = {}'.format(pkg_name))
-    print('version = {}'.format(version))
-    print('token = {}'.format(token))
 
     # clone model repository and checkout model version
     cmd = 'git clone {}/{}/'.format(GITHUB_URL, repo_name)
@@ -114,17 +117,21 @@ def release(repo_name, pkg_name, version):
         # ... convert local build to other OS_PLATFORMS
         pyver_parts = pyver.split('.')
         pystr = pyver_parts[0] + pyver_parts[1]
-        pkgfile = os.path.join(BUILDS_DIR,
-                               '{}'.format(local_platform),
-                               '{}-{}-py{}_0.tar.bz2'.format(pkg_name,
-                                                             version, pystr))
+        pkgfile = '{}-{}-py{}_0.tar.bz2'.format(pkg_name, version, pystr)
+        pkgpath = os.path.join(BUILDS_DIR, local_platform, pkgfile)
         for platform in OS_PLATFORMS:
             if platform == local_platform:
                 continue
-            cmd = 'conda convert -p {} -o {} {}'.format(platform,
-                                                        BUILDS_DIR, pkgfile)
+            cmd = 'conda convert -p {} -o {} {}'.format(
+                platform, BUILDS_DIR, pkgpath)
             u.os_call(cmd)
         # ... upload to Anaconda Cloud
+        for platform in OS_PLATFORMS:
+            pkgpath = os.path.join(BUILDS_DIR, platform, pkgfile)
+            cmd = 'anaconda --token {} upload --user {} {}'.format(
+                token, ANACONDA_USER, pkgpath
+            )
+            u.os_call(cmd)
 
     # remove working directory and its contents
     os.chdir(HOME_DIR)
