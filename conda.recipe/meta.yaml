@@ -2,6 +2,10 @@ package:
   name: pkgbld
   version: 0.0.0
 
+build:
+  entry_points:
+    - pbrelease = pkgbld.cli:main
+
 requirements:
   build:
     - python=3.6
@@ -16,6 +20,10 @@ requirements:
 test:
   imports:
     - pkgbld
+  commands:
+    - which pbrelease  # [unix]
+    - where pbrelease  # [win]
+    - pbrelease --help
 
 about:
   home: https://github.com/open-source-economics/Package-Builder

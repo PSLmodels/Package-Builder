@@ -98,7 +98,7 @@ def release(repo_name, pkg_name, version):
     os.chdir(WORKING_DIR)
 
     # clone model repository and checkout model version
-    print(': ... cloning repository')
+    print(': Package-Builder is cloning repository')
     cmd = 'git clone {}/{}/'.format(GITHUB_URL, repo_name)
     u.os_call(cmd)
     os.chdir(repo_name)
@@ -106,21 +106,23 @@ def release(repo_name, pkg_name, version):
     u.os_call(cmd)
 
     # specify version in repository's conda.recipe/meta.yaml file
-    print(': ... setting version')
+    print(': Package-Builder is setting version')
     u.specify_version(version)
 
     # build and upload model package for each Python version and OS platform
     local_platform = u.conda_platform_name()
     for pyver in PYTHON_VERSIONS:
         # ... build for local_platform
-        print(': ... building package for Python {}'.format(pyver))
+        print((': Package-Builder is building package '
+               'for Python {}').format(pyver))
         cmd = ('conda build --python {} --old-build-string '
                '--channel {} --override-channels '
                '--no-anaconda-upload --output-folder {} '
                'conda.recipe').format(pyver, ANACONDA_CHANNEL, BUILDS_DIR)
         u.os_call(cmd)
         # ... convert local build to other OS_PLATFORMS
-        print(': ... converting package for Python {}'.format(pyver))
+        print((': Package-Builder is converting package '
+               'for Python {}').format(pyver))
         pyver_parts = pyver.split('.')
         pystr = pyver_parts[0] + pyver_parts[1]
         pkgfile = '{}-{}-py{}_0.tar.bz2'.format(pkg_name, version, pystr)
@@ -133,7 +135,8 @@ def release(repo_name, pkg_name, version):
             )
             u.os_call(cmd)
         # ... upload to Anaconda Cloud
-        print(': ... uploading packages for Python {}'.format(pyver))
+        print((': Package-Builder is uploading packages '
+               'for Python {}').format(pyver))
         for platform in OS_PLATFORMS:
             pkgpath = os.path.join(BUILDS_DIR, platform, pkgfile)
             cmd = 'anaconda --token {} upload --user {} {}'.format(
@@ -142,13 +145,13 @@ def release(repo_name, pkg_name, version):
             try:
                 u.os_call(cmd)
             except OSError:
-                msg = (': ... Package-Builder WARNING: anaconda upload '
+                msg = (': Package-Builder WARNING: anaconda upload '
                        'FAILED for {}/{} perhaps because package already '
                        'exists in the Anaconda Cloud ... '
                        'continuing').format(platform, pkgfile)
                 print(msg)
 
-    print(': ... cleaning-up')
+    print(': Package-Builder is cleaning-up')
 
     # remove working directory and its contents
     os.chdir(HOME_DIR)
