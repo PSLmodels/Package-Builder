@@ -147,7 +147,7 @@ def release(repo_name, pkg_name, version):
                        'exists in the Anaconda Cloud ... '
                        'continuing').format(platform, pkgfile)
                 print(msg)
-         
+
     print(': ... cleaning-up')
 
     # remove working directory and its contents
