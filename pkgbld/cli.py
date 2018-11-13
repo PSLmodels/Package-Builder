@@ -50,10 +50,7 @@ def main():
     args = parser.parse_args()
     # show Package-Builder version and quit if --version option specified
     if args.version:
-        version = pkgbld.__version__
-        if version == 'unknown':
-            version = 'locally.generated.package'
-        sys.stdout.write('Package-Builder {}\n'.format(version))
+        sys.stdout.write('Package-Builder {}\n'.format(pkgbld.__version__))
         return 0
     # call pkgbld release function with specified parameters
     pkgbld.release(repo_name=args.REPOSITORY_NAME,
