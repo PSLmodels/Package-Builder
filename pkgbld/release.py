@@ -44,7 +44,7 @@ def release(repo_name, pkg_name, version):
         model package name for repository specified by repo_name
 
     version: string
-        model version string consistent with semantic versioning;
+        model version string having X.Y.Z semantic-versioning pattern;
         must be a release tag in the model repository
 
     Raises
@@ -72,7 +72,7 @@ def release(repo_name, pkg_name, version):
         raise ValueError('version is not a string object')
     pattern = r'^[0-9]+\.[0-9]+\.[0-9]+$'
     if re.match(pattern, version) is None:
-        msg = 'version={} does not follow semantic-versioning rules'
+        msg = 'version={} does not have X.Y.Z semantic-versioning pattern'
         raise ValueError(msg.format(version))
 
     # get token
