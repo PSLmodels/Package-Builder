@@ -8,6 +8,7 @@ which can be accessed as 'pbrelease' from an installed pkgbld conda package.
 
 import sys
 import argparse
+import re
 import pkgbld
 
 
@@ -38,8 +39,8 @@ def main():
                               'Example: taxcalc'),
                         default=None)
     parser.add_argument('MODEL_VERSION', nargs='?',
-                        help=('Model release string that is consistent '
-                              'with semantic-versioning rules. '
+                        help=('Model release string that has X.Y.Z '
+                              'semantic-versioning pattern. '
                               'Example: 0.22.2'),
                         default=None)
     parser.add_argument('--version',
@@ -52,8 +53,26 @@ def main():
     if args.version:
         sys.stdout.write('Package-Builder {}\n'.format(pkgbld.__version__))
         return 0
+    # check command-line arguments
+    repo_name = args.REPOSITORY_NAME
+    pkg_name = args.PACKAGE_NAME
+    version = args.MODEL_VERSION
+    emsg = ''
+    if not isinstance(repo_name, str):
+        emsg += 'ERROR: REPOSITORY_NAME is not specified\n'
+    if not isinstance(pkg_name, str):
+        emsg += 'ERROR: PACKAGE_NAME is not specified\n'
+    if not isinstance(version, str):
+        emsg += 'ERROR: MODEL_VERSION is not specified\n'
+    else:
+        pattern = r'^[0-9]+\.[0-9]+\.[0-9]+$'
+        if re.match(pattern, version) is None:
+            emsg += ('ERROR: MODEL_VERSION does have X.Y.Z '
+                     'semantic-versioning pattern\n')
+    if emsg:
+        print(emsg)
+        print('USAGE:', usage_str)
+        return 1
     # call pkgbld release function with specified parameters
-    pkgbld.release(repo_name=args.REPOSITORY_NAME,
-                   pkg_name=args.PACKAGE_NAME,
-                   version=args.MODEL_VERSION)
+    pkgbld.release(repo_name, pkg_name, version)
     return 0
