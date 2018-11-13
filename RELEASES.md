@@ -4,6 +4,26 @@ Go [here](https://github.com/open-source-economics/Package-Builder/pulls?q=is%3A
 for a complete commit history.
 
 
+2018-11-13 Release 0.12.0
+-------------------------
+(last merged pull request is
+[#123](https://github.com/open-source-economics/Package-Builder/pull/123))
+
+**API Changes**
+- Change `pbrelease` CLI error handling to show simpler error messages and help
+  [[#123](https://github.com/open-source-economics/Package-Builder/pull/123)
+  by Martin Holmer]
+
+**New Features**
+- None
+
+**Bug Fixes**
+- None
+
+
+_Earlier Releases:_
+
+
 2018-11-13 Release 0.11.0
 -------------------------
 (last merged pull request is
@@ -19,9 +39,6 @@ for a complete commit history.
 
 **Bug Fixes**
 - None
-
-
-_Earlier Releases:_
 
 
 2018-11-12 Release 0.10.0
