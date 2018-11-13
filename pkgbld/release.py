@@ -107,7 +107,24 @@ def release(repo_name, pkg_name, version):
 
     # specify version in several repository files
     print(': Package-Builder is setting version')
-    u.specify_version(version, pkg_name)
+    # ... specify version in meta.yaml file
+    u.file_revision(
+        filename=os.path.join('conda.recipe', 'meta.yaml'),
+        pattern=r'version: .*',
+        replacement='version: {}'.format(version)
+    )
+    # ... specify version in setup.py file
+    u.file_revision(
+        filename='setup.py',
+        pattern=r'version = .*',
+        replacement='version = "{}"'.format(version)
+    )
+    # ... specify version in package_name/__init__.py file
+    u.file_revision(
+        filename=os.path.join(pkg_name, '__init__.py'),
+        pattern=r'__version__ = .*',
+        replacement='__version__ = "{}"'.format(version)
+    )
 
     # build and upload model package for each Python version and OS platform
     local_platform = u.conda_platform_name()

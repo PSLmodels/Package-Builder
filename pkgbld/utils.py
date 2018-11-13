@@ -6,7 +6,6 @@ Package-Builder utility functions.
 # pylint --disable=locally-disabled utils.py
 
 import subprocess
-import os
 import re
 import platform
 import sys
@@ -23,45 +22,17 @@ def os_call(cmd):
         raise OSError(msg.format(err.returncode, cmd))
 
 
-def specify_version(model_version, package_name):
+def file_revision(filename, pattern, replacement):
     """
-    Set version in conda.recipe/meta.yaml file.
-    Set version string in setup.py file.
-    Set version string in package_name/__init__.py file.
+    Replace repattern with replacement on each line of file using re.sub().
     """
-    # specify version in meta.yaml file
-    filename = os.path.join('conda.recipe', 'meta.yaml')
-    pattern = r'version: .*'
-    replacement = 'version: {}'.format(model_version)
-    lines = []
-    with open(filename, 'r') as mfile:
-        for line in mfile.readlines():
+    lines = list()
+    with open(filename, 'r') as file_:
+        for line in file_.readlines():
             lines.append(re.sub(pattern, replacement, line))
-    with open(filename, 'w') as mfile:
+    with open(filename, 'w') as file_:
         for line in lines:
-            mfile.write(line)
-    # specify version in setup.py file
-    filename = 'setup.py'
-    pattern = r'version = .*'
-    replacement = 'version = "{}"'.format(model_version)
-    lines = []
-    with open(filename, 'r') as mfile:
-        for line in mfile.readlines():
-            lines.append(re.sub(pattern, replacement, line))
-    with open(filename, 'w') as mfile:
-        for line in lines:
-            mfile.write(line)
-    # specify version in package_name/__init__.py file
-    filename = os.path.join(package_name, '__init__.py')
-    pattern = r'__version__ = .*'
-    replacement = '__version__ = "{}"'.format(model_version)
-    lines = []
-    with open(filename, 'r') as mfile:
-        for line in mfile.readlines():
-            lines.append(re.sub(pattern, replacement, line))
-    with open(filename, 'w') as mfile:
-        for line in lines:
-            mfile.write(line)
+            file_.write(line)
 
 
 def conda_platform_name():
