@@ -105,9 +105,9 @@ def release(repo_name, pkg_name, version):
     cmd = 'git checkout -b v{ver} {ver}'.format(ver=version)
     u.os_call(cmd)
 
-    # specify version in repository's conda.recipe/meta.yaml file
+    # specify version in several repository files
     print(': Package-Builder is setting version')
-    u.specify_version(version)
+    u.specify_version(version, pkg_name)
 
     # build and upload model package for each Python version and OS platform
     local_platform = u.conda_platform_name()
@@ -153,12 +153,12 @@ def release(repo_name, pkg_name, version):
 
     print(': Package-Builder is cleaning-up')
 
-    # remove working directory and its contents
-    os.chdir(HOME_DIR)
-    shutil.rmtree(WORKING_DIR)
-
     # remove local packages made during this process
     cmd = 'conda build purge'
     u.os_call(cmd)
+
+    # remove working directory and its contents
+    os.chdir(HOME_DIR)
+    shutil.rmtree(WORKING_DIR)
 
     print(': Package-Builder is finished')
