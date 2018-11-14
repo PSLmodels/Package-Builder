@@ -4,6 +4,29 @@ Go [here](https://github.com/open-source-economics/Package-Builder/pulls?q=is%3A
 for a complete commit history.
 
 
+2018-11-14 Release 0.12.1
+-------------------------
+(last merged pull request is
+[#126](https://github.com/open-source-economics/Package-Builder/pull/126))
+
+**API Changes**
+- None
+
+**New Features**
+- Add easier-to-understand error message to `pbrelease` CLI if Anaconda token file is not present
+  [[#125](https://github.com/open-source-economics/Package-Builder/pull/125)
+  by Martin Holmer]
+- Make `git clone` faster by downloading only repository code for the version being released (rather than the whole repository)
+  [[#126](https://github.com/open-source-economics/Package-Builder/pull/126)
+  by Martin Holmer]
+
+**Bug Fixes**
+- None
+
+
+_Earlier Releases:_
+
+
 2018-11-13 Release 0.12.0
 -------------------------
 (last merged pull request is
@@ -19,9 +42,6 @@ for a complete commit history.
 
 **Bug Fixes**
 - None
-
-
-_Earlier Releases:_
 
 
 2018-11-13 Release 0.11.0
