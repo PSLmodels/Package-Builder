@@ -6,9 +6,9 @@ which can be accessed as 'pbrelease' from an installed pkgbld conda package.
 # pycodestyle cli.py
 # pylint --disable=locally-disabled cli.py
 
-import sys
 import argparse
 import re
+import os
 import pkgbld
 
 
@@ -51,7 +51,7 @@ def main():
     args = parser.parse_args()
     # show Package-Builder version and quit if --version option specified
     if args.version:
-        sys.stdout.write('Package-Builder {}\n'.format(pkgbld.__version__))
+        print('Package-Builder {}'.format(pkgbld.__version__))
         return 0
     # check command-line arguments
     repo_name = args.REPOSITORY_NAME
@@ -69,6 +69,9 @@ def main():
         if re.match(pattern, version) is None:
             emsg += ('ERROR: MODEL_VERSION does have X.Y.Z '
                      'semantic-versioning pattern\n')
+    if not os.path.isfile(pkgbld.ANACONDA_TOKEN_FILE):
+        emsg += ('ERROR: Anaconda token file '
+                 '{} does not exist'.format(pkgbld.ANACONDA_TOKEN_FILE))
     if emsg:
         print(emsg)
         print('USAGE:', usage_str)
