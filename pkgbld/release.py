@@ -105,8 +105,6 @@ def release(repo_name, pkg_name, version):
     )
     u.os_call(cmd)
     os.chdir(repo_name)
-    cmd = 'git checkout -b v{ver} {ver}'.format(ver=version)
-    u.os_call(cmd)
 
     # specify version in several repository files
     print(': Package-Builder is setting version')
