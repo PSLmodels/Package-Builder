@@ -97,9 +97,12 @@ def release(repo_name, pkg_name, version):
     os.mkdir(WORKING_DIR)
     os.chdir(WORKING_DIR)
 
-    # clone model repository and checkout model version
-    print(': Package-Builder is cloning repository')
-    cmd = 'git clone {}/{}/'.format(GITHUB_URL, repo_name)
+    # clone code for model_version from model repository
+    print((': Package-Builder is cloning repository code '
+           ' for {}'.format(version)))
+    cmd = 'git clone --branch {} --depth 1 {}/{}/'.format(
+        version, GITHUB_URL, repo_name
+    )
     u.os_call(cmd)
     os.chdir(repo_name)
     cmd = 'git checkout -b v{ver} {ver}'.format(ver=version)
