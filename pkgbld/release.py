@@ -99,7 +99,7 @@ def release(repo_name, pkg_name, version):
 
     # clone code for model_version from model repository
     print((': Package-Builder is cloning repository code '
-           ' for {}'.format(version)))
+           'for {}'.format(version)))
     cmd = 'git clone --branch {} --depth 1 {}/{}/'.format(
         version, GITHUB_URL, repo_name
     )
