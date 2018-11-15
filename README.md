@@ -97,7 +97,7 @@ where your replace `repo_name` with the name of your model's
 repository and you replace `pkg_name` with the sub-directory name
 containing your model's highest level `__init__.py` file and you
 replace `version` with the release for which you want to make
-packages.
+model packages.
 
 Here's a full example that creates packages for Behavioral-Responses
 release 0.4.0:
