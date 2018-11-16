@@ -24,7 +24,7 @@ The code in this Package-Builder GitHub repository, which is part of
 the `PSLmodels` GitHub organization, generates a conda package called
 `pkgbld` that contains the `pbrelease` tool.  For models in the
 `PSLmodels` GitHub organization that meet certain criteria (see
-below), `pbrelease` is used to build conda packages (for Windows,
+below), `pbrelease` can be used to build conda packages (for Windows,
 Linux, and Mac) for a specified model release version and then to
 upload those built packages to the Anaconda Cloud's `PSLmodels`
 channel for public distribution.
