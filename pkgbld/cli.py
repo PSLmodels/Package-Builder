@@ -31,8 +31,7 @@ def main():
     )
     parser.add_argument('REPOSITORY_NAME', nargs='?',
                         help=('Name of repository in the GitHub organization '
-                              'called pslmodels (nee open-source-economics). '
-                              'Example: Tax-Calculator'),
+                              'called PSLmodels. Example: Tax-Calculator'),
                         default=None)
     parser.add_argument('PACKAGE_NAME', nargs='?',
                         help=('Name of packages to build and upload. '
@@ -41,7 +40,7 @@ def main():
     parser.add_argument('MODEL_VERSION', nargs='?',
                         help=('Model release string that has X.Y.Z '
                               'semantic-versioning pattern. '
-                              'Example: 0.22.2'),
+                              'Example: 0.23.2'),
                         default=None)
     parser.add_argument('--version',
                         help=('optional flag that writes Package-Builder '

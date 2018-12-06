@@ -11,7 +11,7 @@ them to the Anaconda Cloud's `PSLmodels` channel for public
 distribution.  If you have questions about using `pbrelease`, or
 experience problems, or want to request an enhancement, create a new
 issue
-[here](https://github.com/open-source-economics/Package-Builder/issues)
+[here](https://github.com/PSLmodels/Package-Builder/issues)
 that poses your question, or provides details on what you think is
 wrong with `pbrelease`, or describes the enhancement you're
 requesting.
@@ -66,11 +66,10 @@ for public distribution.
 
 positional arguments:
   REPOSITORY_NAME  Name of repository in the GitHub organization called
-                   pslmodels (nee open-source-economics). Example: Tax-
-                   Calculator
+                   PSLmodels. Example: Tax-Calculator
   PACKAGE_NAME     Name of packages to build and upload. Example: taxcalc
   MODEL_VERSION    Model release string that has X.Y.Z semantic-versioning
-                   pattern. Example: 0.22.2
+                   pattern. Example: 0.23.2
 
 optional arguments:
   -h, --help       show this help message and exit

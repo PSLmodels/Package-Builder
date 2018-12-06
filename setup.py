@@ -10,8 +10,8 @@ version = '0.0.0'
 
 config = {
     'description': 'Package Builder',
-    'url': 'https://github.com/open-source-economics/Package-Builder',
-    'download_url': 'https://github.com/open-source-economics/Package-Builder',
+    'url': 'https://github.com/PSLmodels/Package-Builder',
+    'download_url': 'https://github.com/PSLmodels/Package-Builder',
     'description': 'pkgbld',
     'long_description': longdesc,
     'version': version,
