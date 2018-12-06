@@ -14,7 +14,7 @@ import pkgbld.utils as u
 PYTHON_VERSIONS = ['3.6']
 OS_PLATFORMS = ['osx-64', 'linux-64', 'win-32', 'win-64']
 
-GITHUB_URL = 'https://github.com/open-source-economics'
+GITHUB_URL = 'https://github.com/PSLmodels'
 ANACONDA_USER = 'pslmodels'
 ANACONDA_CHANNEL = ANACONDA_USER
 HOME_DIR = os.path.expanduser('~')

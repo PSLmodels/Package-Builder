@@ -26,4 +26,4 @@ test:
     - pbrelease --help
 
 about:
-  home: https://github.com/open-source-economics/Package-Builder
+  home: https://github.com/PSLmodels/Package-Builder
