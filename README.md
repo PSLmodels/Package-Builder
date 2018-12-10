@@ -1,5 +1,5 @@
+[![PSL tool](https://img.shields.io/badge/PSL-tool-a0a0a0.svg)](https://www.PSLmodels.org)
 [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
-[![PSL tool](https://img.shields.io/badge/PSL-tool-ff69b4.svg)](https://www.PSLmodels.org)
 
 
 Using Package-Builder's pbrelease tool
