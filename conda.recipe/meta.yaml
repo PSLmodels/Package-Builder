@@ -17,13 +17,5 @@ requirements:
     - "conda>=4.5"
     - "conda-build>=3.5"
 
-test:
-  imports:
-    - pkgbld
-  commands:
-    - which pbrelease  # [unix]
-    - where pbrelease  # [win]
-    - pbrelease --help
-
 about:
   home: https://github.com/PSLmodels/Package-Builder
