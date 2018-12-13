@@ -18,7 +18,8 @@ def main():
     """
     # parse command-line arguments:
     usage_str = ('pbrelease  REPOSITORY_NAME  PACKAGE_NAME  MODEL_VERSION\n'
-                 '                  [--help]  [--version]')
+                 '                  [--help]  [--also37]  [--dryrun]\n'
+                 '                  [--version]')
     parser = argparse.ArgumentParser(
         prog='',
         usage=usage_str,
@@ -27,7 +28,8 @@ def main():
                      'release.  The packages are build locally in a '
                      'temporary workspace and then uploaded to the '
                      'Anaconda Cloud PSLmodels channel for public '
-                     'distribution.')
+                     'distribution.  The built/uploaded packages are '
+                     'for Python 3.6 and optionally Python 3.7.')
     )
     parser.add_argument('REPOSITORY_NAME', nargs='?',
                         help=('Name of repository in the GitHub organization '
@@ -42,6 +44,16 @@ def main():
                               'semantic-versioning pattern. '
                               'Example: 0.23.2'),
                         default=None)
+    parser.add_argument('--also37',
+                        help=('optional flag that causes build/upload of '
+                              'packages for Python 3.7'),
+                        default=False,
+                        action="store_true")
+    parser.add_argument('--dryrun',
+                        help=('optional flag that writes build/upload plan '
+                              'to stdout and quits without executing plan'),
+                        default=False,
+                        action="store_true")
     parser.add_argument('--version',
                         help=('optional flag that writes Package-Builder '
                               'release version to stdout and quits'),
@@ -76,5 +88,6 @@ def main():
         print('USAGE:', usage_str)
         return 1
     # call pkgbld release function with specified parameters
-    pkgbld.release(repo_name, pkg_name, version)
+    pkgbld.release(repo_name, pkg_name, version,
+                   also37=args.also37, dryrun=args.dryrun)
     return 0

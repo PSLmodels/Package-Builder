@@ -11,7 +11,7 @@ import shutil
 import pkgbld.utils as u
 
 
-PYTHON_VERSIONS = ['3.6']
+BASE_PYTHON_VERSIONS = ['3.6']
 OS_PLATFORMS = ['osx-64', 'linux-64', 'win-32', 'win-64']
 
 GITHUB_URL = 'https://github.com/PSLmodels'
@@ -29,7 +29,7 @@ WORKING_DIR = os.path.join(
 BUILDS_DIR = 'pkgbld_output'
 
 
-def release(repo_name, pkg_name, version):
+def release(repo_name, pkg_name, version, also37=True, dryrun=False):
     """
     Conduct local build and upload to Anaconda Cloud of conda packages
     for each operating-system platform and Python version for the specified
@@ -47,6 +47,12 @@ def release(repo_name, pkg_name, version):
         model version string having X.Y.Z semantic-versioning pattern;
         must be a release tag in the model repository
 
+    also37: boolean
+        whether or not packages are built/uploaded for Python 3.7
+
+    dryrun: boolean
+        whether or not just the package build/upload plan is shown
+
     Raises
     ------
     ValueError:
@@ -61,7 +67,7 @@ def release(repo_name, pkg_name, version):
     -----
     Example usage: release('Tax-Calculator', 'taxcalc', '0.22.2')
     """
-    # pylint: disable=too-many-statements
+    # pylint: disable=too-many-statements,too-many-locals,too-many-branches
 
     # check parameters
     if not isinstance(repo_name, str):
@@ -70,6 +76,10 @@ def release(repo_name, pkg_name, version):
         raise ValueError('pkg_name is not a string object')
     if not isinstance(version, str):
         raise ValueError('version is not a string object')
+    if not isinstance(also37, bool):
+        raise ValueError('also37 is not a boolean object')
+    if not isinstance(dryrun, bool):
+        raise ValueError('dryrun is not a boolean object')
     pattern = r'^[0-9]+\.[0-9]+\.[0-9]+$'
     if re.match(pattern, version) is None:
         msg = 'version={} does not have X.Y.Z semantic-versioning pattern'
@@ -82,14 +92,23 @@ def release(repo_name, pkg_name, version):
     with open(ANACONDA_TOKEN_FILE, 'r') as tfile:
         token = tfile.read()
 
-    # show release details
+    # specify Python versions
+    if also37:
+        python_versions = BASE_PYTHON_VERSIONS + ['3.7']
+    else:
+        python_versions = BASE_PYTHON_VERSIONS
+
+    # show build/upload plan
     print(': Package-Builder will build model packages for:')
     print(':   repository_name = {}'.format(repo_name))
     print(':   package_name = {}'.format(pkg_name))
     print(':   model_version = {}'.format(version))
-    print(':   python_versions = {}'.format(PYTHON_VERSIONS))
+    print(':   python_versions = {}'.format(python_versions))
     print(': Package-Builder will upload model packages to:')
     print(':   Anaconda channel = {}'.format(ANACONDA_CHANNEL))
+    if dryrun:
+        print(': Package-Builder is quitting')
+        return
 
     # make empty working directory
     if os.path.isdir(WORKING_DIR):
@@ -129,7 +148,7 @@ def release(repo_name, pkg_name, version):
 
     # build and upload model package for each Python version and OS platform
     local_platform = u.conda_platform_name()
-    for pyver in PYTHON_VERSIONS:
+    for pyver in python_versions:
         # ... build for local_platform
         print((': Package-Builder is building package '
                'for Python {}').format(pyver))
