@@ -13,7 +13,7 @@ requirements:
     - "conda-build>=3.5"
 
   run:
-    - python=3.6
+    - python
     - "conda>=4.5"
     - "conda-build>=3.5"
 
