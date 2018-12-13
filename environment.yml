@@ -1,6 +1,6 @@
 name: pkgbld-dev
 dependencies:
-- python=3.6
+- python
 - "conda>=4.5"
 - "conda-build>=3.5"
 - pytest
