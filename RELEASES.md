@@ -4,11 +4,6 @@ Go [here](https://github.com/PSLmodels~/Package-Builder/pulls?q=is%3Apr+is%3Aclo
 for a complete commit history.
 
 
-2018-12-13 Release 0.12.5
--------------------------
-Test release; not for use
-
-
 2018-12-13 Release 0.12.4
 -------------------------
 Test release; not for use
