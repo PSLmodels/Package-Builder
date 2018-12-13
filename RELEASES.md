@@ -4,6 +4,23 @@ Go [here](https://github.com/PSLmodels~/Package-Builder/pulls?q=is%3Apr+is%3Aclo
 for a complete commit history.
 
 
+2018-12-13 Release 0.12.2
+-------------------------
+(last merged pull request is
+[#137](https://github.com/PSLmodels/Package-Builder/pull/137))
+
+**API Changes**
+- None
+
+**New Features**
+- Add `pbrelease --also37` option that enables build/upload of packages for Python 3.7 as well as for Python 3.6
+  [[#136](https://github.com/PSLmodels/Package-Builder/pull/136)
+  by Martin Holmer]
+
+**Bug Fixes**
+- None
+
+
 2018-11-14 Release 0.12.1
 -------------------------
 (last merged pull request is
@@ -22,9 +39,6 @@ for a complete commit history.
 
 **Bug Fixes**
 - None
-
-
-_Earlier Releases:_
 
 
 2018-11-13 Release 0.12.0
