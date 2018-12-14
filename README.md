@@ -1,5 +1,5 @@
 [![PSL tool](https://img.shields.io/badge/PSL-tool-a0a0a0.svg)](https://www.PSLmodels.org)
-[![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
+[![Python 3.6](https://img.shields.io/badge/python-3.6%2B-blue.svg)](https://www.python.org/downloads/release/python-360/)
 
 
 Using Package-Builder's pbrelease tool
@@ -34,8 +34,9 @@ How to install pbrelease?
 -------------------------
 
 At the operating-system command prompt on a computer that has the
-Anaconda distribution of Python 3.6 installed, execute this command if
-you have never installed the package that contains the `pbrelease` tool:
+Anaconda distribution of Python 3.6 or 3.7 installed, execute this
+command if you have never installed the package that contains the
+`pbrelease` tool:
 
 ```
 $ conda install -c PSLmodels pkgbld --yes
@@ -49,7 +50,7 @@ this command and getting something like this screen output:
 
 ```
 $ pbrelease --version
-Package-Builder 0.12.1
+Package-Builder 0.13.0
 ```
 
 Then see the information that `pbrelease` expects by asking for help
@@ -58,12 +59,14 @@ and getting something like this screen output:
 ```
 $ pbrelease --help
 usage: pbrelease  REPOSITORY_NAME  PACKAGE_NAME  MODEL_VERSION
-                  [--help]  [--version]
+                  [--help]  [--also37]  [--dryrun]
+                  [--version]
 
 Creates conda packages named PACKAGE_NAME for the PSL model in REPOSITORY_NAME
 that has a MODEL_VERSION release. The packages are build locally in a
 temporary workspace and then uploaded to the Anaconda Cloud PSLmodels channel
-for public distribution.
+for public distribution. The built/uploaded packages are for Python 3.6 and
+optionally Python 3.7.
 
 positional arguments:
   REPOSITORY_NAME  Name of repository in the GitHub organization called
@@ -74,6 +77,10 @@ positional arguments:
 
 optional arguments:
   -h, --help       show this help message and exit
+  --also37         optional flag that causes build/upload of packages for
+                   Python 3.7
+  --dryrun         optional flag that writes build/upload plan to stdout and
+                   quits without executing plan
   --version        optional flag that writes Package-Builder release version
                    to stdout and quits
 ```
@@ -100,7 +107,7 @@ replace `version` with the release for which you want to make
 model packages.
 
 Here's a full example that creates packages for Behavioral-Responses
-release 0.4.0:
+release 0.5.0:
 
 ```
 $ conda search -c PSLmodels behresp
@@ -108,22 +115,24 @@ Loading channels: done
 PackagesNotFoundError: The following packages are not available ...
   - behresp
 
-$ pbrelease Behavioral-Responses behresp 0.4.0
+$ pbrelease Behavioral-Responses behresp 0.5.0 --also37
 : Package-Builder will build model packages for:
 :   repository_name = Behavioral-Responses
 :   package_name = behresp
-:   model_version = 0.4.0
-:   python_versions = ['3.6']
+:   model_version = 0.5.0
+:   python_versions = ['3.6', '3.7']
 : Package-Builder will upload model packages to:
 :   Anaconda channel = pslmodels
-: Package-Builder is cloning repository code for 0.4.0
+: Package-Builder is cloning repository code for 0.5.0
 ... <an enormous amount of screen output> ...
 : Package-Builder is finished
 
 $ conda search -c PSLmodels behresp
 Loading channels: done
-# Name                  Version           Build  Channel
-behresp                   0.4.0          py36_0  PSLmodels
+# Name                  Version           Build  Channel             
+behresp                   0.4.0          py36_0  PSLmodels           
+behresp                   0.5.0          py36_0  PSLmodels           
+behresp                   0.5.0          py37_0  PSLmodels           
 ```
 
 
@@ -134,7 +143,7 @@ The `pbrelease` tool makes certain assumptions about the PSL
 model's source code.  These assumptions must be met for `pbrelease` to
 work correctly.  Here are the model code criteria:
 
-(1) Model code must be compatible with Anaconda's Python 3.6
+(1) Model code must be compatible with Anaconda's Python 3.6 and higher
 
 (2) Model code must be organized as follows:
 
@@ -159,7 +168,7 @@ work correctly.  Here are the model code criteria:
 (5) The `__init__.py` file must contain a line like this: `__version__ = '0.0.0'`
 
 The best place to look at code that meets all these criteria is the
-Behavioral-Responses repository.
+PSLmodels Behavioral-Responses repository.
 
 Version 0.0.0 indicates a local package; the `pbrelease` tool will
 automatically replace (in a temporary copy of your model code) the
