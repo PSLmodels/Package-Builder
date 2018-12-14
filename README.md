@@ -107,7 +107,7 @@ replace `version` with the release for which you want to make
 model packages.
 
 Here's a full example that creates packages for Behavioral-Responses
-release 0.4.1:
+release 0.5.0:
 
 ```
 $ conda search -c PSLmodels behresp
