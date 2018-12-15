@@ -11,11 +11,13 @@ requirements:
     - python
     - "conda>=4.5"
     - "conda-build>=3.5"
+    - anaconda-client
 
   run:
     - python
     - "conda>=4.5"
     - "conda-build>=3.5"
+    - anaconda-client
 
 about:
   home: https://github.com/PSLmodels/Package-Builder
