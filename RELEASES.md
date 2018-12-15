@@ -4,6 +4,23 @@ Go [here](https://github.com/PSLmodels~/Package-Builder/pulls?q=is%3Apr+is%3Aclo
 for a complete commit history.
 
 
+2018-12-15 Release 0.15.0
+-------------------------
+(last merged pull request is
+[#147](https://github.com/PSLmodels/Package-Builder/pull/147))
+
+**API Changes**
+- None
+
+**New Features**
+- Simplify `anaconda upload` command used by Package-Builder
+  [[#147](https://github.com/PSLmodels/Package-Builder/pull/147)
+  by Martin Holmer with assistance from Hand Doupe]
+
+**Bug Fixes**
+- None
+
+
 2018-12-15 Release 0.14.0
 -------------------------
 (last merged pull request is
