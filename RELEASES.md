@@ -7,16 +7,15 @@ for a complete commit history.
 2018-12-15 Release 0.14.0
 -------------------------
 (last merged pull request is
-[#145](https://github.com/PSLmodels/Package-Builder/pull/145))
+[#146](https://github.com/PSLmodels/Package-Builder/pull/146))
 
 **API Changes**
 - None
 
 **New Features**
 - Add `anaconda-client` as a required dependency of Package-Builder
-  [[#145](https://github.com/PSLmodels/Package-Builder/pull/145)
+  [[#146](https://github.com/PSLmodels/Package-Builder/pull/146)
   by Martin Holmer with need pointed out by Hank Doupe]
-
 
 **Bug Fixes**
 - None
