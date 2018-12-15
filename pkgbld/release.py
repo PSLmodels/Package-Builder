@@ -176,17 +176,10 @@ def release(repo_name, pkg_name, version, also37=True, dryrun=False):
                'for Python {}').format(pyver))
         for platform in OS_PLATFORMS:
             pkgpath = os.path.join(BUILDS_DIR, platform, pkgfile)
-            cmd = 'anaconda --token {} upload --user {} {}'.format(
+            cmd = 'anaconda -t {} upload -u {} --skip-existing {}'.format(
                 token, ANACONDA_USER, pkgpath
             )
-            try:
-                u.os_call(cmd)
-            except OSError:
-                msg = (': Package-Builder WARNING: anaconda upload '
-                       'FAILED for {}/{} perhaps because package already '
-                       'exists in the Anaconda Cloud ... '
-                       'continuing').format(platform, pkgfile)
-                print(msg)
+            u.os_call(cmd)
 
     print(': Package-Builder is cleaning-up')
 
