@@ -4,6 +4,26 @@ Go [here](https://github.com/PSLmodels~/Package-Builder/pulls?q=is%3Apr+is%3Aclo
 for a complete commit history.
 
 
+2018-12-16 Release 0.16.0
+-------------------------
+(last merged pull request is
+[#148](https://github.com/PSLmodels/Package-Builder/pull/148))
+
+**API Changes**
+- None
+
+**New Features**
+- Make `anaconda upload` command overwrite already uploaded packages
+  [[#148](https://github.com/PSLmodels/Package-Builder/pull/148)
+  by Martin Holmer with assistance from Hank Doupe]
+- Avoid using the new 1.7.* versions of anaconda-client package
+  [[#148](https://github.com/PSLmodels/Package-Builder/pull/148)
+  by Martin Holmer with assistance from Hank Doupe]
+
+**Bug Fixes**
+- None
+
+
 2018-12-15 Release 0.15.0
 -------------------------
 (last merged pull request is
@@ -15,7 +35,7 @@ for a complete commit history.
 **New Features**
 - Simplify `anaconda upload` command used by Package-Builder
   [[#147](https://github.com/PSLmodels/Package-Builder/pull/147)
-  by Martin Holmer with assistance from Hand Doupe]
+  by Martin Holmer with assistance from Hank Doupe]
 
 **Bug Fixes**
 - None

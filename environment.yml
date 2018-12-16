@@ -3,7 +3,7 @@ dependencies:
 - python
 - "conda>=4.5"
 - "conda-build>=3.5"
-- anaconda-client
+- anaconda-client=1.6
 - pytest
 - pytest-pep8
 - pytest-xdist
