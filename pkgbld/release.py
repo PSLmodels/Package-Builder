@@ -176,7 +176,7 @@ def release(repo_name, pkg_name, version, also37=True, dryrun=False):
                'for Python {}').format(pyver))
         for platform in OS_PLATFORMS:
             pkgpath = os.path.join(BUILDS_DIR, platform, pkgfile)
-            cmd = 'anaconda -t {} upload -u {} --skip-existing {}'.format(
+            cmd = 'anaconda -t {} upload -u {} --force {}'.format(
                 token, ANACONDA_USER, pkgpath
             )
             u.os_call(cmd)
