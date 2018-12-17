@@ -85,12 +85,10 @@ def release(repo_name, pkg_name, version, also37=True, dryrun=False):
         msg = 'version={} does not have X.Y.Z semantic-versioning pattern'
         raise ValueError(msg.format(version))
 
-    # get token
+    # check for token file
     if not os.path.isfile(ANACONDA_TOKEN_FILE):
         msg = 'Anaconda token file {} does not exist'
         raise ValueError(msg.format(ANACONDA_TOKEN_FILE))
-    with open(ANACONDA_TOKEN_FILE, 'r') as tfile:
-        token = tfile.read()
 
     # specify Python versions
     if also37:
@@ -106,6 +104,7 @@ def release(repo_name, pkg_name, version, also37=True, dryrun=False):
     print(':   python_versions = {}'.format(python_versions))
     print(': Package-Builder will upload model packages to:')
     print(':   Anaconda channel = {}'.format(ANACONDA_CHANNEL))
+    print(':   using token in file = {}'.format(ANACONDA_TOKEN_FILE))
     if dryrun:
         print(': Package-Builder is quitting')
         return
@@ -177,8 +176,9 @@ def release(repo_name, pkg_name, version, also37=True, dryrun=False):
         for platform in OS_PLATFORMS:
             pkgpath = os.path.join(BUILDS_DIR, platform, pkgfile)
             cmd = 'anaconda -t {} upload -u {} --force {}'.format(
-                token, ANACONDA_USER, pkgpath
+                ANACONDA_TOKEN_FILE, ANACONDA_USER, pkgpath
             )
+            print('upload cmd is <{}>'.format(cmd))
             u.os_call(cmd)
 
     print(': Package-Builder is cleaning-up')
