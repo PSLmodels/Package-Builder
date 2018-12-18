@@ -50,7 +50,7 @@ this command and getting something like this screen output:
 
 ```
 $ pbrelease --version
-Package-Builder 0.17.0
+Package-Builder 0.18.0
 ```
 
 Then see the information that `pbrelease` expects by asking for help
@@ -97,14 +97,15 @@ your changes, create a model release on GitHub.  Then to build and
 upload packages for that model release, execute this command:
 
 ```
-$ pbrelease  repo_name  pkg_name  version
+$ pbrelease  repo_name  pkg_name  version  [--also37]
 ```
 
 where your replace `repo_name` with the name of your model's
 repository and you replace `pkg_name` with the sub-directory name
 containing your model's highest level `__init__.py` file and you
 replace `version` with the release for which you want to make
-model packages.
+model packages.  If you want packages for Python 3.7 as well as
+for Python 3.6, use the `--also37` option; otherwise leave it out.
 
 Here's a full example that creates packages for Behavioral-Responses
 release 0.5.0:
@@ -112,8 +113,9 @@ release 0.5.0:
 ```
 $ conda search -c PSLmodels behresp
 Loading channels: done
-PackagesNotFoundError: The following packages are not available ...
-  - behresp
+# Name                  Version           Build  Channel
+behresp                   0.4.0          py36_0  PSLmodels
+behresp                   0.4.1          py36_0  PSLmodels
 
 $ pbrelease Behavioral-Responses behresp 0.5.0 --also37
 : Package-Builder will build model packages for:
@@ -129,10 +131,11 @@ $ pbrelease Behavioral-Responses behresp 0.5.0 --also37
 
 $ conda search -c PSLmodels behresp
 Loading channels: done
-# Name                  Version           Build  Channel             
-behresp                   0.4.0          py36_0  PSLmodels           
-behresp                   0.5.0          py36_0  PSLmodels           
-behresp                   0.5.0          py37_0  PSLmodels           
+# Name                  Version           Build  Channel
+behresp                   0.4.0          py36_0  PSLmodels
+behresp                   0.4.1          py36_0  PSLmodels
+behresp                   0.5.0          py36_0  PSLmodels
+behresp                   0.5.0          py37_0  PSLmodels
 ```
 
 
