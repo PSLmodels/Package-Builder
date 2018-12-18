@@ -4,6 +4,23 @@ Go [here](https://github.com/PSLmodels~/Package-Builder/pulls?q=is%3Apr+is%3Aclo
 for a complete commit history.
 
 
+2018-12-18 Release 0.18.0
+-------------------------
+(last merged pull request is
+[#150](https://github.com/PSLmodels/Package-Builder/pull/150))
+
+**API Changes**
+- None
+
+**New Features**
+- Use newer `subprocess.run` in `os_call` utility function
+  [[#150](https://github.com/PSLmodels/Package-Builder/pull/150)
+  by Martin Holmer]
+
+**Bug Fixes**
+- None
+
+
 2018-12-17 Release 0.17.0
 -------------------------
 (last merged pull request is
