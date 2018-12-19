@@ -50,7 +50,7 @@ this command and getting something like this screen output:
 
 ```
 $ pbrelease --version
-Package-Builder 0.18.0
+Package-Builder 0.19.0
 ```
 
 Then see the information that `pbrelease` expects by asking for help
@@ -125,9 +125,14 @@ $ pbrelease Behavioral-Responses behresp 0.5.0 --also37
 :   python_versions = ['3.6', '3.7']
 : Package-Builder will upload model packages to:
 :   Anaconda channel = pslmodels
+:   using token in file = /Users/mrh/.pslmodels_anaconda_token
+: Package-Builder is starting at Wed Dec 19 11:57:27 2018
 : Package-Builder is cloning repository code for 0.5.0
-... <an enormous amount of screen output> ...
-: Package-Builder is finished
+...
+... <an enormous amount of screen output>
+...
+: Package-Builder is cleaning-up
+: Package-Builder is finishing at Wed Dec 19 12:00:08 2018
 
 $ conda search -c PSLmodels behresp
 Loading channels: done
