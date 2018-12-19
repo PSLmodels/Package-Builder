@@ -7,6 +7,7 @@ Policy Simulaton Library (PSL) model Anaconda-Cloud package release logic.
 
 import os
 import re
+import time
 import shutil
 import pkgbld.utils as u
 
@@ -109,6 +110,9 @@ def release(repo_name, pkg_name, version, also37=True, dryrun=False):
         print(': Package-Builder is quitting')
         return
 
+    # show date and time
+    print((': Package-Builder is starting at {}'.format(time.asctime())))
+
     # make empty working directory
     if os.path.isdir(WORKING_DIR):
         shutil.rmtree(WORKING_DIR)
@@ -178,7 +182,6 @@ def release(repo_name, pkg_name, version, also37=True, dryrun=False):
             cmd = 'anaconda -t {} upload -u {} --force {}'.format(
                 ANACONDA_TOKEN_FILE, ANACONDA_USER, pkgpath
             )
-            print('upload cmd is <{}>'.format(cmd))
             u.os_call(cmd)
 
     print(': Package-Builder is cleaning-up')
@@ -191,4 +194,4 @@ def release(repo_name, pkg_name, version, also37=True, dryrun=False):
     os.chdir(HOME_DIR)
     shutil.rmtree(WORKING_DIR)
 
-    print(': Package-Builder is finished')
+    print(': Package-Builder is finishing at {}'.format(time.asctime()))
