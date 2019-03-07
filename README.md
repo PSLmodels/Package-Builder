@@ -92,6 +92,14 @@ to make packages for your model release.
 How to use pbrelease?
 ---------------------
 
+In order to use the `pbrelease` tool, you need a file containing the
+Anaconda Cloud upload token for the `PSLmodels` channel.  Get that
+file by asking for it in a new Package-Builder issue.  You will be
+sent via private email a zip file containing the token file.  Unzip
+that file in your home directory.  After doing that, the
+`.pslmodels_anaconda_token` file should be in your home directory.
+Now you're ready to use the `pbrelease` tool.
+
 After testing your model and commiting to the master branch all of
 your changes, create a model release on GitHub.  Then to build and
 upload packages for that model release, execute this command:
