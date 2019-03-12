@@ -188,7 +188,7 @@ def release(repo_name, pkg_name, version,
                '--no-anaconda-upload --output-folder {} '
                'conda.recipe').format(pyver, ANACONDA_CHANNEL, BUILDS_DIR)
         u.os_call(cmd)
-        # ... 
+        # ... if localdir is specified, skip convert and upload logic
         if localdir:
             break  # out of for pyver loop
         # ... convert local build to other OS_PLATFORMS

@@ -59,27 +59,33 @@ and getting something like this screen output:
 ```
 $ pbrelease --help
 usage: pbrelease  REPOSITORY_NAME  PACKAGE_NAME  MODEL_VERSION
-                  [--help]  [--also37]  [--dryrun]
-                  [--version]
+                  [--help]  [--local LOCAL]  [--also37]
+                  [--dryrun]  [--version]
 
 Creates conda packages named PACKAGE_NAME for the PSL model in REPOSITORY_NAME
-that has a MODEL_VERSION release. The packages are build locally in a
-temporary workspace and then uploaded to the Anaconda Cloud PSLmodels channel
-for public distribution. The built/uploaded packages are for Python 3.6 and
-optionally Python 3.7.
+that has a GitHub release named MODEL_VERSION. The packages are build locally
+in a temporary workspace and then uploaded to the Anaconda Cloud PSLmodels
+channel for public distribution. The built/uploaded packages are for Python
+3.6 and optionally Python 3.7.
 
 positional arguments:
   REPOSITORY_NAME  Name of repository in the GitHub organization called
                    PSLmodels. Example: Tax-Calculator
   PACKAGE_NAME     Name of packages to build and upload. Example: taxcalc
   MODEL_VERSION    Model release string that has X.Y.Z semantic-versioning
-                   pattern. Example: 0.23.2
+                   pattern. Example: 1.0.1
 
 optional arguments:
   -h, --help       show this help message and exit
+  --local LOCAL    optional flag where LOCAL is name of local directory
+                   containing model source code used to build package, which
+                   is installed on local computer as version 0.0.0; no --local
+                   option implies model source code is cloned from GitHub
+                   REPOSITORY_NAME for MODEL_RELEASE and packages are uploaded
+                   to Anaconda Cloud PSLmodels channel for public distribution
   --also37         optional flag that causes build/upload of packages for
                    Python 3.7
-  --dryrun         optional flag that writes build/upload plan to stdout and
+  --dryrun         optional flag that writes execution plan to stdout and
                    quits without executing plan
   --version        optional flag that writes Package-Builder release version
                    to stdout and quits
@@ -151,6 +157,19 @@ behresp                   0.5.0          py36_0  PSLmodels
 behresp                   0.5.0          py37_0  PSLmodels
 ```
 
+To use `pbrelease` to make a local package from the current (even uncommitted)
+code on your current branch, make the top-level directory of the repo's source
+code tree the current working directory.  Then use the `--local` option as
+shown here:
+```
+$ cd Tax-Calculator
+$ pbrelease Tax-Calculator taxcalc 0.0.0 --local .
+```
+This will produce a local package on your computer for testing or validation
+work.  You can uninstall this local package at any time using this command:
+```
+$ conda uninstall taxcalc --yes
+```
 
 What are the package-building criteria?
 ---------------------------------------
