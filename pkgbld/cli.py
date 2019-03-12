@@ -18,15 +18,15 @@ def main():
     """
     # parse command-line arguments:
     usage_str = ('pbrelease  REPOSITORY_NAME  PACKAGE_NAME  MODEL_VERSION\n'
-                 '                  [--help]  [--also37]  [--dryrun]\n'
-                 '                  [--version]')
+                 '                  [--help]  [--local LOCAL]  [--also37]\n'
+                 '                  [--dryrun]  [--version]')
     parser = argparse.ArgumentParser(
         prog='',
         usage=usage_str,
         description=('Creates conda packages named PACKAGE_NAME for the PSL '
-                     'model in REPOSITORY_NAME that has a MODEL_VERSION '
-                     'release.  The packages are build locally in a '
-                     'temporary workspace and then uploaded to the '
+                     'model in REPOSITORY_NAME that has a GitHub release '
+                     'named MODEL_VERSION.  The packages are build locally '
+                     'in a temporary workspace and then uploaded to the '
                      'Anaconda Cloud PSLmodels channel for public '
                      'distribution.  The built/uploaded packages are '
                      'for Python 3.6 and optionally Python 3.7.')
@@ -42,7 +42,17 @@ def main():
     parser.add_argument('MODEL_VERSION', nargs='?',
                         help=('Model release string that has X.Y.Z '
                               'semantic-versioning pattern. '
-                              'Example: 0.23.2'),
+                              'Example: 1.0.1'),
+                        default=None)
+    parser.add_argument('--local',
+                        help=('optional flag where LOCAL is name of local '
+                              'directory containing model source code used '
+                              'to build package, which is installed on local '
+                              'computer as version 0.0.0; no --local option '
+                              'implies model source code is cloned from '
+                              'GitHub REPOSITORY_NAME for MODEL_RELEASE '
+                              'and packages are uploaded to Anaconda Cloud '
+                              'PSLmodels channel for public distribution'),
                         default=None)
     parser.add_argument('--also37',
                         help=('optional flag that causes build/upload of '
@@ -50,7 +60,7 @@ def main():
                         default=False,
                         action="store_true")
     parser.add_argument('--dryrun',
-                        help=('optional flag that writes build/upload plan '
+                        help=('optional flag that writes execution plan '
                               'to stdout and quits without executing plan'),
                         default=False,
                         action="store_true")
@@ -82,12 +92,17 @@ def main():
                      'semantic-versioning pattern\n')
     if not os.path.isfile(pkgbld.ANACONDA_TOKEN_FILE):
         emsg += ('ERROR: Anaconda token file '
-                 '{} does not exist'.format(pkgbld.ANACONDA_TOKEN_FILE))
+                 '{} does not exist\n'.format(pkgbld.ANACONDA_TOKEN_FILE))
+    if args.local and args.also37:
+        emsg += ('ERROR: cannot use --local and --also37 options '
+                 'at the same time\n')
+    if args.local and not os.path.isdir(args.local):
+        emsg += 'ERROR: LOCAL directory {} does not exist\n'.format(args.local)
     if emsg:
         print(emsg)
         print('USAGE:', usage_str)
         return 1
     # call pkgbld release function with specified parameters
     pkgbld.release(repo_name, pkg_name, version,
-                   also37=args.also37, dryrun=args.dryrun)
+                   localdir=args.local, also37=args.also37, dryrun=args.dryrun)
     return 0
