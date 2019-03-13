@@ -141,7 +141,8 @@ def release(repo_name, pkg_name, version,
         # copy source tree on local computer
         print(': Package-Builder is copying local source code')
         destination = os.path.join(WORKING_DIR, repo_name)
-        shutil.copytree(localdir, destination)
+        ignorepattern = shutil.ignore_pattern('*.pyc', '*.html', 'test_*')
+        shutil.copytree(localdir, destination, ignore=ignorepattern)
         os.chdir(WORKING_DIR)
     else:
         # clone code for model_version from model repository
