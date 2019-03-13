@@ -18,18 +18,18 @@ def main():
     """
     # parse command-line arguments:
     usage_str = ('pbrelease  REPOSITORY_NAME  PACKAGE_NAME  MODEL_VERSION\n'
-                 '                  [--help]  [--also37]  [--dryrun]\n'
-                 '                  [--version]')
+                 '                  [--help]  [--local LOCAL]  '
+                 '[--dryrun]  [--version]')
     parser = argparse.ArgumentParser(
         prog='',
         usage=usage_str,
         description=('Creates conda packages named PACKAGE_NAME for the PSL '
-                     'model in REPOSITORY_NAME that has a MODEL_VERSION '
-                     'release.  The packages are build locally in a '
-                     'temporary workspace and then uploaded to the '
+                     'model in REPOSITORY_NAME that has a GitHub release '
+                     'named MODEL_VERSION.  The packages are built locally '
+                     'in a temporary workspace and then uploaded to the '
                      'Anaconda Cloud PSLmodels channel for public '
                      'distribution.  The built/uploaded packages are '
-                     'for Python 3.6 and optionally Python 3.7.')
+                     'for Python 3.6 and Python 3.7.')
     )
     parser.add_argument('REPOSITORY_NAME', nargs='?',
                         help=('Name of repository in the GitHub organization '
@@ -42,15 +42,21 @@ def main():
     parser.add_argument('MODEL_VERSION', nargs='?',
                         help=('Model release string that has X.Y.Z '
                               'semantic-versioning pattern. '
-                              'Example: 0.23.2'),
+                              'Example: 1.0.1'),
                         default=None)
-    parser.add_argument('--also37',
-                        help=('optional flag that causes build/upload of '
-                              'packages for Python 3.7'),
-                        default=False,
-                        action="store_true")
+    parser.add_argument('--local',
+                        help=('optional flag where LOCAL is name of top-level '
+                              'directory containing the model conda.recipe '
+                              'directory used to build the package that is '
+                              'installed on local computer; '
+                              'no --local option implies model source code '
+                              'is cloned from GitHub REPOSITORY_NAME for '
+                              'MODEL_RELEASE and packages are uploaded to '
+                              'Anaconda Cloud PSLmodels channel for public '
+                              'distribution'),
+                        default=None)
     parser.add_argument('--dryrun',
-                        help=('optional flag that writes build/upload plan '
+                        help=('optional flag that writes execution plan '
                               'to stdout and quits without executing plan'),
                         default=False,
                         action="store_true")
@@ -78,16 +84,23 @@ def main():
     else:
         pattern = r'^[0-9]+\.[0-9]+\.[0-9]+$'
         if re.match(pattern, version) is None:
-            emsg += ('ERROR: MODEL_VERSION does have X.Y.Z '
+            emsg += ('ERROR: MODEL_VERSION does not have X.Y.Z '
                      'semantic-versioning pattern\n')
     if not os.path.isfile(pkgbld.ANACONDA_TOKEN_FILE):
-        emsg += ('ERROR: Anaconda token file '
-                 '{} does not exist'.format(pkgbld.ANACONDA_TOKEN_FILE))
+        emsg += ('ERROR: Anaconda token file {} '
+                 'does not exist\n'.format(pkgbld.ANACONDA_TOKEN_FILE))
+    if args.local:
+        if not os.path.isdir(args.local):
+            emsg += ('ERROR: LOCAL directory {} '
+                     'does not exist\n'.format(args.local))
+        if version != '0.0.0':
+            emsg += ('ERROR: MODEL_VERSION {} is not 0.0.0 '
+                     'when using --local option\n'.format(version))
     if emsg:
         print(emsg)
         print('USAGE:', usage_str)
         return 1
     # call pkgbld release function with specified parameters
     pkgbld.release(repo_name, pkg_name, version,
-                   also37=args.also37, dryrun=args.dryrun)
+                   localdir=args.local, dryrun=args.dryrun)
     return 0

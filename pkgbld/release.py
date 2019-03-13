@@ -7,12 +7,13 @@ Policy Simulaton Library (PSL) model Anaconda-Cloud package release logic.
 
 import os
 import re
+import sys
 import time
 import shutil
 import pkgbld.utils as u
 
 
-BASE_PYTHON_VERSIONS = ['3.6']
+ALL_PYTHON_VERSIONS = ['3.6', '3.7']
 OS_PLATFORMS = ['osx-64', 'linux-64', 'win-32', 'win-64']
 
 GITHUB_URL = 'https://github.com/PSLmodels'
@@ -30,11 +31,16 @@ WORKING_DIR = os.path.join(
 BUILDS_DIR = 'pkgbld_output'
 
 
-def release(repo_name, pkg_name, version, also37=True, dryrun=False):
+def release(repo_name, pkg_name, version, localdir=None, dryrun=False):
     """
-    Conduct local build and upload to Anaconda Cloud of conda packages
-    for each operating-system platform and Python version for the specified
-    Policy Simulation Library (PSL) model and version.
+    If localdir==None, conduct build using cloned source code and
+    upload to Anaconda Cloud of conda packages for each operating-system
+    platform and Python version for the specified Policy Simulation Library
+    (PSL) model and GitHub release version.
+
+    If localdir==string, build from source code in localdir and skip the
+    convert and upload steps instead installing the built package on the
+    local computer.
 
     Parameters
     ----------
@@ -48,8 +54,9 @@ def release(repo_name, pkg_name, version, also37=True, dryrun=False):
         model version string having X.Y.Z semantic-versioning pattern;
         must be a release tag in the model repository
 
-    also37: boolean
-        whether or not packages are built/uploaded for Python 3.7
+    localdir: None or string
+        localdir containing model source code; None implies cloning
+        source code from GitHub repository
 
     dryrun: boolean
         whether or not just the package build/upload plan is shown
@@ -66,7 +73,7 @@ def release(repo_name, pkg_name, version, also37=True, dryrun=False):
 
     Notes
     -----
-    Example usage: release('Tax-Calculator', 'taxcalc', '0.22.2')
+    Example usage: release('Tax-Calculator', 'taxcalc', '1.0.1')
     """
     # pylint: disable=too-many-statements,too-many-locals,too-many-branches
 
@@ -77,8 +84,13 @@ def release(repo_name, pkg_name, version, also37=True, dryrun=False):
         raise ValueError('pkg_name is not a string object')
     if not isinstance(version, str):
         raise ValueError('version is not a string object')
-    if not isinstance(also37, bool):
-        raise ValueError('also37 is not a boolean object')
+    if not (localdir is None or isinstance(localdir, str)):
+        raise ValueError('localdir is not None or a string object')
+    if isinstance(localdir, str):
+        if not os.path.isdir(localdir):
+            raise ValueError('localdir is not a directory')
+        if version != '0.0.0':
+            raise ValueError('version is not 0.0.0 when using --local option')
     if not isinstance(dryrun, bool):
         raise ValueError('dryrun is not a boolean object')
     pattern = r'^[0-9]+\.[0-9]+\.[0-9]+$'
@@ -86,26 +98,27 @@ def release(repo_name, pkg_name, version, also37=True, dryrun=False):
         msg = 'version={} does not have X.Y.Z semantic-versioning pattern'
         raise ValueError(msg.format(version))
 
-    # check for token file
-    if not os.path.isfile(ANACONDA_TOKEN_FILE):
-        msg = 'Anaconda token file {} does not exist'
-        raise ValueError(msg.format(ANACONDA_TOKEN_FILE))
+    # specify Python versions list, which depends on localdir
+    assert sys.version_info[0] == 3
+    local_python_version = '3.{}'.format(sys.version_info[1])
+    python_versions = [local_python_version]  # always first in the list
+    if not localdir:
+        for ver in ALL_PYTHON_VERSIONS:
+            if ver not in python_versions:
+                python_versions.append(ver)
 
-    # specify Python versions
-    if also37:
-        python_versions = BASE_PYTHON_VERSIONS + ['3.7']
-    else:
-        python_versions = BASE_PYTHON_VERSIONS
-
-    # show build/upload plan
+    # show execution plan
     print(': Package-Builder will build model packages for:')
     print(':   repository_name = {}'.format(repo_name))
     print(':   package_name = {}'.format(pkg_name))
     print(':   model_version = {}'.format(version))
     print(':   python_versions = {}'.format(python_versions))
-    print(': Package-Builder will upload model packages to:')
-    print(':   Anaconda channel = {}'.format(ANACONDA_CHANNEL))
-    print(':   using token in file = {}'.format(ANACONDA_TOKEN_FILE))
+    if localdir:
+        print(': Package-Builder will install package on local computer')
+    else:
+        print(': Package-Builder will upload model packages to:')
+        print(':   Anaconda channel = {}'.format(ANACONDA_CHANNEL))
+        print(':   using token in file = {}'.format(ANACONDA_TOKEN_FILE))
     if dryrun:
         print(': Package-Builder is quitting')
         return
@@ -113,41 +126,51 @@ def release(repo_name, pkg_name, version, also37=True, dryrun=False):
     # show date and time
     print((': Package-Builder is starting at {}'.format(time.asctime())))
 
-    # make empty working directory
+    # remove any old working directory
     if os.path.isdir(WORKING_DIR):
         shutil.rmtree(WORKING_DIR)
-    os.mkdir(WORKING_DIR)
-    os.chdir(WORKING_DIR)
 
-    # clone code for model_version from model repository
-    print((': Package-Builder is cloning repository code '
-           'for {}'.format(version)))
-    cmd = 'git clone --branch {} --depth 1 {}/{}/'.format(
-        version, GITHUB_URL, repo_name
-    )
-    u.os_call(cmd)
+    # copy model source code to working directory
+    if localdir:
+        # copy source tree on local computer
+        print(': Package-Builder is copying local source code')
+        destination = os.path.join(WORKING_DIR, repo_name)
+        ignorepattern = shutil.ignore_patterns('*.pyc', '*.html', 'test_*')
+        shutil.copytree(localdir, destination, ignore=ignorepattern)
+        os.chdir(WORKING_DIR)
+    else:
+        # clone code for model_version from model repository
+        print((': Package-Builder is cloning repository code '
+               'for {}'.format(version)))
+        os.mkdir(WORKING_DIR)
+        os.chdir(WORKING_DIR)
+        cmd = 'git clone --branch {} --depth 1 {}/{}/'.format(
+            version, GITHUB_URL, repo_name
+        )
+        u.os_call(cmd)
     os.chdir(repo_name)
 
     # specify version in several repository files
-    print(': Package-Builder is setting version')
-    # ... specify version in meta.yaml file
-    u.file_revision(
-        filename=os.path.join('conda.recipe', 'meta.yaml'),
-        pattern=r'version: .*',
-        replacement='version: {}'.format(version)
-    )
-    # ... specify version in setup.py file
-    u.file_revision(
-        filename='setup.py',
-        pattern=r'version = .*',
-        replacement='version = "{}"'.format(version)
-    )
-    # ... specify version in package_name/__init__.py file
-    u.file_revision(
-        filename=os.path.join(pkg_name, '__init__.py'),
-        pattern=r'__version__ = .*',
-        replacement='__version__ = "{}"'.format(version)
-    )
+    if not localdir:
+        print(': Package-Builder is setting version')
+        # ... specify version in meta.yaml file
+        u.file_revision(
+            filename=os.path.join('conda.recipe', 'meta.yaml'),
+            pattern=r'version: .*',
+            replacement='version: {}'.format(version)
+        )
+        # ... specify version in setup.py file
+        u.file_revision(
+            filename='setup.py',
+            pattern=r'version = .*',
+            replacement='version = "{}"'.format(version)
+        )
+        # ... specify version in package_name/__init__.py file
+        u.file_revision(
+            filename=os.path.join(pkg_name, '__init__.py'),
+            pattern=r'__version__ = .*',
+            replacement='__version__ = "{}"'.format(version)
+        )
 
     # build and upload model package for each Python version and OS platform
     local_platform = u.conda_platform_name()
@@ -160,6 +183,9 @@ def release(repo_name, pkg_name, version, also37=True, dryrun=False):
                '--no-anaconda-upload --output-folder {} '
                'conda.recipe').format(pyver, ANACONDA_CHANNEL, BUILDS_DIR)
         u.os_call(cmd)
+        # ... if localdir is specified, skip convert and upload logic
+        if localdir:
+            break  # out of for pyver loop
         # ... convert local build to other OS_PLATFORMS
         print((': Package-Builder is converting package '
                'for Python {}').format(pyver))
@@ -183,6 +209,16 @@ def release(repo_name, pkg_name, version, also37=True, dryrun=False):
                 ANACONDA_TOKEN_FILE, ANACONDA_USER, pkgpath
             )
             u.os_call(cmd)
+    if localdir:
+        # do uninstall and install on local computer
+        print(': Package-Builder is uninstalling any existing package')
+        cmd = 'conda uninstall {} --yes'.format(pkg_name)
+        u.os_call(cmd, ignore_error=True)
+        print(': Package-Builder is installing package on local computer')
+        pkg_dir = os.path.join('file://', WORKING_DIR, repo_name,
+                               '{}_output'.format(pkg_name))
+        cmd = 'conda install --channel {} {}=0.0.0 --yes'
+        u.os_call(cmd.format(pkg_dir, pkg_name))
 
     print(': Package-Builder is cleaning-up')
 
