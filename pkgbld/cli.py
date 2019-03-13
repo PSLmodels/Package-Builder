@@ -29,7 +29,7 @@ def main():
                      'in a temporary workspace and then uploaded to the '
                      'Anaconda Cloud PSLmodels channel for public '
                      'distribution.  The built/uploaded packages are '
-                     'for Python 3.6 and optionally Python 3.7 ++.')
+                     'for Python 3.6 and optionally Python 3.7.')
     )
     parser.add_argument('REPOSITORY_NAME', nargs='?',
                         help=('Name of repository in the GitHub organization '
@@ -93,11 +93,15 @@ def main():
     if not os.path.isfile(pkgbld.ANACONDA_TOKEN_FILE):
         emsg += ('ERROR: Anaconda token file '
                  '{} does not exist\n'.format(pkgbld.ANACONDA_TOKEN_FILE))
-    if args.local and args.also37:
-        emsg += ('ERROR: cannot use --local and --also37 options '
-                 'at the same time\n')
-    if args.local and not os.path.isdir(args.local):
-        emsg += 'ERROR: LOCAL directory {} does not exist\n'.format(args.local)
+    if args.local:
+        if args.also37:
+            emsg += ('ERROR: cannot use --local and --also37 options '
+                     'at the same time\n')
+        if not os.path.isdir(args.local):
+            emsg += 'ERROR: LOCAL directory {} does not exist\n'.format(
+                args.local)
+        if version != '0.0.0':
+            emsg += 'ERROR: MODEL_VERSION {} is not 0.0.0\n'.format(version)
     if emsg:
         print(emsg)
         print('USAGE:', usage_str)
