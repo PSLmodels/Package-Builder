@@ -215,8 +215,8 @@ def release(repo_name, pkg_name, version, localdir=None, dryrun=False):
         cmd = 'conda uninstall {} --yes'.format(pkg_name)
         u.os_call(cmd, ignore_error=True)
         print(': Package-Builder is installing package on local computer')
-        pkg_dir = os.path.join('file://', WORKING_DIR, repo_name,
-                               '{}_output'.format(pkg_name))
+        pkg_dir = os.path.join('file://', WORKING_DIR,
+                               repo_name, 'pkgbld_output')
         cmd = 'conda install --channel {} {}=0.0.0 --yes'
         u.os_call(cmd.format(pkg_dir, pkg_name))
 
