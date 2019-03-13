@@ -7,12 +7,13 @@ Policy Simulaton Library (PSL) model Anaconda-Cloud package release logic.
 
 import os
 import re
+import sys
 import time
 import shutil
 import pkgbld.utils as u
 
 
-BASE_PYTHON_VERSIONS = ['3.6']
+ALL_PYTHON_VERSIONS = ['3.6', '3.7']
 OS_PLATFORMS = ['osx-64', 'linux-64', 'win-32', 'win-64']
 
 GITHUB_URL = 'https://github.com/PSLmodels'
@@ -30,8 +31,7 @@ WORKING_DIR = os.path.join(
 BUILDS_DIR = 'pkgbld_output'
 
 
-def release(repo_name, pkg_name, version,
-            localdir=None, also37=False, dryrun=False):
+def release(repo_name, pkg_name, version, localdir=None, dryrun=False):
     """
     If localdir==None, conduct build using cloned source code and
     upload to Anaconda Cloud of conda packages for each operating-system
@@ -58,9 +58,6 @@ def release(repo_name, pkg_name, version,
         localdir containing model source code; None implies cloning
         source code from GitHub repository
 
-    also37: boolean
-        whether or not packages are built/uploaded for Python 3.7
-
     dryrun: boolean
         whether or not just the package build/upload plan is shown
 
@@ -76,8 +73,7 @@ def release(repo_name, pkg_name, version,
 
     Notes
     -----
-    Example usage: release('Tax-Calculator', 'taxcalc', '0.22.2')
-
+    Example usage: release('Tax-Calculator', 'taxcalc', '1.0.1')
     """
     # pylint: disable=too-many-statements,too-many-locals,too-many-branches
 
@@ -94,27 +90,22 @@ def release(repo_name, pkg_name, version,
         if not os.path.isdir(localdir):
             raise ValueError('localdir is not a directory')
         if version != '0.0.0':
-            raise ValueError('version is not 0.0.0')
-    if not isinstance(also37, bool):
-        raise ValueError('also37 is not a boolean object')
+            raise ValueError('version is not 0.0.0 when using --local option')
     if not isinstance(dryrun, bool):
         raise ValueError('dryrun is not a boolean object')
     pattern = r'^[0-9]+\.[0-9]+\.[0-9]+$'
     if re.match(pattern, version) is None:
         msg = 'version={} does not have X.Y.Z semantic-versioning pattern'
         raise ValueError(msg.format(version))
-    if localdir and also37:
-        raise ValueError('cannot specify both localdir and also37')
 
-    # revise version if localdir is specified
-    if localdir:
-        version = '0.0.0'
-
-    # specify Python versions
-    if also37:
-        python_versions = BASE_PYTHON_VERSIONS + ['3.7']
-    else:
-        python_versions = BASE_PYTHON_VERSIONS
+    # specify Python versions list, which depends on localdir
+    assert sys.version_info[0] == 3
+    local_python_version = '3.{}'.format(sys.version_info[1])
+    python_versions = [local_python_version]  # always first in the list
+    if not localdir:
+        for ver in ALL_PYTHON_VERSIONS:
+            if ver not in python_versions:
+                python_versions.append(ver)
 
     # show execution plan
     print(': Package-Builder will build model packages for:')
