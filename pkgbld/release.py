@@ -115,7 +115,7 @@ def release(repo_name, pkg_name, version, localdir=None, dryrun=False):
     print(':   python_versions = {}'.format(python_versions))
     if localdir:
         print(': Package-Builder will install package on local computer')
-    else:        
+    else:
         print(': Package-Builder will upload model packages to:')
         print(':   Anaconda channel = {}'.format(ANACONDA_CHANNEL))
         print(':   using token in file = {}'.format(ANACONDA_TOKEN_FILE))
