@@ -4,6 +4,23 @@ Go [here](https://github.com/PSLmodels~/Package-Builder/pulls?q=is%3Apr+is%3Aclo
 for a complete commit history.
 
 
+2019-03-13 Release 0.21.0
+-------------------------
+(last merged pull request is
+[#161](https://github.com/PSLmodels/Package-Builder/pull/161))
+
+**API Changes**
+- None
+
+**New Features**
+- None
+
+**Bug Fixes**
+- Correct name of directory where built package is to be found for local installation using the new `--local LOCAL` option
+  [[#161](https://github.com/PSLmodels/Package-Builder/pull/161)
+  by Martin Holmer]
+
+
 2019-03-13 Release 0.20.0
 -------------------------
 (last merged pull request is
