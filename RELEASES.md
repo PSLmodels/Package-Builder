@@ -4,6 +4,25 @@ Go [here](https://github.com/PSLmodels~/Package-Builder/pulls?q=is%3Apr+is%3Aclo
 for a complete commit history.
 
 
+2010-03-13 Release 0.20.0
+-------------------------
+(last merged pull request is
+[#158](https://github.com/PSLmodels/Package-Builder/pull/158))
+
+**API Changes**
+- Remove `--also37` option as now packages for uploading are automatically built for both Python 3.6 and Python 3.7
+  [[#158](https://github.com/PSLmodels/Package-Builder/pull/158)
+  by Martin Holmer]
+
+**New Features**
+- Add `--local LOCAL` option to build package from local source code and install it on local computer
+  [[#158](https://github.com/PSLmodels/Package-Builder/pull/158)
+  by Martin Holmer with suggestion and assistance from Hank Doupe]
+
+**Bug Fixes**
+- None
+
+
 2018-12-19 Release 0.19.0
 -------------------------
 (last merged pull request is
