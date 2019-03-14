@@ -50,7 +50,7 @@ this command and getting something like this screen output:
 
 ```
 $ pbrelease --version
-Package-Builder 0.19.0
+Package-Builder 0.21.0
 ```
 
 Then see the information that `pbrelease` expects by asking for help
@@ -117,16 +117,10 @@ containing your model's highest level `__init__.py` file and you
 replace `version` with the release for which you want to make
 model packages.
 
-Here's a full example that creates packages for Behavioral-Responses
-release 0.5.0:
+Here's an example that builds and uploads packages for
+Behavioral-Responses release 0.5.0:
 
 ```
-$ conda search -c PSLmodels behresp
-Loading channels: done
-# Name                  Version           Build  Channel
-behresp                   0.4.0          py36_0  PSLmodels
-behresp                   0.4.1          py36_0  PSLmodels
-
 $ pbrelease Behavioral-Responses behresp 0.5.0
 : Package-Builder will build model packages for:
 :   repository_name = Behavioral-Responses
@@ -136,21 +130,13 @@ $ pbrelease Behavioral-Responses behresp 0.5.0
 : Package-Builder will upload model packages to:
 :   Anaconda channel = pslmodels
 :   using token in file = /Users/mrh/.pslmodels_anaconda_token
-: Package-Builder is starting at Wed Dec 19 11:57:27 2018
+: Package-Builder is starting at Thu Mar 14 07:25:21 2019
 : Package-Builder is cloning repository code for 0.5.0
 ...
 ... <an enormous amount of screen output>
 ...
 : Package-Builder is cleaning-up
-: Package-Builder is finishing at Wed Dec 19 12:00:08 2018
-
-$ conda search -c PSLmodels behresp
-Loading channels: done
-# Name                  Version           Build  Channel
-behresp                   0.4.0          py36_0  PSLmodels
-behresp                   0.4.1          py36_0  PSLmodels
-behresp                   0.5.0          py36_0  PSLmodels
-behresp                   0.5.0          py37_0  PSLmodels
+: Package-Builder is finishing at Thu Mar 14 07:27:27 2019
 ```
 
 To use `pbrelease` to make a **local package** from the current (even
@@ -162,8 +148,10 @@ use the `--local .` option as shown here:
 $ cd Tax-Calculator
 $ pbrelease Tax-Calculator taxcalc 0.0.0 --local .
 ```
+
 This will produce a local package on your computer for testing or validation
 work.  You can uninstall this local package at any time using this command:
+
 ```
 $ conda uninstall taxcalc --yes
 ```
