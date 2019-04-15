@@ -18,7 +18,7 @@ def main():
     """
     # parse command-line arguments:
     usage_str = ('pbrelease  REPOSITORY_NAME  PACKAGE_NAME  MODEL_VERSION\n'
-                 '                  [--help]  [--local LOCAL]  '
+                 '                  [--help]  [--local]  '
                  '[--dryrun]  [--version]')
     parser = argparse.ArgumentParser(
         prog='',
@@ -45,16 +45,12 @@ def main():
                               'Example: 1.0.1'),
                         default=None)
     parser.add_argument('--local',
-                        help=('optional flag where LOCAL is name of top-level '
-                              'directory containing the model conda.recipe '
-                              'directory used to build the package that is '
-                              'installed on local computer; '
-                              'no --local option implies model source code '
-                              'is cloned from GitHub REPOSITORY_NAME for '
-                              'MODEL_RELEASE and packages are uploaded to '
-                              'Anaconda Cloud PSLmodels channel for public '
-                              'distribution'),
-                        default=None)
+                        help=('optional flag that causes package to be '
+                              'built from current source code and installed '
+                              'on local computer without packages being '
+                              'uploaded to Anaconda Cloud PSLmodels channel.'),
+                        default=False,
+                        action="store_true")
     parser.add_argument('--dryrun',
                         help=('optional flag that writes execution plan '
                               'to stdout and quits without executing plan'),
@@ -90,17 +86,19 @@ def main():
         emsg += ('ERROR: Anaconda token file {} '
                  'does not exist\n'.format(pkgbld.ANACONDA_TOKEN_FILE))
     if args.local:
-        if not os.path.isdir(args.local):
-            emsg += ('ERROR: LOCAL directory {} '
-                     'does not exist\n'.format(args.local))
-        if version != '0.0.0':
-            emsg += ('ERROR: MODEL_VERSION {} is not 0.0.0 '
-                     'when using --local option\n'.format(version))
+        cwd = os.getcwd()
+        if not cwd.endswith(repo_name):
+            emsg += ('ERROR: cwd={} does not correspond to '
+                     'REPOSITORY_NAME={}\n'.format(cwd, repo_name))
+        local_pkgname = os.path.join('.', pkg_name)
+        if not os.path.isdir(local_pkgname):
+            emsg += ('ERROR: cwd={} does not contain '
+                     'subdirectory {} '.format(cwd, pkg_name))
     if emsg:
         print(emsg)
         print('USAGE:', usage_str)
         return 1
     # call pkgbld release function with specified parameters
     pkgbld.release(repo_name, pkg_name, version,
-                   localdir=args.local, dryrun=args.dryrun)
+                   local=args.local, dryrun=args.dryrun)
     return 0
