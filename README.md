@@ -59,7 +59,7 @@ and getting something like this screen output:
 ```
 $ pbrelease --help
 usage: pbrelease  REPOSITORY_NAME  PACKAGE_NAME  MODEL_VERSION
-                  [--help]  [--local LOCAL]  [--dryrun]  [--version]
+                  [--help]  [--local]  [--dryrun]  [--version]
 
 Creates conda packages named PACKAGE_NAME for the PSL model in REPOSITORY_NAME
 that has a GitHub release named MODEL_VERSION. The packages are built locally
@@ -76,12 +76,10 @@ positional arguments:
 
 optional arguments:
   -h, --help       show this help message and exit
-  --local LOCAL    optional flag where LOCAL is name of top-level directory
-                   containing the model conda.recipe directory used to build
-                   the package that is installed on local computer; no --local
-                   option implies model source code is cloned from GitHub
-                   REPOSITORY_NAME for MODEL_RELEASE and packages are uploaded
-                   to Anaconda Cloud PSLmodels channel for public distribution
+  --local          optional flag that causes package to be built from current
+                   source code and installed on local computer without
+                   packages being uploaded to Anaconda Cloud PSLmodels
+                   channel.
   --dryrun         optional flag that writes execution plan to stdout and
                    quits without executing plan
   --version        optional flag that writes Package-Builder release version
@@ -142,15 +140,17 @@ $ pbrelease Behavioral-Responses behresp 0.5.0
 To use `pbrelease` to make a **local package** from the current (even
 uncommitted) code on your current branch, make the top-level directory
 of the repo's source-code tree the current working directory.  Then
-use the `--local .` option as shown here:
+use the `--local` option as shown here:
 
 ```
 $ cd Tax-Calculator
-$ pbrelease Tax-Calculator taxcalc 0.0.0 --local .
+$ pbrelease Tax-Calculator taxcalc 0.0.0 --local
 ```
 
-This will produce a local package on your computer for testing or validation
-work.  You can uninstall this local package at any time using this command:
+This will produce a local package on your computer for testing or
+validation work.  The above example specifies version 0.0.0, but you
+can specify any version you want.  You can uninstall this local
+package at any time using this command:
 
 ```
 $ conda uninstall taxcalc --yes
@@ -190,7 +190,6 @@ work correctly.  Here are the model code criteria:
 The best place to look at code that meets all these criteria is the
 PSLmodels Behavioral-Responses repository.
 
-Version 0.0.0 indicates a local package; the `pbrelease` tool will
+Version 0.0.0 indicates the earliest version; the `pbrelease` tool will
 automatically replace (in a temporary copy of your model code) the
-0.0.0 with the X.Y.Z version specified when you execute `pbrelease`
-without using the `--local` option.
+0.0.0 with the X.Y.Z version specified when you execute `pbrelease`.
