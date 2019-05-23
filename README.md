@@ -23,8 +23,8 @@ What is pbrelease?
 
 The code in this Package-Builder GitHub repository, which is part of
 the `PSLmodels` GitHub organization, generates a conda package called
-`pkgbld` that contains the `pbrelease` tool.  For models in the
-`PSLmodels` GitHub organization that meet certain criteria (see
+`pkgbld` that contains the `pbrelease` command-line tool.  For models
+in the `PSLmodels` GitHub organization that meet certain criteria (see
 below), `pbrelease` can be used to build conda packages (for Windows,
 Linux, and Mac) for a specified model release version and then to
 upload those built packages to the Anaconda Cloud's `PSLmodels`
@@ -155,6 +155,22 @@ package at any time using this command:
 ```
 $ conda uninstall taxcalc --yes
 ```
+
+If your model relies on packages that are not found in the default
+Anaconda channels or in the PSLmodels channel, then you need to
+execute the following command before using the `pbrelease` tool:
+
+```
+$ conda config --add channels CHANNEL
+```
+
+where you replace `CHANNEL` with the name of the extra channel you
+want `pbrelease` to search for packages that your model relies on.
+So, for example, if your model relies on a package in the `conda-forge`
+channel, replace `CHANNEL` with `conda-forge` in the command above.
+You need to add an extra channel only once.  You can replace `--add`
+with `--remove` and `--show` to manage your conda channel configuration.
+
 
 What are the package-building criteria?
 ---------------------------------------
