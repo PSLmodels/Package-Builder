@@ -168,8 +168,9 @@ where you replace `CHANNEL` with the name of the extra channel you
 want `pbrelease` to search for packages that your model relies on.
 So, for example, if your model relies on a package in the `conda-forge`
 channel, replace `CHANNEL` with `conda-forge` in the command above.
-You need to add an extra channel only once.  You can replace `--add`
-with `--remove` and `--show` to manage your conda channel configuration.
+You need to add an extra channel only once.  You can replace
+`--add channels CHANNEL` with `--remove channels CHANNEL` or replace
+it with `--show channels` to manage your conda channel configuration.
 
 
 What are the package-building criteria?
