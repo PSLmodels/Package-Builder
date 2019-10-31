@@ -50,7 +50,7 @@ this command and getting something like this screen output:
 
 ```
 $ pbrelease --version
-Package-Builder 0.21.0
+Package-Builder 0.22.0
 ```
 
 Then see the information that `pbrelease` expects by asking for help
