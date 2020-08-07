@@ -29,7 +29,7 @@ def main():
                      'in a temporary workspace and then uploaded to the '
                      'Anaconda Cloud PSLmodels channel for public '
                      'distribution.  The built/uploaded packages are '
-                     'for Python 3.6 and Python 3.7.')
+                     'for Python 3.6, 3.7, and 3.8.')
     )
     parser.add_argument('REPOSITORY_NAME', nargs='?',
                         help=('Name of repository in the GitHub organization '
