@@ -34,7 +34,7 @@ config = {
         'Topic :: Software Development :: Libraries :: Python Modules'],
     'tests_require': ['pytest'],
     'entry_points': {
-        "console_scripts": ["pkgbld=pkgbld.cli:main"]
+        "console_scripts": ["pbrelease=pkgbld.cli:main"]
     },
 }
 
