@@ -13,7 +13,7 @@ import shutil
 import pkgbld.utils as u
 
 
-ALL_PYTHON_VERSIONS = ['3.6', '3.7']
+ALL_PYTHON_VERSIONS = ['3.6', '3.7', '3.8']
 OS_PLATFORMS = ['osx-64', 'linux-64', 'win-32', 'win-64']
 
 GITHUB_URL = 'https://github.com/PSLmodels'

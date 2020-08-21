@@ -34,7 +34,7 @@ How to install pbrelease?
 -------------------------
 
 At the operating-system command prompt on a computer that has the
-Anaconda distribution of Python 3.6 or 3.7 installed, execute this
+Anaconda distribution of Python 3.6, 3.7, or 3.8 installed, execute this
 command if you have never installed the package that contains the
 `pbrelease` tool:
 
@@ -65,7 +65,7 @@ Creates conda packages named PACKAGE_NAME for the PSL model in REPOSITORY_NAME
 that has a GitHub release named MODEL_VERSION. The packages are built locally
 in a temporary workspace and then uploaded to the Anaconda Cloud PSLmodels
 channel for public distribution. The built/uploaded packages are for Python
-3.6 and Python 3.7.
+3.6, 3.7, and 3.8.
 
 positional arguments:
   REPOSITORY_NAME  Name of repository in the GitHub organization called

@@ -30,8 +30,12 @@ config = {
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Software Development :: Libraries :: Python Modules'],
-    'tests_require': ['pytest']
+    'tests_require': ['pytest'],
+    'entry_points': {
+        "console_scripts": ["pkgbld=pkgbld.cli:main"]
+    },
 }
 
 setup(**config)
